@@ -11,6 +11,7 @@
     "axios": "^0.24.0",
     "file-saver": "^2.0.5",
     "firebase": "^9.6.2",
+    "lodash": "^4.17.21",
     "multiparty": "^4.2.3",
     "next": "latest",
     "next-connect": "^0.12.2",
