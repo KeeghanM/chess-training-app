@@ -3,8 +3,6 @@ import { redirect } from 'next/navigation'
 
 import { prisma } from '~/server/db'
 
-import { Tour } from '@frigade/react'
-
 import PremiumDisplay from '../components/dashboard/PremiumDisplay'
 import Container from '~/app/components/_elements/container'
 import Heading from '~/app/components/_elements/heading'
@@ -175,7 +173,6 @@ export default async function Dashboard() {
 
   return (
     <>
-      <Tour flowId="flow_JaIcoLlR" />
       <div className="relative">
         <div className="absolute inset-0">
           <Image

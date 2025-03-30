@@ -20,7 +20,6 @@
     "@dnd-kit/sortable": "^8.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@formkit/auto-animate": "^0.8.2",
-    "@frigade/react": "^2.9.4",
     "@kinde-oss/kinde-auth-nextjs": "^2.5.5",
     "@mliebelt/pgn-parser": "^1.4.15",
     "@prisma/client": "^5.22.0",
