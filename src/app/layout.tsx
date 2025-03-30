@@ -9,7 +9,6 @@ import Header from './components/template/header/Header'
 
 import { PostHogPageview } from './_util/PostHog'
 import Providers from './_util/Providers'
-import getDistinctId from './_util/getDistinctId'
 
 import './globals.css'
 
@@ -49,8 +48,6 @@ export default async function RootLayout({
 }: {
   children: ReactNode
 }) {
-  const distinctId = await getDistinctId()
-
   return (
     <>
       <Script id="brevo-conversations">
@@ -70,7 +67,7 @@ export default async function RootLayout({
           <PostHogPageview />
         </Suspense>
         <body>
-          <Providers distinctId={distinctId}>
+          <Providers>
             <Header />
             {children}
             <Footer />

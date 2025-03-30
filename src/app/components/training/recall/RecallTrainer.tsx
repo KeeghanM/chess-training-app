@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 
-import { Tour } from '@frigade/react'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import * as Sentry from '@sentry/nextjs'
 import Tippy from '@tippyjs/react'
@@ -340,7 +339,6 @@ export default function RecallTrainer() {
     </div>
   ) : (
     <>
-      <Tour flowId="flow_g0ITjQQa" />
       {mode == 'settings' ? (
         <>
           <div className="border border-gray-300 text-black dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)]">

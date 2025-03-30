@@ -9,7 +9,6 @@ import { getUserServer } from '~/app/_util/getUserServer'
 export default async function BadgesPage() {
   const { badges } = await getUserServer()
   const allBadges = await prisma.badge.findMany()
-  await prisma.$disconnect()
 
   allBadges.sort((a) => {
     if (badges.find((badge) => badge.badgeName === a.name)) return -1

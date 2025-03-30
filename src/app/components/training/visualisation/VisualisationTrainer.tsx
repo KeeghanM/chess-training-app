@@ -4,7 +4,6 @@ import Link from 'next/link'
 
 import { useEffect, useState } from 'react'
 
-import { Tour, useFlow } from '@frigade/react'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import * as Sentry from '@sentry/nextjs'
 import Tippy from '@tippyjs/react'
@@ -71,8 +70,6 @@ export default function VisualisationTrainer() {
 
   const [xpCounter, setXpCounter] = useState(0)
   const [currentStreak, setCurrentStreak] = useState(0)
-
-  const { flow } = useFlow('flow_FudOixipuMiWOaP7')
 
   const difficultyAdjuster = (d: number) => {
     return d == 0 ? 0.9 : d == 1 ? 1 : 1.2
@@ -335,7 +332,6 @@ export default function VisualisationTrainer() {
 
   return (
     <>
-      <Tour flowId="flow_FudOixipuMiWOaP7" />
       {mode == 'settings' ? (
         <>
           <div className="border border-gray-300 text-black dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)]">
@@ -438,15 +434,6 @@ export default function VisualisationTrainer() {
                   </p>
                   <p>{getDifficulty()}</p>
                 </div>
-                <p
-                  onClick={async () => {
-                    await flow?.restart()
-                    setMode('settings')
-                  }}
-                  className="cursor-pointer underline hover:no-underline"
-                >
-                  How to use?
-                </p>
                 <XpTracker counter={xpCounter} type={'tactic'} />
               </div>
               <div className="flex items-center gap-2 w-fit mx-auto md:mx-0">
