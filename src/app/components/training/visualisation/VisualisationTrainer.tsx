@@ -8,8 +8,8 @@ import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import * as Sentry from '@sentry/nextjs'
 import Tippy from '@tippyjs/react'
 import { useWindowSize } from '@uidotdev/usehooks'
-import { Chess } from 'chess.js'
 import type { Square } from 'chess.js'
+import { Chess } from 'chess.js'
 import { Chessboard } from 'react-chessboard'
 import Toggle from 'react-toggle'
 import 'react-toggle/style.css'
@@ -622,6 +622,7 @@ export default function VisualisationTrainer() {
                     {PgnDisplay.map((item) => item)}
                   </div>
                   <label className="ml-auto flex items-center gap-2 text-sm">
+                    {/* @ts-expect-error - react-toggle type compatibility issue */}
                     <Toggle
                       defaultChecked={autoNext}
                       onChange={async () => {
