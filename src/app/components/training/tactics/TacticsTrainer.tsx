@@ -5,24 +5,25 @@ import { useRouter } from 'next/navigation'
 
 import { useEffect, useState } from 'react'
 
+import { usePuzzleQueries } from '@hooks/use-puzzle-queries'
+import { useTacticsQueries } from '@hooks/use-tactics-queries'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import type { Puzzle } from '@prisma/client'
 import * as Sentry from '@sentry/nextjs'
+import { useAppStore } from '@stores/app-store'
 import Tippy from '@tippyjs/react'
+import trackEventOnClient from '@utils/trackEventOnClient'
 import type { Move } from 'chess.js'
 import { Chess } from 'chess.js'
 import Toggle from 'react-toggle'
 import 'react-toggle/style.css'
 import useSound from 'use-sound'
-import type { ResponseJson } from '~/app/api/responses'
 
-import Button from '~/app/components/_elements/button'
-import Spinner from '~/app/components/general/Spinner'
-import TimeSince from '~/app/components/general/TimeSince'
-import XpTracker from '~/app/components/general/XpTracker'
-import ThemeSwitch from '~/app/components/template/header/ThemeSwitch'
-
-import trackEventOnClient from '~/app/_util/trackEventOnClient'
+import Button from '@components/_elements/button'
+import Spinner from '@components/general/Spinner'
+import TimeSince from '@components/general/TimeSince'
+import XpTracker from '@components/general/XpTracker'
+import ThemeSwitch from '@components/template/header/ThemeSwitch'
 
 import ChessBoard from '../ChessBoard'
 import type { PrismaTacticsSet } from './create/TacticsSetCreator'
@@ -48,14 +49,21 @@ export interface TrainingPuzzle {
 export default function TacticsTrainer(props: {
   set: PrismaTacticsSetWithPuzzles
 }) {
+  // --- Hooks ---
+  const { useTrainingPuzzleQuery } = usePuzzleQueries()
+  const { increaseCorrect, increaseIncorrect, increaseTimeTaken } =
+    useTacticsQueries()
+
+  const { preferences, setSoundEnabled, setAutoNext } = useAppStore()
+  const { soundEnabled, autoNext } = preferences
+
   const { user } = useKindeBrowserClient()
   const router = useRouter()
 
   // Setup main state for the game/puzzles
-  const [currentRound, setCurrentRound] = useState(
+  const [currentRound] = useState(
     props.set.rounds[props.set.rounds.length - 1]!,
   )
-  const [currentPuzzle, setCurrentPuzzle] = useState<TrainingPuzzle>()
   const [CompletedPuzzles, setCompletedPuzzles] = useState(
     currentRound.correct + currentRound.incorrect,
   )
@@ -68,37 +76,23 @@ export default function TacticsTrainer(props: {
   const [correctSound] = useSound('/sfx/correct.mp3')
   const [incorrectSound] = useSound('/sfx/incorrect.mp3')
 
-  // Setup state for the settings/general
-  const [soundEnabled, setSoundEnabled] = useState(true)
-  const [autoNext, setAutoNext] = useState(false)
+  // Setup state for the game and training
   const [loading, setLoading] = useState(true)
   const [readyForInput, setReadyForInput] = useState(false)
   const [puzzleFinished, setPuzzleFinished] = useState(false)
-  const [startTime, setStartTime] = useState(Date.now())
+  const [startTime] = useState(Date.now())
   const [sessionTimeStarted] = useState(new Date())
   const [puzzleStatus, setPuzzleStatus] = useState<
     'none' | 'correct' | 'incorrect'
   >('none')
   const [xpCounter, setXpCounter] = useState(0)
-  const [currentStreak, setCurrentStreak] = useState(0)
 
-  const getPuzzle = async (id: string) => {
-    try {
-      const resp = await fetch(`/api/puzzles/getPuzzleById/${id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      const json = (await resp.json()) as ResponseJson
-      if (json.message != 'Puzzle found') throw new Error(json.message)
+  // Get current puzzle data using React Query
+  const currentPuzzleIndex = CompletedPuzzles
+  const currentPuzzleId = props.set.puzzles[currentPuzzleIndex]?.puzzleid || ''
 
-      return json.data!.puzzle as TrainingPuzzle
-    } catch (e) {
-      Sentry.captureException(e)
-      return undefined
-    }
-  }
+  const puzzleQuery = useTrainingPuzzleQuery(currentPuzzleId)
+  const currentPuzzle = puzzleQuery.data
 
   const makeMove = (move: string) => {
     try {
@@ -132,84 +126,6 @@ export default function TacticsTrainer(props: {
       setReadyForInput(true)
     }, 500)
     return timeoutId
-  }
-
-  const increaseTimeTaken = () => {
-    if (!user) return
-    setLoading(true)
-    const newTime = Date.now()
-    const timeTaken = (newTime - startTime) / 1000
-    try {
-      fetch('/api/tactics/stats/increaseTimeTaken', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          roundId: currentRound.id,
-          timeTaken,
-          setId: props.set.id,
-        }),
-      }).catch((e) => Sentry.captureException(e))
-    } catch (e) {
-      Sentry.captureException(e)
-    }
-    setStartTime(newTime)
-    setLoading(false)
-  }
-
-  const increaseCorrect = () => {
-    if (!user) return
-
-    setLoading(true)
-    try {
-      trackEventOnClient('tactics_set_puzzle_correct', {
-        rating: currentPuzzle!.rating.toString(),
-      })
-      fetch('/api/tactics/stats/increaseCorrect', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          roundId: currentRound.id,
-          currentStreak: currentStreak + 1,
-        }),
-      }).catch((e) => {
-        Sentry.captureException(e)
-      })
-    } catch (e) {
-      Sentry.captureException(e)
-    }
-
-    setCurrentStreak(currentStreak + 1)
-    setCurrentRound({ ...currentRound, correct: currentRound.correct + 1 })
-    setLoading(false)
-  }
-  const increaseIncorrect = () => {
-    if (!user) return
-    setLoading(true)
-    try {
-      trackEventOnClient('tactics_set_puzzle_incorrect', {
-        rating: currentPuzzle!.rating.toString(),
-      })
-      fetch('/api/tactics/stats/increaseIncorrect', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          roundId: currentRound.id,
-        }),
-      }).catch((e) => {
-        Sentry.captureException(e)
-      })
-    } catch (e) {
-      Sentry.captureException(e)
-    }
-    setCurrentStreak(0)
-    setCurrentRound({ ...currentRound, incorrect: currentRound.incorrect + 1 })
-    setLoading(false)
   }
 
   const goToNextPuzzle = async () => {
@@ -257,14 +173,10 @@ export default function TacticsTrainer(props: {
     }
 
     // We haven't completed the set so we need to change the puzzle
-
-    const newPuzzle = await getPuzzle(
-      props.set.puzzles[currentPuzzleIndex + 1]!.puzzleid,
-    )
     setPuzzleStatus('none')
     setLoading(false)
     setCompletedPuzzles(currentPuzzleIndex + 1)
-    setCurrentPuzzle(newPuzzle)
+    // React Query will automatically fetch the new puzzle when currentPuzzleIndex changes
   }
 
   const checkEndOfLine = async () => {
@@ -275,8 +187,16 @@ export default function TacticsTrainer(props: {
       setPuzzleFinished(true)
       setXpCounter(xpCounter + 1)
 
-      increaseTimeTaken()
-      increaseCorrect()
+      increaseTimeTaken.mutate({
+        roundId: currentRound.id,
+        timeTaken: (Date.now() - startTime) / 1000,
+        setId: props.set.id,
+      })
+      increaseCorrect.mutate({
+        roundId: currentRound.id,
+        setId: props.set.id,
+        timeTaken: (Date.now() - startTime) / 1000,
+      })
 
       if (autoNext && puzzleStatus != 'incorrect') {
         await goToNextPuzzle()
@@ -324,7 +244,9 @@ export default function TacticsTrainer(props: {
       game.undo()
       setReadyForInput(false)
       await showIncorrectSequence()
-      increaseIncorrect()
+      increaseIncorrect.mutate({
+        roundId: currentRound.id,
+      })
       setReadyForInput(true)
       setPuzzleFinished(true)
       return false
@@ -383,39 +305,32 @@ export default function TacticsTrainer(props: {
 
   const exit = async () => {
     setLoading(true)
-    increaseTimeTaken()
+    increaseTimeTaken.mutate({
+      roundId: currentRound.id,
+      timeTaken: (Date.now() - startTime) / 1000,
+      setId: props.set.id,
+    })
     trackEventOnClient('tactics_set_closed', {})
     router.push('/training/tactics/list')
     return
   }
 
   // Here are all our useEffect functions
-  useEffect(() => {
-    // On mount, load the first puzzle
-    ;(async () => {
-      const startingRound = props.set.rounds[props.set.rounds.length - 1]!
-      const puzzleId =
-        props.set.puzzles[startingRound.correct + startingRound.incorrect]!
-          .puzzleid
-      const puzzle = await getPuzzle(puzzleId)
-      if (!puzzle) return
-      setCurrentPuzzle(puzzle)
-      setLoading(false)
-    })().catch((e) => {
-      Sentry.captureException(e)
-      throw new Error('Unable to load puzzle')
-    })
+  // useEffect(() => {
+  //   // Set loading based on React Query state
+  //   setLoading(puzzleQuery.isLoading)
 
-    return () => {
-      // On unmount, log the stats
-      ;(async () => {
-        increaseTimeTaken()
-      })().catch((e) => {
-        Sentry.captureException(e)
-        throw new Error('Unable to log stats')
-      })
-    }
-  }, [])
+  //   return () => {
+  //     // On unmount, log the stats
+  //     if (user) {
+  //       increaseTimeTaken.mutate({
+  //         roundId: currentRound.id,
+  //         timeTaken: (Date.now() - startTime) / 1000,
+  //         setId: props.set.id,
+  //       })
+  //     }
+  //   }
+  // }, [puzzleQuery.isLoading, user, currentRound.id, startTime, props.set.id, increaseTimeTaken])
 
   useEffect(() => {
     // Create a new game from the puzzle whenever it changes

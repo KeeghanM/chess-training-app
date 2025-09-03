@@ -3,13 +3,16 @@
 import { useEffect, useState } from 'react'
 
 import * as Sentry from '@sentry/nextjs'
-import type { ResponseJson } from '~/app/api/responses'
+
+import { useProfileQueries } from '@hooks/use-profile-queries'
 
 export type availableTypes = 'line' | 'tactic'
+
 export default function XpTracker(props: {
   counter: number
   type: availableTypes
 }) {
+  const { updateXp } = useProfileQueries()
   const [show, setShow] = useState(false)
   const [xpToAdd, setXpToAdd] = useState(0)
 
@@ -26,32 +29,31 @@ export default function XpTracker(props: {
 
   useEffect(() => {
     if (props.counter === 0) return
+    
     // Calculate the XP to add
     const xpToAdd = calculateXp(props.type)
     setXpToAdd(xpToAdd)
+    
     // We hide and show it, just in case the user gets multiple XP
     // in a short period of time
     setShow(false)
     setShow(true)
+    
     // Hide the message after 3.5 seconds
     setTimeout(() => {
       setShow(false)
     }, 2500)
-    // Add the XP to the user
-    ;(async () => {
-      const resp = await fetch('/api/profile/xp', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
+    
+    // Add the XP to the user using React Query mutation
+    updateXp.mutate(
+      { xp: xpToAdd, type: props.type },
+      {
+        onError: (error) => {
+          Sentry.captureException(error)
         },
-        body: JSON.stringify({ xp: xpToAdd, type: props.type }),
-      })
-      const json = (await resp.json()) as ResponseJson
-      if (json.message != 'XP added') throw new Error(json.message)
-    })().catch((e) => {
-      Sentry.captureException(e)
-    })
-  }, [props.counter])
+      },
+    )
+  }, [props.counter, props.type, updateXp])
 
   return show ? (
     <div className="absolute inset-0 grid place-items-center pointer-events-none">

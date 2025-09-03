@@ -1,42 +1,21 @@
 'use client'
 
-import { useContext, useEffect, useState } from 'react'
+import { useContext } from 'react'
 
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import type { ResponseJson } from '~/app/api/responses'
+import { useAdminQueries } from '@hooks/use-admin-queries'
 
 import Spinner from '../../general/Spinner'
 import {
   CuratedSetBrowserContext,
-  type CuratedSetPuzzle,
 } from './CuratedSetsBrowser'
 
 export default function PuzzleList() {
-  const queryClient = useQueryClient()
+  const { useCuratedSetPuzzlesQuery } = useAdminQueries()
   const { selectedSet, puzzle, setPuzzle } = useContext(
     CuratedSetBrowserContext,
   )
-  const [puzzles, setPuzzles] = useState<CuratedSetPuzzle[]>([])
 
-  const { isLoading, error } = useQuery({
-    queryKey: ['puzzles'],
-    queryFn: async () => {
-      if (!selectedSet) throw new Error('No set selected')
-      const resp = await fetch('/api/admin/curated-sets/getPuzzles', {
-        method: 'POST',
-        body: JSON.stringify({ setId: selectedSet.id }),
-      })
-      const json = (await resp.json()) as ResponseJson
-      if (json.message != 'Puzzles found') throw new Error(json.message)
-
-      const puzzles = json.data!.puzzles as CuratedSetPuzzle[]
-      setPuzzles(puzzles)
-    },
-  })
-
-  useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: ['puzzles'] })
-  }, [selectedSet])
+  const { data: puzzles = [], isLoading, error } = useCuratedSetPuzzlesQuery(selectedSet?.id || null)
 
   if (error) {
     return (
