@@ -5,9 +5,7 @@ import { useContext } from 'react'
 import { useAdminQueries } from '@hooks/use-admin-queries'
 
 import Spinner from '../../general/Spinner'
-import {
-  CuratedSetBrowserContext,
-} from './CuratedSetsBrowser'
+import { CuratedSetBrowserContext } from './CuratedSetsBrowser'
 
 export default function PuzzleList() {
   const { useCuratedSetPuzzlesQuery } = useAdminQueries()
@@ -15,7 +13,11 @@ export default function PuzzleList() {
     CuratedSetBrowserContext,
   )
 
-  const { data: puzzles = [], isLoading, error } = useCuratedSetPuzzlesQuery(selectedSet?.id || null)
+  const {
+    data: puzzles = [],
+    isLoading,
+    error,
+  } = useCuratedSetPuzzlesQuery(selectedSet?.id || null)
 
   if (error) {
     return (

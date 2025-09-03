@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-import type { ResponseJson } from '~/app/api/responses'
 import { usePuzzleQueries } from './use-puzzle-queries'
 
 // Visualisation Queries
@@ -19,8 +18,10 @@ export function useVisualisationQueries() {
     difficulty: number
     length: number
   }) => {
-    const trueRating = Math.round(params.rating * difficultyAdjuster(params.difficulty))
-    
+    const trueRating = Math.round(
+      params.rating * difficultyAdjuster(params.difficulty),
+    )
+
     return useRandomTrainingPuzzleQuery({
       rating: trueRating,
       count: '1',
@@ -31,19 +32,13 @@ export function useVisualisationQueries() {
   // --- Mutations ---
   const updateVisualisationStreak = useMutation({
     mutationFn: async (data: { currentStreak: number }): Promise<void> => {
-      const response = await fetch('/api/visualisation/streak', {
+      await fetch('/api/visualisation/streak', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       })
-      
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Streak updated') {
-        throw new Error(json.message || 'Failed to update visualisation streak')
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['visualisation-stats'] })
@@ -57,19 +52,13 @@ export function useVisualisationQueries() {
       correct: boolean
       timeTaken: number
     }): Promise<void> => {
-      const response = await fetch('/api/visualisation/attempt', {
+      await fetch('/api/visualisation/attempt', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       })
-      
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Attempt logged') {
-        throw new Error(json.message || 'Failed to log visualisation attempt')
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['visualisation-stats'] })

@@ -4,6 +4,7 @@ import { useState } from 'react'
 
 import { useCourseQueries } from '@hooks/use-course-queries'
 import * as AlertDialog from '@radix-ui/react-alert-dialog'
+
 import Button from '~/app/components/_elements/button'
 import Spinner from '~/app/components/general/Spinner'
 
@@ -21,10 +22,13 @@ export default function ResetButtons({ groups, courseId }: ResetButtonProps) {
   const [error, setError] = useState<string | null>(null)
   const [selectedGroup, setSelectedGroup] = useState<string>('')
   const [open, setOpen] = useState(false)
-  
-  const { markGroupForReview: markGroupMutation, markAllForReview: markAllMutation } = useCourseQueries()
 
-    const markGroupForReview = async () => {
+  const {
+    markGroupForReview: markGroupMutation,
+    markAllForReview: markAllMutation,
+  } = useCourseQueries()
+
+  const markGroupForReview = async () => {
     setGroupLoading(true)
     setError(null)
 

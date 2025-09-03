@@ -4,8 +4,12 @@ import Link from 'next/link'
 
 import { useEffect, useState } from 'react'
 
+import { useEndgameQueries } from '@hooks/use-endgame-queries'
+import { useProfileQueries } from '@hooks/use-profile-queries'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
+import { useAppStore } from '@stores/app-store'
 import Tippy from '@tippyjs/react'
+import trackEventOnClient from '@utils/trackEventOnClient'
 import type { Move } from 'chess.js'
 import { Chess } from 'chess.js'
 import Toggle from 'react-toggle'
@@ -16,10 +20,6 @@ import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
 import XpTracker from '@components/general/XpTracker'
 import ThemeSwitch from '@components/template/header/ThemeSwitch'
-import { useEndgameQueries } from '@hooks/use-endgame-queries'
-import { useProfileQueries } from '@hooks/use-profile-queries'
-import { useAppStore } from '@stores/app-store'
-import trackEventOnClient from '@utils/trackEventOnClient'
 
 import ChessBoard from '../ChessBoard'
 
@@ -27,7 +27,8 @@ export default function EndgameTrainer() {
   const { user } = useKindeBrowserClient()
 
   // --- Hooks ---
-  const { useRandomEndgameQuery, updateEndgameStreak, logEndgameAttempt } = useEndgameQueries()
+  const { useRandomEndgameQuery, updateEndgameStreak, logEndgameAttempt } =
+    useEndgameQueries()
   const { updateStreak } = useProfileQueries()
   const { preferences, setSoundEnabled, setAutoNext } = useAppStore()
   const { soundEnabled, autoNext } = preferences

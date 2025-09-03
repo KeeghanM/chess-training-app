@@ -1,14 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
+import { useTacticsQueries } from '@hooks/use-tactics-queries'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import type { TacticsSet, TacticsSetRound } from '@prisma/client'
 import * as AlertDialog from '@radix-ui/react-alert-dialog'
 import * as Sentry from '@sentry/nextjs'
 import Select from 'react-select'
 
-import { useTacticsQueries } from '@hooks/use-tactics-queries'
 import Button from '~/app/components/_elements/button'
 import StyledLink from '~/app/components/_elements/styledLink'
 import GetPremiumButton from '~/app/components/ecomm/GetPremiumButton'
@@ -20,16 +20,15 @@ export type PrismaTacticsSet = TacticsSet & { rounds: TacticsSetRound[] }
 interface TacticsSetCreatorProps {
   setCount: number
   maxSets: number
-  loading: boolean
-  setCreated: (set: PrismaTacticsSet) => void
   hasUnlimitedSets: boolean
 }
-export default function TacticsSetCreator(props: TacticsSetCreatorProps) {
+export default function TacticsSetCreator({
+  setCount,
+  maxSets,
+  hasUnlimitedSets,
+}: TacticsSetCreatorProps) {
   const { user } = useKindeBrowserClient()
   const { fetchPuzzlesMutation, createTacticsSet } = useTacticsQueries()
-  const { setCount, maxSets, setCreated, hasUnlimitedSets } = props
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [open, setOpen] = useState(false)
   const [name, setName] = useState('')
@@ -60,6 +59,10 @@ export default function TacticsSetCreator(props: TacticsSetCreatorProps) {
     { value: 'enPassant', label: 'En Passant' },
   ]
 
+  useEffect(() => {
+    createTacticsSet.reset()
+  }, [name, size, rating, themesList, difficulty])
+
   const difficultyAdjuster = (d: number) => {
     return d == 0 ? 0.9 : d == 1 ? 1 : 1.2
   }
@@ -72,7 +75,7 @@ export default function TacticsSetCreator(props: TacticsSetCreatorProps) {
       rating: Math.round(rating * difficultyAdjuster(difficulty)),
       count: count.toString(),
       themesType: 'ONE' as const,
-      themes: themes.length > 0 ? themes : undefined,
+      themes: themes.length > 0 ? JSON.stringify(themes) : undefined,
     }
 
     try {
@@ -95,12 +98,9 @@ export default function TacticsSetCreator(props: TacticsSetCreatorProps) {
     setRating(1500)
     setDifficulty(1)
     setThemesList([])
-    setError('')
     setMessage('')
-    setLoading(false)
   }
   const validForm = () => {
-    setError('')
     setMessage('')
 
     if (name.length < 5) {
@@ -129,16 +129,12 @@ export default function TacticsSetCreator(props: TacticsSetCreatorProps) {
     return true
   }
   const createSet = async () => {
-    setLoading(true)
     if (!validForm()) {
-      setLoading(false)
       return
     }
 
     const puzzles = await GetPuzzlesForSet(rating, size, themesList)
     if (!puzzles || puzzles.length == 0) {
-      setError('No puzzles found')
-      setLoading(false)
       return
     }
 
@@ -148,8 +144,8 @@ export default function TacticsSetCreator(props: TacticsSetCreatorProps) {
 
     try {
       if (!user) throw new Error('Not logged in')
-      
-      const set = await createTacticsSet.mutateAsync({
+
+      await createTacticsSet.mutateAsync({
         name: name,
         puzzleIds,
         rating,
@@ -164,13 +160,9 @@ export default function TacticsSetCreator(props: TacticsSetCreatorProps) {
           difficulty == 0 ? 'Easy' : difficulty == 1 ? 'Medium' : 'Hard',
       })
       resetForm()
-      setCreated(set as unknown as PrismaTacticsSet)
       setOpen(false)
     } catch (e) {
       Sentry.captureException(e)
-      if (e instanceof Error) {
-        setError('Oops! Something went wrong: ' + e.message)
-      }
     }
   }
 
@@ -305,10 +297,14 @@ export default function TacticsSetCreator(props: TacticsSetCreatorProps) {
                 <div className="flex gap-4">
                   <Button
                     variant="primary"
-                    onClick={async () => await createSet()}
-                    disabled={loading}
+                    onClick={createSet}
+                    disabled={
+                      createTacticsSet.isPending ||
+                      fetchPuzzlesMutation.isPending
+                    }
                   >
-                    {loading ? (
+                    {createTacticsSet.isPending ||
+                    fetchPuzzlesMutation.isPending ? (
                       <>
                         Creating <Spinner />
                       </>
@@ -321,7 +317,11 @@ export default function TacticsSetCreator(props: TacticsSetCreatorProps) {
                   </Button>
                 </div>
                 {message && <p className="italic text-red-500">{message}</p>}
-                {error && <p className="italic text-red-500">{error}</p>}
+                {createTacticsSet.error && (
+                  <p className="italic text-red-500">
+                    {createTacticsSet.error.message}
+                  </p>
+                )}
               </>
             ) : (
               <div className="flex flex-col gap-2">

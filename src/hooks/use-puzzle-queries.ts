@@ -1,6 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
-
 import type { Puzzle } from '@prisma/client'
+import { useQuery } from '@tanstack/react-query'
 import type { ResponseJson } from '~/app/api/responses'
 
 // Additional puzzle types for training
@@ -26,11 +25,7 @@ export function usePuzzleQueries() {
         const [, id] = queryKey
         const response = await fetch(`/api/puzzles/getPuzzleById/${id}`)
         const json = (await response.json()) as ResponseJson
-        
-        if (!response.ok || json.message !== 'Puzzle found') {
-          throw new Error(json.message || 'Failed to fetch puzzle')
-        }
-        
+
         return json.data?.puzzle as unknown as TrainingPuzzle
       },
       enabled: !!puzzleId,
@@ -41,8 +36,11 @@ export function usePuzzleQueries() {
     useQuery({
       queryKey: ['puzzles', filters],
       queryFn: async ({ queryKey }): Promise<Puzzle[]> => {
-        const [, filters] = queryKey as [string, { rating?: number; themes?: string[] } | undefined]
-        
+        const [, filters] = queryKey as [
+          string,
+          { rating?: number; themes?: string[] } | undefined,
+        ]
+
         // Prepare POST body with filters
         const requestBody = {
           rating: filters?.rating || 1500, // Default rating
@@ -50,7 +48,7 @@ export function usePuzzleQueries() {
           themesType: filters?.themes?.length ? 'include' : undefined,
           themes: filters?.themes?.join(','),
         }
-        
+
         const response = await fetch('/api/puzzles/getPuzzles', {
           method: 'POST',
           headers: {
@@ -59,11 +57,7 @@ export function usePuzzleQueries() {
           body: JSON.stringify(requestBody),
         })
         const json = (await response.json()) as ResponseJson
-        
-        if (!response.ok || json.message !== 'Puzzles found') {
-          throw new Error(json.message || 'Failed to fetch puzzles')
-        }
-        
+
         return json.data?.puzzles as unknown as Puzzle[]
       },
       enabled: !!filters, // Only enable when filters are provided
@@ -80,14 +74,20 @@ export function usePuzzleQueries() {
     useQuery({
       queryKey: ['random-training-puzzle', params],
       queryFn: async ({ queryKey }): Promise<TrainingPuzzle> => {
-        const [, queryParams] = queryKey as [string, {
-          rating?: number
-          themes?: string[]
-          themesType?: string
-          count?: string
-          playerMoves?: number
-        } | undefined]
-        
+        const [, queryParams] = queryKey as [
+          string,
+          (
+            | {
+                rating?: number
+                themes?: string[]
+                themesType?: string
+                count?: string
+                playerMoves?: number
+              }
+            | undefined
+          ),
+        ]
+
         const response = await fetch('/api/puzzles/getPuzzles', {
           method: 'POST',
           headers: {
@@ -96,11 +96,7 @@ export function usePuzzleQueries() {
           body: JSON.stringify(queryParams),
         })
         const json = (await response.json()) as ResponseJson
-        
-        if (!response.ok || json.message !== 'Puzzles found') {
-          throw new Error(json.message || 'Failed to fetch training puzzle')
-        }
-        
+
         const puzzles = json.data?.puzzles as TrainingPuzzle[]
         if (!puzzles || puzzles.length === 0) {
           throw new Error('No puzzles found')

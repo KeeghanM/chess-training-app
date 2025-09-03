@@ -1,8 +1,10 @@
 'use client'
 
+import { useState } from 'react'
+
 import { useCourseQueries } from '@hooks/use-course-queries'
 import type { Group, Line, Move, UserLine } from '@prisma/client'
-import { useState } from 'react'
+
 import Button from '~/app/components/_elements/button'
 import PrettyPrintLine from '~/app/components/general/PrettyPrintLine'
 import Spinner from '~/app/components/general/Spinner'

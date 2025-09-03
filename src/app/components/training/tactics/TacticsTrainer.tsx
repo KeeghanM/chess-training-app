@@ -18,6 +18,7 @@ import { Chess } from 'chess.js'
 import Toggle from 'react-toggle'
 import 'react-toggle/style.css'
 import useSound from 'use-sound'
+import { queryClient } from '~/hooks/query-client'
 
 import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
@@ -60,7 +61,7 @@ export default function TacticsTrainer(props: {
   const router = useRouter()
 
   // Setup main state for the game/puzzles
-  const [currentRound] = useState(
+  const [currentRound, setCurrentRound] = useState(
     props.set.rounds[props.set.rounds.length - 1]!,
   )
   const [CompletedPuzzles, setCompletedPuzzles] = useState(
@@ -84,6 +85,7 @@ export default function TacticsTrainer(props: {
     'none' | 'correct' | 'incorrect'
   >('none')
   const [xpCounter, setXpCounter] = useState(0)
+  const [currentStreak, setCurrentStreak] = useState(0)
 
   // Get current puzzle data using React Query
   const currentPuzzleIndex = CompletedPuzzles
@@ -148,7 +150,7 @@ export default function TacticsTrainer(props: {
             correct: currentRound.correct.toString(),
             incorrect: currentRound.incorrect.toString(),
           })
-          
+
           // Use React Query mutation for creating new round
           await createRound.mutateAsync({
             setId: props.set.id,
@@ -186,8 +188,12 @@ export default function TacticsTrainer(props: {
       })
       increaseCorrect.mutate({
         roundId: currentRound.id,
-        setId: props.set.id,
-        timeTaken: (Date.now() - startTime) / 1000,
+        currentStreak: currentStreak + 1,
+      })
+      setCurrentStreak(currentStreak + 1)
+      setCurrentRound({
+        ...currentRound,
+        correct: currentRound.correct + 1,
       })
 
       if (autoNext && puzzleStatus != 'incorrect') {
@@ -239,8 +245,14 @@ export default function TacticsTrainer(props: {
       increaseIncorrect.mutate({
         roundId: currentRound.id,
       })
+      setCurrentStreak(0)
       setReadyForInput(true)
       setPuzzleFinished(true)
+      setCurrentRound({
+        ...currentRound,
+        incorrect: currentRound.incorrect + 1,
+      })
+      
       return false
     }
     setPosition(game.fen())
@@ -301,6 +313,7 @@ export default function TacticsTrainer(props: {
       timeTaken: (Date.now() - startTime) / 1000,
       setId: props.set.id,
     })
+    queryClient.invalidateQueries({ queryKey: ['tactics', 'sets'] })
     trackEventOnClient('tactics_set_closed', {})
     router.push('/training/tactics/list')
     return
@@ -359,14 +372,12 @@ export default function TacticsTrainer(props: {
 
   return (
     <div className="relative border border-gray-300 dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)]">
-      {(
-        // Check if any queries are loading
-        puzzleQuery.isFetching ||
+      {// Check if any queries are loading
+      (puzzleQuery.isFetching ||
         increaseCorrect.isPending ||
         increaseIncorrect.isPending ||
         increaseTimeTaken.isPending ||
-        createRound.isPending
-      ) && (
+        createRound.isPending) && (
         <div className="absolute inset-0 z-50 grid place-items-center bg-[rgba(0,0,0,0.3)]">
           <Spinner />
         </div>

@@ -2,12 +2,13 @@
 
 import Link from 'next/link'
 
+import { useCourseQueries } from '@hooks/use-course-queries'
+
 import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
 import StyledLink from '@components/_elements/styledLink'
 import Spinner from '@components/general/Spinner'
 
-import { useCourseQueries } from '@hooks/use-course-queries'
 import PremiumSubscribe from '../../../ecomm/PremiumSubscribe'
 import CourseListItem from './CourseListItem'
 
@@ -17,7 +18,11 @@ export default function CourseList(props: { hasUnlimitedCourses: boolean }) {
 
   // React Query hooks
   const { useUserCoursesQuery } = useCourseQueries()
-  const { data: courses = [], isLoading: loading, refetch } = useUserCoursesQuery('active')
+  const {
+    data: courses = [],
+    isLoading: loading,
+    refetch,
+  } = useUserCoursesQuery('active')
 
   return (
     <>

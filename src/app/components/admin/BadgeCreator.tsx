@@ -40,7 +40,7 @@ export default function BadgeCreator() {
         body: JSON.stringify({ name, description, category }),
       })
       const json = (await res.json()) as ResponseJson
-      if (json.message !== 'Badge created') throw new Error(json.message)
+
       return json
     },
     onError: (error) => {

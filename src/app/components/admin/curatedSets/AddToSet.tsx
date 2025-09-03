@@ -25,7 +25,6 @@ export default function AddToSet() {
         }),
       })
       const json = (await resp.json()) as ResponseJson
-      if (json.message !== 'Puzzle added to set') throw new Error(json.message)
       return json
     },
     onError: (error) => {

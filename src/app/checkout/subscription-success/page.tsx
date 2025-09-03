@@ -1,6 +1,7 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
+
 import { Suspense, useEffect, useState } from 'react'
 
 import Container from '~/app/components/_elements/container'
@@ -94,7 +95,9 @@ export default function SubscriptionSuccessPage() {
       <div className="mx-auto max-w-2xl space-y-6 text-center py-8">
         <Heading as="h1">Subscription Status</Heading>
 
-        <Suspense fallback={<p className="text-gray-600 text-sm">Loading...</p>}>
+        <Suspense
+          fallback={<p className="text-gray-600 text-sm">Loading...</p>}
+        >
           <SubscriptionHandler />
         </Suspense>
 

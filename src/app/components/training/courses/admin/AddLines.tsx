@@ -4,10 +4,10 @@ import Link from 'next/link'
 
 import { useState } from 'react'
 
+import { useCourseQueries } from '@hooks/use-course-queries'
 import type { Course, Move } from '@prisma/client'
 import * as Sentry from '@sentry/nextjs'
 
-import { useCourseQueries } from '@hooks/use-course-queries'
 import Button from '~/app/components/_elements/button'
 import Heading from '~/app/components/_elements/heading'
 import StyledLink from '~/app/components/_elements/styledLink'
@@ -27,14 +27,14 @@ export default function AddLines(props: { courseId: string }) {
     'pgn',
   )
   const [lines, setLines] = useState<Line[]>([])
-  
+
   const { addLines, getCourseLines } = useCourseQueries()
 
   const uploadLines = async (group: string, lines: Line[]) => {
     try {
       const cleanLines = lines.map((line) => ({
-        groupName: line.tags[group],
-        colour: line.tags.Colour,
+        groupName: line.tags[group]!,
+        colour: line.tags.Colour!,
         moves: line.moves,
       }))
       const allGroups = [...new Set(cleanLines.map((line) => line.groupName))]
@@ -56,9 +56,9 @@ export default function AddLines(props: { courseId: string }) {
   const processLines = async (lines: Line[]) => {
     // Download existing data
     try {
-      const existingCourseData = await getCourseLines.mutateAsync({ 
-        courseId: props.courseId 
-      }) as FullCourseData
+      const existingCourseData = (await getCourseLines.mutateAsync({
+        courseId: props.courseId,
+      })) as FullCourseData
 
       // Now filter out any lines that already exist
       setLines(

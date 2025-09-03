@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-import type { ResponseJson } from '~/app/api/responses'
 import { usePuzzleQueries } from './use-puzzle-queries'
 
 // Types for endgames
@@ -40,12 +39,12 @@ export function useEndgameQueries() {
 
   // Factory function for random endgame using the generic puzzle query
   const useRandomEndgameQuery = (filters?: EndgameFilters) => {
-    const adjustedRating = filters?.rating 
+    const adjustedRating = filters?.rating
       ? Math.round(filters.rating * difficultyAdjuster(filters.difficulty || 1))
       : 1500
-    
+
     const theme = getTheme(filters?.type)
-    
+
     return useRandomTrainingPuzzleQuery({
       rating: adjustedRating,
       themesType: 'ALL',
@@ -57,19 +56,13 @@ export function useEndgameQueries() {
   // --- Mutations ---
   const updateEndgameStreak = useMutation({
     mutationFn: async (data: { currentStreak: number }): Promise<void> => {
-      const response = await fetch('/api/endgames/streak', {
+      await fetch('/api/endgames/streak', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       })
-      
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Streak updated') {
-        throw new Error(json.message || 'Failed to update endgame streak')
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['endgame-stats'] })
@@ -83,19 +76,13 @@ export function useEndgameQueries() {
       correct: boolean
       timeTaken: number
     }): Promise<void> => {
-      const response = await fetch('/api/endgames/attempt', {
+      await fetch('/api/endgames/attempt', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       })
-      
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Attempt logged') {
-        throw new Error(json.message || 'Failed to log endgame attempt')
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['endgame-stats'] })

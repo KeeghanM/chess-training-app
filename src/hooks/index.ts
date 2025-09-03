@@ -6,12 +6,12 @@ export { usePuzzleQueries } from './use-puzzle-queries'
 export { useTacticsQueries } from './use-tactics-queries'
 
 // Export types
-export type {
-    Badge, CuratedSet, CuratedSetPuzzle
-} from './use-admin-queries'
+export type { Badge, CuratedSet, CuratedSetPuzzle } from './use-admin-queries'
 export type { UserProfile, XpUpdate } from './use-profile-queries'
 export type { TrainingPuzzle } from './use-puzzle-queries'
 export type {
-    CreateRoundData, TacticsRound, TacticsSet, UpdateStatsData
+  CreateRoundData,
+  TacticsRound,
+  TacticsSet,
+  UpdateStatsData,
 } from './use-tactics-queries'
-

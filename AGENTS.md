@@ -10,12 +10,12 @@
 
 - **Apply the DRY-3 rule**: Refactor code into a reusable function or component once it's written for the third time.
 - Keep components under 300 lines as a general rule of thumb.
-    - If a component exceeds the size limit, break it down into smaller sub-components or extract logic into custom hooks.
+  - If a component exceeds the size limit, break it down into smaller sub-components or extract logic into custom hooks.
 
 ## 🛡️ Guard Clauses & Validation
 
 - Prefer early returns to reduce nesting and improve readability.
-    - This applies to both conditional rendering in components and error handling in functions.
+  - This applies to both conditional rendering in components and error handling in functions.
 - For input validation, use Zod as high up the function call stack as possible.
 - Validate inputs immediately and use a guard clause to handle invalid data.
 
@@ -35,25 +35,25 @@
 ## 🏗️ Component Structure
 
 - **Imports**:
-    - External imports first, alphabetized.
-    - Internal imports next, alphabetized and grouped by type (@components, @db, etc.).
+  - External imports first, alphabetized.
+  - Internal imports next, alphabetized and grouped by type (@components, @db, etc.).
 - **Types**: Define types near where they're used.
 - **Component Logic**:
-    - Place React hooks at the top of the component.
-    - Follow with guard clauses for loading or error states.
-    - Place the main component logic below the early returns.
+  - Place React hooks at the top of the component.
+  - Follow with guard clauses for loading or error states.
+  - Place the main component logic below the early returns.
 - **Export**: Use export default function with a descriptive name.
 
 ## 📂 Import Path Aliases
 
 Use the following aliases for clean imports:
 
-- @components/* (UI and app components)
-- @db/* (Database schema)
-- @auth/* (Authentication)
-- @hooks/* (React Query hooks)
-- @stores/* (Zustand stores)
-- @utils/* (Utility functions)
+- @components/\* (UI and app components)
+- @db/\* (Database schema)
+- @auth/\* (Authentication)
+- @hooks/\* (React Query hooks)
+- @stores/\* (Zustand stores)
+- @utils/\* (Utility functions)
 
 ## 🚀 Data Fetching
 
@@ -64,8 +64,8 @@ Use the following aliases for clean imports:
 - Destructure the data and isLoading properties from the query hook results.
 - Use mutations with a consistent pattern, e.g., modifyPuzzle.mutate(updatedPuzzle).
 - Zustand is for client-side state only; do not use it for server state.
-    - Things like which screens are open, user preferences, etc., can go in Zustand.
-    - Use React Query for server state (data from the backend).
+  - Things like which screens are open, user preferences, etc., can go in Zustand.
+  - Use React Query for server state (data from the backend).
 
 ## Documentation Philosophy
 

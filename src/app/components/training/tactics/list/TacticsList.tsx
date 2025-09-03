@@ -2,9 +2,9 @@
 
 import Link from 'next/link'
 
+import { useTacticsQueries } from '@hooks/use-tactics-queries'
 import { env } from '~/env'
 
-import { useTacticsQueries } from '@hooks/use-tactics-queries'
 import Button from '~/app/components/_elements/button'
 import Container from '~/app/components/_elements/container'
 import Spinner from '~/app/components/general/Spinner'
@@ -14,29 +14,14 @@ import SetListItem from './SetListItem'
 
 export default function TacticsList(props: { hasUnlimitedSets: boolean }) {
   const { hasUnlimitedSets } = props
-  const { tacticsSetQuery } = useTacticsQueries()
-  
-  const sets = tacticsSetQuery.data || []
-  const loading = tacticsSetQuery.isLoading
-
-  const addSet = () => {
-    // React Query will automatically refetch and update the list
-    tacticsSetQuery.refetch()
-  }
-
-  const updateList = () => {
-    // React Query will automatically refetch the data
-    tacticsSetQuery.refetch()
-  }
+  const { tacticsSetsQuery } = useTacticsQueries()
 
   return (
     <Container>
       <div className="flex items-center gap-2">
         <TacticsSetCreator
-          setCount={sets.length}
+          setCount={tacticsSetsQuery.data?.length ?? 0}
           maxSets={env.NEXT_PUBLIC_MAX_SETS}
-          setCreated={addSet}
-          loading={loading}
           hasUnlimitedSets={hasUnlimitedSets}
         />
         <>
@@ -52,7 +37,7 @@ export default function TacticsList(props: { hasUnlimitedSets: boolean }) {
         </>
       </div>
       <div className="mt-4 flex flex-col gap-4">
-        {loading ? (
+        {tacticsSetsQuery.isLoading ? (
           <>
             <div className="flex flex-col h-24 gap-0 border border-gray-300 dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)] hover:shadow-lg transition-shadow duration-300 opacity-50">
               <p className="w-fit m-auto flex gap-1">
@@ -66,13 +51,13 @@ export default function TacticsList(props: { hasUnlimitedSets: boolean }) {
               </p>
             </div>
           </>
-        ) : sets.length === 0 ? (
+        ) : tacticsSetsQuery.data?.length === 0 ? (
           <p className="text-center dark:text-white">
             You don't have any sets yet. Create one above!
           </p>
         ) : (
-          sets
-            .sort((a, b) => {
+          tacticsSetsQuery.data
+            ?.sort((a, b) => {
               // add non-trained sets to the top, sorted by created date
               // then sort, in descending order, by the last trained date
               if (a.lastTrained === null) return -1
@@ -87,9 +72,7 @@ export default function TacticsList(props: { hasUnlimitedSets: boolean }) {
                 new Date(a.lastTrained).getTime()
               )
             })
-            .map((set) => (
-              <SetListItem key={set.id} set={set} updated={updateList} />
-            ))
+            .map((set) => <SetListItem key={set.id} set={set} />)
         )}
       </div>
     </Container>

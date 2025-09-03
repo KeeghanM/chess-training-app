@@ -4,15 +4,15 @@ import { useRouter } from 'next/navigation'
 
 import { useState } from 'react'
 
+import { useCourseQueries } from '@hooks/use-course-queries'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import * as Sentry from '@sentry/nextjs'
+import GenerateSlug from '@utils/GenerateSlug'
+import trackEventOnClient from '@utils/trackEventOnClient'
 
 import Button from '@components/_elements/button'
 import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
-import { useCourseQueries } from '@hooks/use-course-queries'
-import GenerateSlug from '@utils/GenerateSlug'
-import trackEventOnClient from '@utils/trackEventOnClient'
 
 import DetailsForm from './DetailsForm'
 import GroupSelector from './GroupSelector'
@@ -43,7 +43,7 @@ export default function CreateCourseForm() {
 
     try {
       const courseData = transformCourseData(group, lines, courseName)
-      
+
       await createCourse.mutateAsync({
         courseName,
         description,
@@ -53,11 +53,14 @@ export default function CreateCourseForm() {
       trackEventOnClient('create_course_success', {})
       router.push('/training/courses/')
     } catch (error) {
-      if (error instanceof Error && error.message === 'Course name is not available') {
+      if (
+        error instanceof Error &&
+        error.message === 'Course name is not available'
+      ) {
         // TODO: Show name field with error
         return
       }
-      
+
       Sentry.captureException(error)
       setCurrentStep('error')
     }

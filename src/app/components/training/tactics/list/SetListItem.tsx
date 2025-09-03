@@ -17,11 +17,7 @@ import trackEventOnClient from '~/app/_util/trackEventOnClient'
 import SetListEdit from './SetListEdit'
 import SetListStats from './SetListStats'
 
-export default function SetListItem(props: {
-  set: PrismaTacticsSet
-  updated: () => void
-}) {
-  const { set } = props
+export default function SetListItem({ set }: { set: PrismaTacticsSet }) {
   const { user } = useKindeBrowserClient()
   const currentRound = set.rounds
     ? set.rounds[set.rounds.length - 1]
@@ -124,7 +120,7 @@ export default function SetListItem(props: {
               'Train'
             )}
           </Button>
-          <SetListEdit set={set} onFinished={props.updated} user={user} />
+          <SetListEdit set={set} user={user} />
           <SetListStats set={set} />
         </div>
       </div>

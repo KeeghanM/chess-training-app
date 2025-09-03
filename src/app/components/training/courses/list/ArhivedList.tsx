@@ -2,18 +2,17 @@
 
 import Link from 'next/link'
 
+import { useCourseQueries } from '@hooks/use-course-queries'
 import 'tippy.js/dist/tippy.css'
 
 import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
 
-import { useCourseQueries } from '@hooks/use-course-queries'
-
 export default function ArchivedList() {
-
   // React Query hooks
   const { useUserCoursesQuery, restoreCourse } = useCourseQueries()
-  const { data: courses = [], isLoading: loading } = useUserCoursesQuery('archived')
+  const { data: courses = [], isLoading: loading } =
+    useUserCoursesQuery('archived')
 
   const handleRestoreCourse = async (courseId: string) => {
     try {

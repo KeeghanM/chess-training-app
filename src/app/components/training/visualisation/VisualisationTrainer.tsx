@@ -4,10 +4,14 @@ import Link from 'next/link'
 
 import { useEffect, useState } from 'react'
 
+import { useProfileQueries } from '@hooks/use-profile-queries'
+import { type TrainingPuzzle } from '@hooks/use-puzzle-queries'
+import { useVisualisationQueries } from '@hooks/use-visualisation-queries'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import * as Sentry from '@sentry/nextjs'
 import Tippy from '@tippyjs/react'
 import { useWindowSize } from '@uidotdev/usehooks'
+import trackEventOnClient from '@utils/trackEventOnClient'
 import type { Square } from 'chess.js'
 import { Chess } from 'chess.js'
 import { Chessboard } from 'react-chessboard'
@@ -20,10 +24,6 @@ import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
 import XpTracker from '@components/general/XpTracker'
 import ThemeSwitch from '@components/template/header/ThemeSwitch'
-import { useProfileQueries } from '@hooks/use-profile-queries'
-import { type TrainingPuzzle } from '@hooks/use-puzzle-queries'
-import { useVisualisationQueries } from '@hooks/use-visualisation-queries'
-import trackEventOnClient from '@utils/trackEventOnClient'
 
 /**
  * Renders the chess training visualization interface.
@@ -39,7 +39,8 @@ export default function VisualisationTrainer() {
 
   // --- Hooks ---
   const { updateStreak } = useProfileQueries()
-  const { useRandomVisualisationQuery, updateVisualisationStreak } = useVisualisationQueries()
+  const { useRandomVisualisationQuery, updateVisualisationStreak } =
+    useVisualisationQueries()
 
   // Setup main state for the game/puzzles
   const [currentPuzzle, setCurrentPuzzle] = useState<TrainingPuzzle>()
@@ -117,7 +118,7 @@ export default function VisualisationTrainer() {
       )
       return
     }
-    
+
     setFetchPuzzle(true)
     setLoading(true)
     puzzleQuery.refetch()
@@ -139,7 +140,7 @@ export default function VisualisationTrainer() {
         { currentStreak: currentStreak + 1 },
         {
           onError: (e) => Sentry.captureException(e),
-        }
+        },
       )
       setCurrentStreak(currentStreak + 1)
     } else if (status == 'incorrect') {

@@ -4,11 +4,19 @@ import { useRouter } from 'next/navigation'
 
 import { useEffect, useState } from 'react'
 
+import {
+  PrismaUserCourse,
+  type TrainingFen,
+  useCourseQueries,
+} from '@hooks/use-course-queries'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import type { Comment, Move, UserFen } from '@prisma/client'
 import * as Sentry from '@sentry/nextjs'
+import { useAppStore } from '@stores/app-store'
 import Tippy from '@tippyjs/react'
 import { useWindowSize } from '@uidotdev/usehooks'
+import getArrows from '@utils/StringToArrows'
+import trackEventOnClient from '@utils/trackEventOnClient'
 import type { Move as ChessMove } from 'chess.js'
 import { Chess } from 'chess.js'
 import type { Arrow } from 'react-chessboard/dist/chessboard/types'
@@ -23,10 +31,6 @@ import StyledLink from '@components/_elements/styledLink'
 import Spinner from '@components/general/Spinner'
 import XpTracker from '@components/general/XpTracker'
 import ThemeSwitch from '@components/template/header/ThemeSwitch'
-import { PrismaUserCourse, useCourseQueries, type TrainingFen } from '@hooks/use-course-queries'
-import { useAppStore } from '@stores/app-store'
-import getArrows from '@utils/StringToArrows'
-import trackEventOnClient from '@utils/trackEventOnClient'
 
 import ChessBoard from '../ChessBoard'
 
@@ -413,14 +417,17 @@ export default function CourseTrainer(props: {
       // This is not using await, because actually we want this to run in the background
       // and not block the user from continuing. If this errors, all it means is that the user
       // will have to re-do some moves, next time they train which isn't a big deal.
-      uploadTrainedFens.mutate({
-        userCourseId: props.userCourse.id,
-        fens: fensToUpload,
-      }, {
-        onError: (error) => {
-          Sentry.captureException(error) // Don't do anything with the error, just log it
-        }
-      })
+      uploadTrainedFens.mutate(
+        {
+          userCourseId: props.userCourse.id,
+          fens: fensToUpload,
+        },
+        {
+          onError: (error) => {
+            Sentry.captureException(error) // Don't do anything with the error, just log it
+          },
+        },
+      )
     }
   }
 
@@ -469,17 +476,20 @@ export default function CourseTrainer(props: {
     setLines(updatedLines)
 
     // Send the update to the server in the background
-    updateLineStats.mutate({
-      userCourseId: props.userCourse.id,
-      lineId: currentLine.id.toString(),
-      lineCorrect,
-      revisionDate,
-    }, {
-      onError: (error) => {
-        Sentry.captureException(error)
-        // Revert to the previous state or handle the error
-      }
-    })
+    updateLineStats.mutate(
+      {
+        userCourseId: props.userCourse.id,
+        lineId: currentLine.id.toString(),
+        lineCorrect,
+        revisionDate,
+      },
+      {
+        onError: (error) => {
+          Sentry.captureException(error)
+          // Revert to the previous state or handle the error
+        },
+      },
+    )
 
     return updatedLines // Return the optimistically updated lines
   }

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-
 import type { ResponseJson } from '~/app/api/responses'
+
 import type { TrainingPuzzle } from './use-puzzle-queries'
 
 // Types based on existing admin components
@@ -33,11 +33,7 @@ export function useAdminQueries() {
     queryFn: async (): Promise<Badge[]> => {
       const response = await fetch('/api/admin/badges')
       const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Badges found') {
-        throw new Error(json.message || 'Failed to fetch badges')
-      }
-      
+
       return json.data?.badges as unknown as Badge[]
     },
   })
@@ -49,7 +45,7 @@ export function useAdminQueries() {
       queryFn: async ({ queryKey }): Promise<CuratedSetPuzzle[]> => {
         const [, id] = queryKey
         if (!id) throw new Error('No set selected')
-        
+
         const response = await fetch('/api/admin/curated-sets/getPuzzles', {
           method: 'POST',
           headers: {
@@ -58,11 +54,7 @@ export function useAdminQueries() {
           body: JSON.stringify({ setId: id }),
         })
         const json = (await response.json()) as ResponseJson
-        
-        if (!response.ok || json.message !== 'Puzzles found') {
-          throw new Error(json.message || 'Failed to fetch puzzles')
-        }
-        
+
         return json.data?.puzzles as unknown as CuratedSetPuzzle[]
       },
       enabled: !!setId,
@@ -76,11 +68,7 @@ export function useAdminQueries() {
         const [, id] = queryKey
         const response = await fetch(`/api/admin/curated-sets/${id}`)
         const json = (await response.json()) as ResponseJson
-        
-        if (!response.ok || json.message !== 'Set found') {
-          throw new Error(json.message || 'Failed to fetch curated set')
-        }
-        
+
         return json.data?.set as unknown as CuratedSet
       },
       enabled: !!setId,
@@ -89,19 +77,13 @@ export function useAdminQueries() {
   // --- Mutations ---
   const createBadge = useMutation({
     mutationFn: async (newBadge: Omit<Badge, 'id'>): Promise<void> => {
-      const response = await fetch('/api/admin/badges', {
+      await fetch('/api/admin/badges', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(newBadge),
       })
-      
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Badge created') {
-        throw new Error(json.message || 'Failed to create badge')
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['badges'] })
@@ -110,19 +92,13 @@ export function useAdminQueries() {
 
   const updateBadge = useMutation({
     mutationFn: async (updatedBadge: Badge): Promise<void> => {
-      const response = await fetch(`/api/admin/badges/${updatedBadge.id}`, {
+      await fetch(`/api/admin/badges/${updatedBadge.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(updatedBadge),
       })
-      
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Badge updated') {
-        throw new Error(json.message || 'Failed to update badge')
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['badges'] })
@@ -131,19 +107,13 @@ export function useAdminQueries() {
 
   const updateBadgeOrder = useMutation({
     mutationFn: async (badges: Badge[]): Promise<void> => {
-      const response = await fetch('/api/admin/badges/order', {
+      await fetch('/api/admin/badges/order', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ badges }),
       })
-      
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Badge order updated') {
-        throw new Error(json.message || 'Failed to update badge order')
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['badges'] })
@@ -152,19 +122,13 @@ export function useAdminQueries() {
 
   const createCustomPuzzle = useMutation({
     mutationFn: async (puzzleData: Record<string, unknown>): Promise<void> => {
-      const response = await fetch('/api/admin/puzzles/create', {
+      await fetch('/api/admin/puzzles/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(puzzleData),
       })
-      
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Puzzle created') {
-        throw new Error(json.message || 'Failed to create puzzle')
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['puzzles'] })

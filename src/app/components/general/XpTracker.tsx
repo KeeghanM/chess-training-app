@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from 'react'
 
-import * as Sentry from '@sentry/nextjs'
-
 import { useProfileQueries } from '@hooks/use-profile-queries'
+import * as Sentry from '@sentry/nextjs'
 
 export type availableTypes = 'line' | 'tactic'
 
@@ -29,20 +28,20 @@ export default function XpTracker(props: {
 
   useEffect(() => {
     if (props.counter === 0) return
-    
+
     // Calculate the XP to add
     const xpToAdd = calculateXp(props.type)
     setXpToAdd(xpToAdd)
-    
+
     // We hide and show it, just in case the user gets multiple XP
     // in a short period of time
     setShow(false)
     setShow(true)
-    
+
     setTimeout(() => {
       setShow(false)
     }, 2500)
-    
+
     updateXp.mutate(
       { xp: xpToAdd, type: props.type },
       {

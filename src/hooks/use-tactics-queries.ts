@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-
 import type { ResponseJson } from '~/app/api/responses'
+
 import type { TrainingPuzzle } from './use-puzzle-queries'
 
 // Types based on the TacticsTrainer component
@@ -39,9 +39,13 @@ export interface CreateRoundData {
 
 export interface UpdateStatsData {
   roundId: string
-  timeTaken?: number
-  currentStreak?: number
-  setId?: string
+  currentStreak: number
+}
+
+export interface UpdateTimeData {
+  roundId: string
+  timeTaken: number
+  setId: string
 }
 
 // Tactics Queries
@@ -49,16 +53,12 @@ export function useTacticsQueries() {
   const queryClient = useQueryClient()
 
   // --- Data fetching ---
-  const tacticsSetQuery = useQuery({
+  const tacticsSetsQuery = useQuery({
     queryKey: ['tactics', 'sets'],
     queryFn: async (): Promise<TacticsSet[]> => {
       const response = await fetch('/api/tactics/user')
       const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Sets found') {
-        throw new Error(json.message || 'Failed to fetch tactics sets')
-      }
-      
+
       return json.data?.sets as unknown as TacticsSet[]
     },
   })
@@ -68,11 +68,7 @@ export function useTacticsQueries() {
     queryFn: async (): Promise<{ sets: TacticsSet[]; activeCount: number }> => {
       const response = await fetch('/api/tactics/user/archived')
       const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Sets found') {
-        throw new Error(json.message || 'Failed to fetch archived tactics sets')
-      }
-      
+
       return {
         sets: json.data?.sets as unknown as TacticsSet[],
         activeCount: json.data?.activeCount as number,
@@ -88,11 +84,7 @@ export function useTacticsQueries() {
         const [, , id] = queryKey
         const response = await fetch(`/api/tactics/sets/${id}`)
         const json = (await response.json()) as ResponseJson
-        
-        if (!response.ok || json.message !== 'Set found') {
-          throw new Error(json.message || 'Failed to fetch tactics set')
-        }
-        
+
         return json.data?.set as unknown as TacticsSet
       },
       enabled: !!setId,
@@ -101,22 +93,18 @@ export function useTacticsQueries() {
   // --- Mutations ---
   const createRound = useMutation({
     mutationFn: async (data: CreateRoundData): Promise<void> => {
-      const response = await fetch('/api/tactics/createRound', {
+      await fetch('/api/tactics/createRound', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       })
-      
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Round created') {
-        throw new Error(json.message || 'Failed to create round')
-      }
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['tactics', 'set', variables.setId] })
+      queryClient.invalidateQueries({
+        queryKey: ['tactics', 'set', variables.setId],
+      })
       queryClient.invalidateQueries({ queryKey: ['tactics', 'sets'] })
     },
   })
@@ -130,9 +118,9 @@ export function useTacticsQueries() {
         },
         body: JSON.stringify(data),
       })
-      
+
       const json = (await response.json()) as ResponseJson
-      
+
       if (!response.ok) {
         throw new Error(json.message || 'Failed to update correct stat')
       }
@@ -151,9 +139,9 @@ export function useTacticsQueries() {
         },
         body: JSON.stringify(data),
       })
-      
+
       const json = (await response.json()) as ResponseJson
-      
+
       if (!response.ok) {
         throw new Error(json.message || 'Failed to update incorrect stat')
       }
@@ -164,7 +152,7 @@ export function useTacticsQueries() {
   })
 
   const increaseTimeTaken = useMutation({
-    mutationFn: async (data: UpdateStatsData): Promise<void> => {
+    mutationFn: async (data: UpdateTimeData): Promise<void> => {
       const response = await fetch('/api/tactics/stats/increaseTimeTaken', {
         method: 'POST',
         headers: {
@@ -172,9 +160,9 @@ export function useTacticsQueries() {
         },
         body: JSON.stringify(data),
       })
-      
+
       const json = (await response.json()) as ResponseJson
-      
+
       if (!response.ok) {
         throw new Error(json.message || 'Failed to update time taken')
       }
@@ -185,7 +173,7 @@ export function useTacticsQueries() {
     mutationFn: async (params: {
       rating?: number
       ratingDeviation?: number
-      themes?: string[]
+      themes?: string
       count?: string
       themesType?: string
     }): Promise<TrainingPuzzle[]> => {
@@ -198,10 +186,6 @@ export function useTacticsQueries() {
       })
 
       const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Puzzles found') {
-        throw new Error(json.message || 'Failed to fetch puzzles')
-      }
 
       const puzzles = json.data?.puzzles as TrainingPuzzle[]
       if (!puzzles || puzzles.length === 0) {
@@ -227,54 +211,38 @@ export function useTacticsQueries() {
       })
 
       const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Set created') {
-        throw new Error(json.message || 'Failed to create tactics set')
-      }
 
       return json.data?.set as unknown as TacticsSet
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tactics'] })
+      queryClient.invalidateQueries({ queryKey: ['tactics', 'sets'] })
     },
   })
 
   const archiveTactic = useMutation({
-    mutationFn: async ({ tacticId }: { tacticId: string }): Promise<void> => {
-      const response = await fetch('/api/tactics/archive', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ tacticId }),
-      })
-      
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Tactic archived') {
-        throw new Error(json.message || 'Failed to archive tactic')
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tactics'] })
-    },
-  })
-
-  const deleteTactic = useMutation({
     mutationFn: async ({ setId }: { setId: string }): Promise<void> => {
-      const response = await fetch('/api/tactics/delete', {
+      await fetch('/api/tactics/archive', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ setId }),
       })
-      
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Set Deleted') {
-        throw new Error(json.message || 'Failed to delete set')
-      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tactics', 'sets'] })
+    },
+  })
+
+  const deleteTactic = useMutation({
+    mutationFn: async ({ setId }: { setId: string }): Promise<void> => {
+      await fetch('/api/tactics/delete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ setId }),
+      })
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tactics'] })
@@ -283,19 +251,13 @@ export function useTacticsQueries() {
 
   const resetTacticProgress = useMutation({
     mutationFn: async ({ setId }: { setId: string }): Promise<void> => {
-      const response = await fetch('/api/tactics/resetProgress', {
+      await fetch('/api/tactics/resetProgress', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ setId }),
       })
-      
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Progress Reset') {
-        throw new Error(json.message || 'Failed to reset progress')
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tactics'] })
@@ -303,20 +265,20 @@ export function useTacticsQueries() {
   })
 
   const updateTactic = useMutation({
-    mutationFn: async ({ setId, name }: { setId: string; name: string }): Promise<void> => {
-      const response = await fetch('/api/tactics/update', {
+    mutationFn: async ({
+      setId,
+      name,
+    }: {
+      setId: string
+      name: string
+    }): Promise<void> => {
+      await fetch('/api/tactics/update', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ setId, name }),
       })
-      
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Set Updated') {
-        throw new Error(json.message || 'Failed to update set')
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tactics'] })
@@ -325,15 +287,9 @@ export function useTacticsQueries() {
 
   const restoreTactic = useMutation({
     mutationFn: async ({ setId }: { setId: string }): Promise<void> => {
-      const response = await fetch(`/api/tactics/user/${setId}/restore`, {
+      await fetch(`/api/tactics/user/${setId}/restore`, {
         method: 'POST',
       })
-      
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Set restored') {
-        throw new Error(json.message || 'Failed to restore set')
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tactics'] })
@@ -342,7 +298,7 @@ export function useTacticsQueries() {
   })
 
   return {
-    tacticsSetQuery,
+    tacticsSetsQuery,
     archivedTacticsQuery,
     useTacticsSetQuery,
     createRound,

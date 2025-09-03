@@ -2,9 +2,13 @@
 
 import { useEffect, useState } from 'react'
 
+import { useProfileQueries } from '@hooks/use-profile-queries'
+import { useRecallQueries } from '@hooks/use-recall-queries'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
+import { useAppStore } from '@stores/app-store'
 import Tippy from '@tippyjs/react'
 import { useWindowSize } from '@uidotdev/usehooks'
+import trackEventOnClient from '@utils/trackEventOnClient'
 import type { Color, PieceSymbol, Square } from 'chess.js'
 import { Chess, SQUARES } from 'chess.js'
 import { Chessboard } from 'react-chessboard'
@@ -16,10 +20,6 @@ import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
 import XpTracker from '@components/general/XpTracker'
 import ThemeSwitch from '@components/template/header/ThemeSwitch'
-import { useProfileQueries } from '@hooks/use-profile-queries'
-import { useRecallQueries } from '@hooks/use-recall-queries'
-import { useAppStore } from '@stores/app-store'
-import trackEventOnClient from '@utils/trackEventOnClient'
 
 // TODO: On multiple recalls, show a temporary green/red border on square clicked for feedback
 // TODO: On multiple recalls, have the piece to select flash on change to alert that it's changed
@@ -29,7 +29,8 @@ export default function RecallTrainer() {
   const { user } = useKindeBrowserClient()
 
   // --- Hooks ---
-  const { useRandomRecallQuery, updateRecallStreak, logRecallAttempt } = useRecallQueries()
+  const { useRandomRecallQuery, updateRecallStreak, logRecallAttempt } =
+    useRecallQueries()
   const { updateStreak } = useProfileQueries()
   const { preferences, setSoundEnabled } = useAppStore()
   const { soundEnabled } = preferences

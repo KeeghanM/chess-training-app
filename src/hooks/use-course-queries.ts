@@ -1,6 +1,12 @@
-import type { Course as PrismaCourse, UserCourse, UserLine } from '@prisma/client'
+import type {
+  Course as PrismaCourse,
+  UserCourse,
+  UserLine,
+} from '@prisma/client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ResponseJson } from '~/app/api/responses'
+
+import { CleanMove } from '~/app/components/training/courses/create/parse/ParsePGNtoLineData'
 
 // Types
 export type PrismaUserCourse = UserCourse & {
@@ -38,11 +44,7 @@ export function useCourseQueries() {
     queryFn: async (): Promise<Course[]> => {
       const response = await fetch('/api/courses')
       const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Courses found') {
-        throw new Error(json.message || 'Failed to fetch courses')
-      }
-      
+
       return json.data?.courses as unknown as Course[]
     },
   })
@@ -55,11 +57,7 @@ export function useCourseQueries() {
         const [, id] = queryKey
         const response = await fetch(`/api/courses/${id}`)
         const json = (await response.json()) as ResponseJson
-        
-        if (!response.ok || json.message !== 'Course found') {
-          throw new Error(json.message || 'Failed to fetch course')
-        }
-        
+
         return json.data?.course as unknown as Course
       },
       enabled: !!courseId,
@@ -69,15 +67,13 @@ export function useCourseQueries() {
   const useUserCourseQuery = (courseId: string) =>
     useQuery({
       queryKey: ['user-course', courseId],
-      queryFn: async ({ queryKey }): Promise<{ course: PrismaUserCourse; nextReview?: string }> => {
+      queryFn: async ({
+        queryKey,
+      }): Promise<{ course: PrismaUserCourse; nextReview?: string }> => {
         const [, id] = queryKey
         const response = await fetch(`/api/courses/user/${id}`)
         const json = (await response.json()) as ResponseJson
-        
-        if (!response.ok || json.message !== 'Course Fetched') {
-          throw new Error(json.message || 'Failed to fetch user course')
-        }
-        
+
         return {
           course: json.data?.course as PrismaUserCourse,
           nextReview: json.data?.nextReview as string | undefined,
@@ -89,19 +85,13 @@ export function useCourseQueries() {
   // --- Mutations ---
   const purchaseCourse = useMutation({
     mutationFn: async ({ courseId }: { courseId: string }): Promise<void> => {
-      const response = await fetch('/api/ecomm/purchaseCourse', {
+      await fetch('/api/ecomm/purchaseCourse', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ courseId }),
       })
-      
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok) {
-        throw new Error(json.message || 'Failed to purchase course')
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['courses'] })
@@ -115,7 +105,7 @@ export function useCourseQueries() {
       userCourseId: string
       fens: TrainingFen[]
     }): Promise<void> => {
-      const response = await fetch(`/api/courses/user/${data.userCourseId}/fens/upload`, {
+      await fetch(`/api/courses/user/${data.userCourseId}/fens/upload`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -124,12 +114,6 @@ export function useCourseQueries() {
           fens: data.fens,
         }),
       })
-      
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Fens uploaded') {
-        throw new Error(json.message || 'Failed to upload trained FENs')
-      }
     },
     onSuccess: () => {
       // Invalidate course-related queries
@@ -146,22 +130,19 @@ export function useCourseQueries() {
       lineCorrect: boolean
       revisionDate: Date
     }): Promise<void> => {
-      const response = await fetch(`/api/courses/user/${data.userCourseId}/stats/${data.lineId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      await fetch(
+        `/api/courses/user/${data.userCourseId}/stats/${data.lineId}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            lineCorrect: data.lineCorrect,
+            revisionDate: data.revisionDate,
+          }),
         },
-        body: JSON.stringify({
-          lineCorrect: data.lineCorrect,
-          revisionDate: data.revisionDate,
-        }),
-      })
-      
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Stats updated') {
-        throw new Error(json.message || 'Failed to update line stats')
-      }
+      )
     },
     onSuccess: () => {
       // Invalidate course-related queries
@@ -178,23 +159,13 @@ export function useCourseQueries() {
       description: string
       courseData: Record<string, unknown> // Generic object type instead of any
     }): Promise<void> => {
-      const response = await fetch('/api/courses/create/upload', {
+      await fetch('/api/courses/create/upload', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       })
-      
-      const json = (await response.json()) as ResponseJson
-      
-      if (json.message === 'Course name is not available') {
-        throw new Error('Course name is not available')
-      }
-      
-      if (!response.ok || json.message !== 'Course created') {
-        throw new Error(json.message || 'Failed to create course')
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['courses'] })
@@ -210,7 +181,7 @@ export function useCourseQueries() {
         },
         body: JSON.stringify({ courseName }),
       })
-      
+
       const json = (await response.json()) as ResponseJson
       return json.message === 'Course name is available'
     },
@@ -228,15 +199,9 @@ export function useCourseQueries() {
   // Course management mutations
   const deleteCourse = useMutation({
     mutationFn: async (userCourseId: string): Promise<void> => {
-      const response = await fetch(`/api/courses/user/${userCourseId}`, {
+      await fetch(`/api/courses/user/${userCourseId}`, {
         method: 'DELETE',
       })
-      
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok) {
-        throw new Error(json.message || 'Failed to delete course')
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-courses'] })
@@ -244,17 +209,11 @@ export function useCourseQueries() {
     },
   })
 
-    const restoreCourse = useMutation({
+  const restoreCourse = useMutation({
     mutationFn: async (courseId: string): Promise<void> => {
-      const response = await fetch(`/api/courses/${courseId}/restore`, {
+      await fetch(`/api/courses/${courseId}/restore`, {
         method: 'POST',
       })
-      
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok) {
-        throw new Error(json.message || 'Failed to restore course')
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['courses'] })
@@ -281,17 +240,11 @@ export function useCourseQueries() {
         sortOrder: number
       }>
     }): Promise<void> => {
-      const response = await fetch('/api/courses', {
+      await fetch('/api/courses', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       })
-
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Course updated') {
-        throw new Error(json.message || 'Failed to update course')
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['courses'] })
@@ -305,22 +258,16 @@ export function useCourseQueries() {
       lines: Array<{
         groupName: string
         colour: string
-        moves: Array<{ move: string; comment?: string }>
+        moves: CleanMove[]
       }>
     }): Promise<void> => {
-      const response = await fetch('/api/courses/create/addLines', {
+      await fetch('/api/courses/create/addLines', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       })
-
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Lines added') {
-        throw new Error(json.message || 'Failed to add lines')
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['courses'] })
@@ -338,10 +285,6 @@ export function useCourseQueries() {
       })
 
       const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Success') {
-        throw new Error(json.message || 'Failed to get course lines')
-      }
 
       return json.data?.course
     },
@@ -353,7 +296,7 @@ export function useCourseQueries() {
       lineId: string
       minDate: string
     }): Promise<void> => {
-      const response = await fetch(
+      await fetch(
         `/api/courses/user/${data.courseId}/lines/markLineForReview`,
         {
           method: 'POST',
@@ -363,12 +306,6 @@ export function useCourseQueries() {
           body: JSON.stringify({ lineId: data.lineId, minDate: data.minDate }),
         },
       )
-
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Lines updated') {
-        throw new Error(json.message || 'Failed to mark line for review')
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-courses'] })
@@ -380,7 +317,7 @@ export function useCourseQueries() {
       courseId: string
       groupId: number
     }): Promise<void> => {
-      const response = await fetch(
+      await fetch(
         `/api/courses/user/${data.courseId}/lines/markGroupForReview`,
         {
           method: 'POST',
@@ -390,12 +327,6 @@ export function useCourseQueries() {
           body: JSON.stringify({ groupId: data.groupId }),
         },
       )
-
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Lines updated') {
-        throw new Error(json.message || 'Failed to mark group for review')
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-courses'] })
@@ -404,21 +335,12 @@ export function useCourseQueries() {
 
   const markAllForReview = useMutation({
     mutationFn: async (data: { courseId: string }): Promise<void> => {
-      const response = await fetch(
-        `/api/courses/user/${data.courseId}/lines/markAllForReview`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+      await fetch(`/api/courses/user/${data.courseId}/lines/markAllForReview`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      )
-
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Lines updated') {
-        throw new Error(json.message || 'Failed to mark all lines for review')
-      }
+      })
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-courses'] })
@@ -432,11 +354,7 @@ export function useCourseQueries() {
       queryFn: async (): Promise<PrismaUserCourse[]> => {
         const response = await fetch(`/api/courses/user/${type}`)
         const json = (await response.json()) as ResponseJson
-        
-        if (!response.ok) {
-          throw new Error(json.message || `Failed to fetch ${type} courses`)
-        }
-        
+
         return (json.data?.courses as PrismaUserCourse[]) || []
       },
     })

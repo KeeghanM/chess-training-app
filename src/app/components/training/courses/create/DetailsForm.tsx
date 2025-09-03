@@ -1,14 +1,13 @@
 import { useState } from 'react'
 
+import { useCourseQueries } from '@hooks/use-course-queries'
 import * as Sentry from '@sentry/nextjs'
+import trackEventOnClient from '@utils/trackEventOnClient'
 
 import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
 import Spinner from '@components/general/Spinner'
 import TextEditor from '@components/general/TextEditor'
-
-import { useCourseQueries } from '@hooks/use-course-queries'
-import trackEventOnClient from '@utils/trackEventOnClient'
 
 export default function DetailsForm(props: {
   finished: (name: string, description: string) => void
@@ -38,7 +37,7 @@ export default function DetailsForm(props: {
     try {
       // Check if name is available
       const isNameAvailable = await checkCourseName.mutateAsync(name)
-      
+
       if (!isNameAvailable) {
         setError('Name is already taken')
         setStatus('idle')
@@ -48,7 +47,7 @@ export default function DetailsForm(props: {
 
       // Check if user can create more courses
       const refetchResult = await checkCanCreateCourse.refetch()
-      
+
       if (!refetchResult.data) {
         setError('You have reached the maximum number of courses')
         setStatus('idle')

@@ -4,12 +4,12 @@ import Link from 'next/link'
 
 import { useEffect, useMemo, useState } from 'react'
 
+import { useCourseQueries } from '@hooks/use-course-queries'
 import type { Course, Group } from '@prisma/client'
 import * as Sentry from '@sentry/nextjs'
 import Tippy from '@tippyjs/react'
 import 'tippy.js/dist/tippy.css'
 
-import { useCourseQueries } from '@hooks/use-course-queries'
 import Button from '~/app/components/_elements/button'
 import Spinner from '~/app/components/general/Spinner'
 import TextEditor from '~/app/components/general/TextEditor'
@@ -32,7 +32,7 @@ export default function CourseAdminPanel(props: CourseAdminPanelProps) {
     return [...lines].sort((a, b) => a.sortOrder - b.sortOrder)
   }, [lines])
   const [linesToDelete, setLinesToDelete] = useState<number[]>([])
-  
+
   const { updateCourse } = useCourseQueries()
   const [groups, setGroups] = useState(course.groups)
   const [courseName, setCourseName] = useState(course.courseName)

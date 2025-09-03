@@ -23,7 +23,6 @@ const initialPreferences: UserPreferences = {
   theme: 'system',
 }
 
-
 export const useAppStore = create<AppStore>()(
   devtools(
     persist(

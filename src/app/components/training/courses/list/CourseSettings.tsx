@@ -4,17 +4,19 @@ import Link from 'next/link'
 
 import { useState } from 'react'
 
+import {
+  type PrismaUserCourse,
+  useCourseQueries,
+} from '@hooks/use-course-queries'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import * as AlertDialog from '@radix-ui/react-alert-dialog'
 import Tippy from '@tippyjs/react'
+import trackEventOnClient from '@utils/trackEventOnClient'
 
 import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
 import StyledLink from '@components/_elements/styledLink'
 import Spinner from '@components/general/Spinner'
-
-import { useCourseQueries, type PrismaUserCourse } from '@hooks/use-course-queries'
-import trackEventOnClient from '@utils/trackEventOnClient'
 
 interface CourseSettingsProps {
   userCourse: PrismaUserCourse
@@ -46,7 +48,7 @@ export default function CourseSettings(props: CourseSettingsProps) {
     trackEventOnClient('course_status_set', {
       active: 'archived',
     })
-    
+
     try {
       await deleteCourse.mutateAsync(userCourse.id)
       update()
