@@ -1,8 +1,7 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 
 import Container from '~/app/components/_elements/container'
 import Heading from '~/app/components/_elements/heading'
@@ -10,7 +9,7 @@ import StyledLink from '~/app/components/_elements/styledLink'
 
 type StatusType = 'loading' | 'success' | 'error'
 
-export default function SubscriptionSuccessPage() {
+function SubscriptionHandler() {
   const [status, setStatus] = useState<StatusType>('loading')
   const [message, setMessage] = useState('Processing your subscription...')
   const searchParams = useSearchParams()
@@ -68,28 +67,36 @@ export default function SubscriptionSuccessPage() {
   }
 
   return (
+    <div className="space-y-4">
+      {status === 'loading' && (
+        <p className="text-gray-600 text-sm">{message}</p>
+      )}
+
+      {status === 'success' && (
+        <>
+          <p className="text-green-600 text-sm font-medium">{message}</p>
+          <p className="text-gray-600 text-sm">
+            You should receive a confirmation email shortly.
+          </p>
+        </>
+      )}
+
+      {status === 'error' && (
+        <p className="text-red-600 text-sm font-medium">{message}</p>
+      )}
+    </div>
+  )
+}
+
+export default function SubscriptionSuccessPage() {
+  return (
     <Container>
       <div className="mx-auto max-w-2xl space-y-6 text-center py-8">
         <Heading as="h1">Subscription Status</Heading>
 
-        <div className="space-y-4">
-          {status === 'loading' && (
-            <p className="text-gray-600 text-sm">{message}</p>
-          )}
-
-          {status === 'success' && (
-            <>
-              <p className="text-green-600 text-sm font-medium">{message}</p>
-              <p className="text-gray-600 text-sm">
-                You should receive a confirmation email shortly.
-              </p>
-            </>
-          )}
-
-          {status === 'error' && (
-            <p className="text-red-600 text-sm font-medium">{message}</p>
-          )}
-        </div>
+        <Suspense fallback={<p className="text-gray-600 text-sm">Loading...</p>}>
+          <SubscriptionHandler />
+        </Suspense>
 
         <div className="flex justify-center gap-4">
           <StyledLink href="/dashboard">Go to Dashboard</StyledLink>

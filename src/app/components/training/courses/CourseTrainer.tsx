@@ -9,8 +9,8 @@ import type { Comment, Move, UserFen } from '@prisma/client'
 import * as Sentry from '@sentry/nextjs'
 import Tippy from '@tippyjs/react'
 import { useWindowSize } from '@uidotdev/usehooks'
-import { Chess } from 'chess.js'
 import type { Move as ChessMove } from 'chess.js'
+import { Chess } from 'chess.js'
 import type { Arrow } from 'react-chessboard/dist/chessboard/types'
 import Toggle from 'react-toggle'
 import 'react-toggle/style.css'
@@ -864,6 +864,7 @@ export default function CourseTrainer(props: {
             {PgnDisplay.map((item) => item)}
           </div>
           <label className="ml-auto flex items-center gap-2 text-sm">
+            {/* @ts-expect-error - react-toggle type compatibility issue */}
             <Toggle
               defaultChecked={autoNext}
               onChange={async () => {

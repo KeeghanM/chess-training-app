@@ -689,6 +689,7 @@ export default function TacticsTrainer(props: {
               {PgnDisplay.map((item) => item)}
             </div>
             <label className="ml-auto flex items-center gap-2 text-sm text-black dark:text-white">
+              {/* @ts-expect-error - react-toggle type compatibility issue */}
               <Toggle
                 defaultChecked={autoNext}
                 onChange={async () => {
