@@ -22,7 +22,10 @@ export default function PrettyPrintLine(props: { line: Line | string }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       {movePairs.map((pair, index) => (
-        <div className="flex items-center gap-1" key={pair.blackMove+pair.whiteMove+index+Math.random()*100}>
+        <div
+          className="flex items-center gap-1"
+          key={pair.blackMove + pair.whiteMove + index + Math.random() * 100}
+        >
           <span className="font-bold">{index + 1}.</span>
           {pair.whiteMove && <span>{pair.whiteMove}</span>}
           {pair.blackMove && <span>{pair.blackMove}</span>}

@@ -9,31 +9,88 @@ import type { ResponseJson } from '~/app/api/responses'
 import Button from '../_elements/button'
 import Spinner from '../general/Spinner'
 
+// Extend the Window interface to include Stripe
+declare global {
+  interface Window {
+    Stripe: (publishableKey: string) => {
+      redirectToCheckout: (options: {
+        sessionId: string
+      }) => Promise<{ error?: Error }>
+    }
+  }
+}
+
+// Get the Stripe publishable key from environment variables
+const PUBLIC_STRIPE_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function GetPremiumButton(props: { returnUrl: string }) {
   const { user } = useKindeBrowserClient()
-  const { returnUrl } = props
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
+
   const getPremium = async () => {
     setLoading(true)
 
     try {
-      if (!user) window.location.href = '/auth/signin'
+      if (!user) {
+        window.location.href = '/auth/signin'
+        return
+      }
 
-      const resp = await fetch('/api/ecomm/getPremium', {
+      const response = await fetch('/api/subscription', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          returnUrl,
+          action: 'create_checkout',
         }),
       })
-      const json = (await resp.json()) as ResponseJson
-      if (json?.data?.url == undefined) throw new Error(json?.message)
 
-      window.location.href = json.data.url as string
+      const result = (await response.json()) as ResponseJson
+
+      console.log('Subscription API response:', { response, result })
+
+      if (!response.ok || !result?.data?.sessionId) {
+        console.error('Checkout creation failed:', {
+          responseOk: response.ok,
+          status: response.status,
+          result,
+          hasSessionId: !!result?.data?.sessionId,
+        })
+        throw new Error(result?.message || 'Failed to create checkout session')
+      }
+
+      console.log('Session ID received:', result.data.sessionId)
+
+      // The subscription endpoint gives us a Stripe SessionID
+      // Which we now need to manually redirect the user to
+      if (!window.Stripe) {
+        console.error('Stripe.js not loaded')
+        throw new Error(
+          'Stripe.js library is not loaded. Please ensure Stripe.js is included and loaded before attempting checkout.',
+        )
+      }
+      if (!PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+        console.error('Stripe publishable key missing')
+        throw new Error(
+          'Stripe publishable key is missing. Please set the NEXT_PUBLIC_STRIPE_PUBLIC_KEY environment variable.',
+        )
+      }
+
+      console.log(
+        'Initializing Stripe with key:',
+        PUBLIC_STRIPE_PUBLISHABLE_KEY,
+      )
+      const stripe = window.Stripe(PUBLIC_STRIPE_PUBLISHABLE_KEY)
+      console.log(
+        'Redirecting to checkout with session ID:',
+        result.data.sessionId,
+      )
+      await stripe.redirectToCheckout({
+        sessionId: result.data.sessionId as string,
+      })
     } catch (e) {
+      console.error('Checkout process error:', e)
       Sentry.captureException(e)
       setLoading(false)
       setError(true)

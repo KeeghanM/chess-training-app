@@ -1,6 +1,5 @@
-
 import globalAxios from 'axios'
-import killbill from 'killbill'
+import * as killbill from 'killbill'
 
 const axios = globalAxios.create()
 
@@ -31,7 +30,7 @@ const killBillAccountApi = new killbill.AccountApi(config, KILLBILL_URL, axios)
 const killBillSubscriptionApi = new killbill.SubscriptionApi(
   config,
   KILLBILL_URL,
-  axios
+  axios,
 )
 
 export enum PRODUCTS {
@@ -79,40 +78,45 @@ class KillBillClient {
     comment: 'Triggered by Arc-Aide',
   }
 
-  // Create KB Account 
+  // Create KB Account
   async createKbAccount(
     externalKey: string,
     name: string,
-    email: string
+    email: string,
   ): Promise<KBAccount> {
-    const accountData: killbill.Account = {
-      name,
-      email,
-      externalKey,
-      currency: 'USD',
-    }
-
-    const response = await killBillAccountApi.createAccount(
-      accountData,
-      this.auditData.user,
-      this.auditData.reason,
-      this.auditData.comment
-    )
-
-    return {
-      accountId: response.data.accountId!,
-      externalKey: response.data.externalKey!,
-      name: response.data.name!,
-      email: response.data.email!,
-    }
-  }
-
-  // Find account by external key
-  async findAccountByExternalKey(
-    externalKey: string
-  ): Promise<KBAccount | null> {
     try {
-      const response = await killBillAccountApi.getAccountByKey(externalKey)
+      const accountData: killbill.Account = {
+        name,
+        email,
+        externalKey,
+        currency: 'GBP',
+      }
+
+      console.log('Creating KillBill account with data:', accountData)
+
+      const response = await killBillAccountApi.createAccount(
+        accountData,
+        this.auditData.user,
+        this.auditData.reason,
+        this.auditData.comment,
+      )
+
+      console.log(
+        'KillBill account creation response:',
+        JSON.stringify(response, null, 2),
+      )
+      console.log('Response data:', response.data)
+      console.log('Response status:', response.status)
+
+      if (!response.data || !response.data.accountId) {
+        console.error('Invalid response structure:', {
+          hasData: !!response.data,
+          dataKeys: response.data ? Object.keys(response.data) : 'no data',
+          fullResponse: response,
+        })
+        throw new Error('Invalid response from KillBill account creation')
+      }
+
       return {
         accountId: response.data.accountId!,
         externalKey: response.data.externalKey!,
@@ -120,6 +124,35 @@ class KillBillClient {
         email: response.data.email!,
       }
     } catch (error) {
+      console.error('Error creating KillBill account:', error)
+      throw error
+    }
+  }
+
+  // Find account by external key
+  async findAccountByExternalKey(
+    externalKey: string,
+  ): Promise<KBAccount | null> {
+    try {
+      console.log(
+        'Looking for KillBill account with external key:',
+        externalKey,
+      )
+      const response = await killBillAccountApi.getAccountByKey(externalKey)
+
+      console.log('Found existing KillBill account:', response.data)
+
+      return {
+        accountId: response.data.accountId!,
+        externalKey: response.data.externalKey!,
+        name: response.data.name!,
+        email: response.data.email!,
+      }
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        console.log('No existing KillBill account found, will create new one')
+        return null // Account not found
+      }
       console.error('Error in findAccountByExternalKey:', error)
       return null
     }
@@ -129,7 +162,7 @@ class KillBillClient {
   async findOrCreateAccount(
     externalKey: string,
     name: string,
-    email: string
+    email: string,
   ): Promise<KBAccount> {
     const existing = await this.findAccountByExternalKey(externalKey)
     if (existing) return existing
@@ -138,8 +171,12 @@ class KillBillClient {
 
   // Create Stripe session
   async createSession(accountId: string, successUrl: string): Promise<string> {
-    if(!KILLBILL_URL || !KILLBILL_USERNAME || !KILLBILL_PASSWORD) {
+    if (!KILLBILL_URL || !KILLBILL_USERNAME || !KILLBILL_PASSWORD) {
       throw new Error('KillBill environment variables are not set properly')
+    }
+
+    if (!accountId) {
+      throw new Error('Account ID is required for creating a session')
     }
 
     try {
@@ -163,13 +200,22 @@ class KillBillClient {
         },
       })
 
-      // Extract session ID from response
+      console.log(
+        'KillBill Stripe plugin response:',
+        JSON.stringify(response.data, null, 2),
+      )
+
+      // Extract session ID from response (following Ruby example)
       const formFields = response.data.formFields || []
       const sessionIdField = formFields.find((field: any) => field.key === 'id')
+
+      console.log('Session ID field:', sessionIdField)
 
       if (!sessionIdField) {
         throw new Error('No session ID returned from KillBill Stripe plugin')
       }
+
+      console.log('Returning session ID:', sessionIdField.value)
 
       return sessionIdField.value
     } catch (error) {
@@ -178,18 +224,18 @@ class KillBillClient {
     }
   }
 
-  // Create payment method 
+  // Create payment method
   async createKbPaymentMethod(
     accountId: string,
     sessionId?: string,
-    token?: string
+    token?: string,
   ): Promise<killbill.PaymentMethod> {
     const paymentMethodData: killbill.PaymentMethod = {
       accountId,
       pluginName: 'killbill-stripe',
     }
 
-    // Create plugin properties for Stripe 
+    // Create plugin properties for Stripe
     const pluginProperties: string[] = []
     if (token) {
       pluginProperties.push(`token=${token}`)
@@ -204,16 +250,16 @@ class KillBillClient {
       true, // isDefault
       false, // payAllUnpaidInvoices
       undefined, // controlPluginName
-      pluginProperties
+      pluginProperties,
     )
 
     return response.data
   }
 
-  // Create subscription 
+  // Create subscription
   async createSubscription(
     accountId: string,
-    productId: string = 'premium-monthly'
+    productId: string = 'premium-monthly',
   ): Promise<killbill.Subscription> {
     const productName =
       PRODUCTS[productId as keyof typeof PRODUCTS] || 'Premium'
@@ -237,7 +283,7 @@ class KillBillClient {
       undefined, // migrated
       undefined, // skipResponse
       true, // callCompletion
-      20 // callTimeoutSec
+      20, // callTimeoutSec
     )
 
     return response.data
@@ -246,7 +292,7 @@ class KillBillClient {
   // Add add-on to existing subscription
   async addAddonToSubscription(
     accountId: string,
-    addonProductId: TPlanId
+    addonProductId: TPlanId,
   ): Promise<killbill.Subscription> {
     // First, get the account's bundles to find the base subscription
     const bundlesResponse =
@@ -299,7 +345,7 @@ class KillBillClient {
       undefined, // migrated
       undefined, // skipResponse
       true, // callCompletion
-      20 // callTimeoutSec
+      20, // callTimeoutSec
     )
 
     return response.data
@@ -318,14 +364,14 @@ class KillBillClient {
       undefined, // useRequestedDateForBilling
       undefined, // pluginProperty
       this.auditData.reason, // xKillbillReason
-      this.auditData.comment // xKillbillComment
+      this.auditData.comment, // xKillbillComment
     )
   }
 
   // Cancel specific add-on subscription
   async cancelSubscriptionByType(
     userExternalKey: string,
-    planId: TPlanId
+    planId: TPlanId,
   ): Promise<void> {
     const account = await this.findAccountByExternalKey(userExternalKey)
     if (!account) {
@@ -333,7 +379,7 @@ class KillBillClient {
     }
 
     const bundlesResponse = await killBillAccountApi.getAccountBundles(
-      account.accountId
+      account.accountId,
     )
     const productName = PRODUCTS[planId as keyof typeof PRODUCTS]
 
@@ -357,11 +403,11 @@ class KillBillClient {
     throw new Error(`No active ${productName} subscription found`)
   }
 
-  // Complete charge process 
+  // Complete charge process
   async charge(
     accountId: string,
     sessionId?: string,
-    token?: string
+    token?: string,
   ): Promise<{
     invoice: any
     paymentMethod: killbill.PaymentMethod
@@ -371,7 +417,7 @@ class KillBillClient {
     const paymentMethod = await this.createKbPaymentMethod(
       accountId,
       sessionId,
-      token
+      token,
     )
 
     // Add a subscription
@@ -387,7 +433,7 @@ class KillBillClient {
 
   // Get subscription status
   async getSubscriptionStatus(
-    userExternalKey: string
+    userExternalKey: string,
   ): Promise<SubscriptionStatus> {
     try {
       const account = await this.findAccountByExternalKey(userExternalKey)
@@ -396,7 +442,7 @@ class KillBillClient {
       }
 
       const bundlesResponse = await killBillAccountApi.getAccountBundles(
-        account.accountId
+        account.accountId,
       )
       const subscriptions: killbill.Subscription[] = []
 
@@ -407,7 +453,7 @@ class KillBillClient {
       }
 
       const activeSubscriptions = subscriptions.filter(
-        (sub) => sub.state === 'ACTIVE'
+        (sub) => sub.state === 'ACTIVE',
       )
       const hasActiveSubscription = activeSubscriptions.length > 0
 

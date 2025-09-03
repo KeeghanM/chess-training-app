@@ -151,7 +151,9 @@ export default function AccountForm(props: { profile: UserProfile }) {
             />
           </div>
           <div>
-            <label className="text-black dark:text-white">Default Difficulty</label>
+            <label className="text-black dark:text-white">
+              Default Difficulty
+            </label>
             <div className="flex flex-col items-center gap-2 md:flex-row md:gap-4">
               <Button
                 variant={difficulty == 0 ? 'success' : 'accent'}
@@ -229,7 +231,7 @@ export default function AccountForm(props: { profile: UserProfile }) {
         <div className="flex flex-row items-center gap-2">
           <Tippy content="Public profiles will show your ratings, bio, and Username. Your email will always be kept private.">
             <label className="text-black dark:text-white flex gap-1 flex-row items-center">
-              <p className=''>Public Profile</p>
+              <p className="">Public Profile</p>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"

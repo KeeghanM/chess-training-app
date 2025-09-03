@@ -3,6 +3,7 @@ import { prisma } from '~/server/db'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import * as Sentry from '@sentry/nextjs'
 import { v4 as uuidv4 } from 'uuid'
+
 import { killBillClient } from './KillBill'
 
 export type KindeUser = {
@@ -21,7 +22,7 @@ export async function getUserServer() {
     const hasAuth = await isAuthenticated()
     const permissions = await getPermissions()
     const subscriptionStatus = await killBillClient.getSubscriptionStatus(
-      user.id
+      user.id,
     )
 
     try {

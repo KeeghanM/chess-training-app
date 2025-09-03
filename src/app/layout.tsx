@@ -1,7 +1,7 @@
 import Script from 'next/script'
 
-import { Suspense } from 'react'
 import type { ReactNode } from 'react'
+import { Suspense } from 'react'
 
 import CookieBanner from './components/template/CookieBanner'
 import Footer from './components/template/footer/Footer'
@@ -50,6 +50,7 @@ export default async function RootLayout({
 }) {
   return (
     <>
+      <Script src="https://js.stripe.com/v3/" strategy="lazyOnload" />
       <Script id="brevo-conversations">
         {`(function(d, w, c) {
         w.BrevoConversationsID = '656f5685f955fb046f086532';

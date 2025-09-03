@@ -60,7 +60,6 @@ export default async function Dashboard() {
     },
   })
 
-  // This will force new users into the onboarding
   if (!profile) redirect('/dashboard/new')
 
   const tools: Tool[] = [
