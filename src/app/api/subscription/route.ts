@@ -34,8 +34,7 @@ export async function POST(request: Request) {
         return errorResponse('Failed to create KillBill account', 500)
       }
 
-      const baseUrl = new URL(request.url).origin
-      const successUrl = `${baseUrl}/checkout/subscription-success?kbAccountId=${kbAccount.accountId}&sessionId={CHECKOUT_SESSION_ID}`
+      const successUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/subscription-success?kbAccountId=${kbAccount.accountId}&sessionId={CHECKOUT_SESSION_ID}`
 
       const sessionId = await killBillClient.createSession(
         kbAccount.accountId,
