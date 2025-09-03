@@ -50,3 +50,5 @@ yarn-error.log*
 .sentryclirc
 # Sentry Config File
 .env.sentry-build-plugin
+
+git-diff.txt

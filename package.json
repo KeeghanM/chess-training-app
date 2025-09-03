@@ -13,7 +13,8 @@
     "qa:types": "tsc --noEmit",
     "start": "next start",
     "format": "prettier --log-level warn --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
-    "slicemachine": "start-slicemachine"
+    "slicemachine": "start-slicemachine",
+    "docs": "git log origin/main..HEAD --pretty=format:'%ad:: %s' > git-diff.txt && echo '\n----------\n' >> git-diff.txt && git diff origin/main...HEAD --color ':!*.lock' >> git-diff.txt"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

@@ -23,7 +23,6 @@ declare global {
 // Get the Stripe publishable key from environment variables
 const PUBLIC_STRIPE_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function GetPremiumButton() {
   const { user } = useKindeBrowserClient()
   const [loading, setLoading] = useState(false)

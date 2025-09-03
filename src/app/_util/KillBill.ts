@@ -243,8 +243,8 @@ class KillBillClient {
     const subscriptionData = {
       accountId,
       productName,
-      productCategory: 'BASE' as any,
-      billingPeriod: 'MONTHLY' as any,
+      productCategory: 'BASE',
+      billingPeriod: 'MONTHLY',
       priceList: 'DEFAULT',
       // priceOverrides: [...]
     } as killbill.Subscription
@@ -306,8 +306,8 @@ class KillBillClient {
       accountId,
       bundleId: baseBundleId,
       productName,
-      productCategory: 'ADD_ON' as any,
-      billingPeriod: 'MONTHLY' as any,
+      productCategory: 'ADD_ON',
+      billingPeriod: 'MONTHLY',
       priceList: 'DEFAULT',
     } as killbill.Subscription
 
