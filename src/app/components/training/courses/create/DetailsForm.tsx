@@ -1,14 +1,14 @@
 import { useState } from 'react'
 
 import * as Sentry from '@sentry/nextjs'
-import type { ResponseJson } from '~/app/api/responses'
 
-import Button from '~/app/components/_elements/button'
-import Heading from '~/app/components/_elements/heading'
-import Spinner from '~/app/components/general/Spinner'
-import TextEditor from '~/app/components/general/TextEditor'
+import Button from '@components/_elements/button'
+import Heading from '@components/_elements/heading'
+import Spinner from '@components/general/Spinner'
+import TextEditor from '@components/general/TextEditor'
 
-import trackEventOnClient from '~/app/_util/trackEventOnClient'
+import { useCourseQueries } from '@hooks/use-course-queries'
+import trackEventOnClient from '@utils/trackEventOnClient'
 
 export default function DetailsForm(props: {
   finished: (name: string, description: string) => void
@@ -22,6 +22,9 @@ export default function DetailsForm(props: {
   )
   const [error, setError] = useState<string | null>(null)
 
+  // React Query hooks
+  const { checkCourseName, checkCanCreateCourse } = useCourseQueries()
+
   const create = async () => {
     setStatus('loading')
     setError(null)
@@ -33,35 +36,30 @@ export default function DetailsForm(props: {
     }
 
     try {
-      const res = await fetch('/api/courses/create/checkName', {
-        method: 'POST',
-        body: JSON.stringify({ name }),
-      })
-      const json = (await res.json()) as ResponseJson
-      if (!json.data?.isAvailable) {
+      // Check if name is available
+      const isNameAvailable = await checkCourseName.mutateAsync(name)
+      
+      if (!isNameAvailable) {
         setError('Name is already taken')
         setStatus('idle')
-        trackEventOnClient('create_course_duplicate_name', {
-          name,
-        })
+        trackEventOnClient('create_course_duplicate_name', { name })
         return
       }
 
-      const res2 = await fetch('/api/courses/user/canCreate')
-      const json2 = (await res2.json()) as ResponseJson
-      if (!json2.data?.canCreate) {
+      // Check if user can create more courses
+      const refetchResult = await checkCanCreateCourse.refetch()
+      
+      if (!refetchResult.data) {
         setError('You have reached the maximum number of courses')
         setStatus('idle')
         trackEventOnClient('create_course_max_reached', {})
         return
       }
 
-      trackEventOnClient('create_course_details_submitted', {
-        name,
-      })
+      trackEventOnClient('create_course_details_submitted', { name })
       props.finished(name, description)
-    } catch (e) {
-      Sentry.captureException(e)
+    } catch (error) {
+      Sentry.captureException(error)
       setError('Oops! Something went wrong. Please try again later.')
       setStatus('idle')
     }

@@ -6,18 +6,15 @@ import { useState } from 'react'
 
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import * as AlertDialog from '@radix-ui/react-alert-dialog'
-import * as Sentry from '@sentry/nextjs'
 import Tippy from '@tippyjs/react'
-import type { ResponseJson } from '~/app/api/responses'
 
-import Button from '~/app/components/_elements/button'
-import Heading from '~/app/components/_elements/heading'
-import StyledLink from '~/app/components/_elements/styledLink'
-import Spinner from '~/app/components/general/Spinner'
+import Button from '@components/_elements/button'
+import Heading from '@components/_elements/heading'
+import StyledLink from '@components/_elements/styledLink'
+import Spinner from '@components/general/Spinner'
 
-import trackEventOnClient from '~/app/_util/trackEventOnClient'
-
-import type { PrismaUserCourse } from './CoursesList'
+import { useCourseQueries, type PrismaUserCourse } from '@hooks/use-course-queries'
+import trackEventOnClient from '@utils/trackEventOnClient'
 
 interface CourseSettingsProps {
   userCourse: PrismaUserCourse
@@ -27,9 +24,10 @@ interface CourseSettingsProps {
 export default function CourseSettings(props: CourseSettingsProps) {
   const { userCourse, update } = props
   const { user } = useKindeBrowserClient()
-
-  const [deleting, setDeleting] = useState(false)
   const [open, setOpen] = useState(false)
+
+  // React Query hooks
+  const { deleteCourse } = useCourseQueries()
 
   const close = () => {
     setOpen(false)
@@ -45,22 +43,16 @@ export default function CourseSettings(props: CourseSettingsProps) {
         : 'Are you sure you want to archive this course? This will remove your progress.'
     if (!confirm(confirmString)) return
 
-    setDeleting(true)
     trackEventOnClient('course_status_set', {
       active: 'archived',
     })
+    
     try {
-      const resp = await fetch(`/api/courses/user/${userCourse?.id}`, {
-        method: 'DELETE',
-      })
-      const json = (await resp.json()) as ResponseJson
-      if (json?.message != 'Course archived')
-        throw new Error(json?.message ?? 'Course not archived')
+      await deleteCourse.mutateAsync(userCourse.id)
       update()
-    } catch (e) {
-      Sentry.captureException(e)
+    } catch (error) {
+      console.error('Failed to archive course:', error)
     }
-    setDeleting(false)
   }
 
   if (!userCourse) return null
@@ -120,11 +112,11 @@ export default function CourseSettings(props: CourseSettingsProps) {
           </div>
           <div className="flex gap-4 md:justify-between flex-col md:flex-row">
             <Button
-              disabled={deleting}
+              disabled={deleteCourse.isPending}
               variant="danger"
               onClick={archiveCourse}
             >
-              {deleting ? (
+              {deleteCourse.isPending ? (
                 <>
                   Archiving <Spinner />
                 </>
