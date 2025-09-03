@@ -33,8 +33,12 @@ export const env = createEnv({
     SENTRY_AUTH_TOKEN: z.string(),
     RAPIDAPI_KEY: z.string(),
     STRIPE_SECRET_KEY: z.string(),
-    STRIPE_PUBLIC_KEY: z.string(),
     STRIPE_WEBHOOK_SECRET: z.string(),
+    KILLBILL_URL: z.string().url(),
+    KILLBILL_USERNAME: z.string(),
+    KILLBILL_PASSWORD: z.string(),
+    KILLBILL_API_KEY: z.string(),
+    KILLBILL_API_SECRET: z.string(),
   },
 
   /**
@@ -46,6 +50,7 @@ export const env = createEnv({
     NEXT_PUBLIC_POSTHOG_KEY: z.string(),
     NEXT_PUBLIC_POSTHOG_HOST: z.string(),
     NEXT_PUBLIC_SITE_URL: z.string().url(),
+    NEXT_PUBLIC_STRIPE_PUBLIC_KEY: z.string(),
     NEXT_PUBLIC_MAX_COURSES: z
       .string()
       .transform((val) => parseInt(val))
@@ -82,12 +87,17 @@ export const env = createEnv({
     SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
     RAPIDAPI_KEY: process.env.RAPIDAPI_KEY,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
-    STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+    KILLBILL_URL: process.env.KILLBILL_URL,
+    KILLBILL_USERNAME: process.env.KILLBILL_USERNAME,
+    KILLBILL_PASSWORD: process.env.KILLBILL_PASSWORD,
+    KILLBILL_API_KEY: process.env.KILLBILL_API_KEY,
+    KILLBILL_API_SECRET: process.env.KILLBILL_API_SECRET,
     // CLIENT
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+    NEXT_PUBLIC_STRIPE_PUBLIC_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY,
     NEXT_PUBLIC_MAX_COURSES: process.env.NEXT_PUBLIC_MAX_COURSES,
     NEXT_PUBLIC_MAX_SETS: process.env.NEXT_PUBLIC_MAX_SETS,
   },

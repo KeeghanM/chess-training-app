@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 
 import Container from '~/app/components/_elements/container'
 import AccountForm from '~/app/components/dashboard/AccountForm'
+import SubscriptionManager from '~/app/components/dashboard/SubscriptionManager'
 
 import { getUserServer } from '~/app/_util/getUserServer'
 
@@ -13,7 +14,10 @@ export default async function AccountSettingsPage() {
   return (
     <div className="dark:bg-slate-800">
       <Container>
-        <AccountForm profile={profile} />
+        <div className="space-y-8">
+          <AccountForm profile={profile} />
+          <SubscriptionManager />
+        </div>
       </Container>
     </div>
   )

@@ -41,8 +41,6 @@ export default function AccountForm(props: { profile: UserProfile }) {
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
 
-  if (!user) return null
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     if (!user) return Sentry.captureException(new Error('User not found'))
     e.preventDefault()
@@ -103,6 +101,23 @@ export default function AccountForm(props: { profile: UserProfile }) {
     }
   }
 
+  if (!user)
+    return (
+      <div className="flex flex-col gap-0 border border-gray-300 dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)] ">
+        <div className="flex flex-col md:flex-row px-2 py-1 border-b border-gray-300 dark:border-slate-600 items-center justify-between">
+          <Heading color="text-orange-500 !m-0 !p-0" as={'h2'}>
+            Account Settings
+          </Heading>
+          <Link href="/dashboard">
+            <Button variant="accent">Back to dashboard</Button>
+          </Link>
+        </div>
+        <div className="p-4">
+          <p>Loading account details...</p>
+        </div>
+      </div>
+    )
+
   return (
     <div className="flex flex-col gap-0 border border-gray-300 dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)] ">
       <div className="flex flex-col md:flex-row px-2 py-1 border-b border-gray-300 dark:border-slate-600 items-center justify-between">
@@ -151,7 +166,9 @@ export default function AccountForm(props: { profile: UserProfile }) {
             />
           </div>
           <div>
-            <label className="text-black dark:text-white">Default Difficulty</label>
+            <label className="text-black dark:text-white">
+              Default Difficulty
+            </label>
             <div className="flex flex-col items-center gap-2 md:flex-row md:gap-4">
               <Button
                 variant={difficulty == 0 ? 'success' : 'accent'}
@@ -229,7 +246,7 @@ export default function AccountForm(props: { profile: UserProfile }) {
         <div className="flex flex-row items-center gap-2">
           <Tippy content="Public profiles will show your ratings, bio, and Username. Your email will always be kept private.">
             <label className="text-black dark:text-white flex gap-1 flex-row items-center">
-              <p className=''>Public Profile</p>
+              <p className="">Public Profile</p>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"

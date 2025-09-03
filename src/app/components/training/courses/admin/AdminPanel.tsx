@@ -47,7 +47,6 @@ export default function CourseAdminPanel(props: CourseAdminPanelProps) {
 
     setSaving(true)
     try {
-      console.log(lines)
       const res = await fetch('/api/courses', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },

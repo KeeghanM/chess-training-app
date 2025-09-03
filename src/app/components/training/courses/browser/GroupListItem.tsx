@@ -47,18 +47,15 @@ export default function GroupListItem(props: {
   return (
     <div
       className={
-        'flex flex-col gap-0 border-2 dark:text-white dark:border-slate-600 cursor-pointer '  +
+        'flex flex-col gap-0 border-2 dark:text-white dark:border-slate-600 cursor-pointer ' +
         (open
           ? 'bg-orange-500 bg-opacity-10 border-orange-500'
           : 'bg-purple-200 border-purple-700 hover:border-orange-500 hover:bg-orange-500 hover:bg-opacity-10')
       }
-        onClick={() => (!open ? props.onClick() : null)}
+      onClick={() => (!open ? props.onClick() : null)}
     >
       <div className="flex items-center justify-between text-white gap-2 p-2 text-base">
-        <div
-          className='flex items-center gap-2 text-orange-500 transition-all duration-200' 
-         
-        >
+        <div className="flex items-center gap-2 text-orange-500 transition-all duration-200">
           <h2 className="font-bold">{name}</h2>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -74,7 +71,7 @@ export default function GroupListItem(props: {
           </svg>
         </div>
         <div className="flex items-center gap-2">
-          <p className='text-black dark:text-white'>
+          <p className="text-black dark:text-white">
             {lines.length - linesUnseen}/{lines.length}
           </p>
           <Tippy

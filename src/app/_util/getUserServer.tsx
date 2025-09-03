@@ -4,6 +4,8 @@ import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import * as Sentry from '@sentry/nextjs'
 import { v4 as uuidv4 } from 'uuid'
 
+import { killBillClient } from './KillBill'
+
 export type KindeUser = {
   id: string
   email: string | null
@@ -19,6 +21,10 @@ export async function getUserServer() {
   if (user) {
     const hasAuth = await isAuthenticated()
     const permissions = await getPermissions()
+    const subscriptionStatus = await killBillClient.getSubscriptionStatus(
+      user.id,
+    )
+
     try {
       const profile = await prisma.userProfile.findFirst({
         where: {
@@ -35,9 +41,7 @@ export async function getUserServer() {
         },
       })
       const isStaff = permissions?.permissions.includes('staff-member') ?? false
-      const isPremium =
-        profile.hasPremium ||
-        (permissions?.permissions.includes('premium-override') ?? false)
+      const isPremium = subscriptionStatus.features.hasPremium
 
       return { user, hasAuth, profile, isStaff, isPremium, badges }
     } catch (e) {

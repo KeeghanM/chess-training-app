@@ -27,7 +27,7 @@ export default function PremiumSubscribe(props: {
           </AlertDialog.Title>
           <div className="flex flex-col gap-2">
             {children}
-            <GetPremiumButton returnUrl="training/courses" />
+            <GetPremiumButton />
             <Button variant="secondary" onClick={() => setOpen(false)}>
               Cancel
             </Button>
