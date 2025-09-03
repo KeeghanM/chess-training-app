@@ -49,9 +49,8 @@ export interface TrainingPuzzle {
 export default function TacticsTrainer(props: {
   set: PrismaTacticsSetWithPuzzles
 }) {
-  // --- Hooks ---
-  const { useTrainingPuzzleQuery } = usePuzzleQueries()
-  const { increaseCorrect, increaseIncorrect, increaseTimeTaken } =
+  const { usePuzzleQuery } = usePuzzleQueries()
+  const { increaseCorrect, increaseIncorrect, increaseTimeTaken, createRound } =
     useTacticsQueries()
 
   const { preferences, setSoundEnabled, setAutoNext } = useAppStore()
@@ -77,7 +76,6 @@ export default function TacticsTrainer(props: {
   const [incorrectSound] = useSound('/sfx/incorrect.mp3')
 
   // Setup state for the game and training
-  const [loading, setLoading] = useState(true)
   const [readyForInput, setReadyForInput] = useState(false)
   const [puzzleFinished, setPuzzleFinished] = useState(false)
   const [startTime] = useState(Date.now())
@@ -91,7 +89,7 @@ export default function TacticsTrainer(props: {
   const currentPuzzleIndex = CompletedPuzzles
   const currentPuzzleId = props.set.puzzles[currentPuzzleIndex]?.puzzleid || ''
 
-  const puzzleQuery = useTrainingPuzzleQuery(currentPuzzleId)
+  const puzzleQuery = usePuzzleQuery(currentPuzzleId)
   const currentPuzzle = puzzleQuery.data
 
   const makeMove = (move: string) => {
@@ -132,7 +130,6 @@ export default function TacticsTrainer(props: {
     // First log all the stats re:current puzzle
     // Check if we've completed the set, in which case we need to create a new round & exit
     // If we haven't then load the next puzzle
-    setLoading(true)
 
     const currentPuzzleIndex = props.set.puzzles.findIndex(
       (item) => item.puzzleid == currentPuzzle!.puzzleid,
@@ -151,16 +148,12 @@ export default function TacticsTrainer(props: {
             correct: currentRound.correct.toString(),
             incorrect: currentRound.incorrect.toString(),
           })
-          await fetch('/api/tactics/createRound', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              setId: props.set.id,
-              roundNumber: currentRound.roundNumber + 1,
-              puzzleRating: props.set.rating,
-            }),
+          
+          // Use React Query mutation for creating new round
+          await createRound.mutateAsync({
+            setId: props.set.id,
+            roundNumber: currentRound.roundNumber + 1,
+            puzzleRating: props.set.rating ?? 1500, // Default to 1500 if null
           })
         } catch (e) {
           Sentry.captureException(e)
@@ -174,7 +167,6 @@ export default function TacticsTrainer(props: {
 
     // We haven't completed the set so we need to change the puzzle
     setPuzzleStatus('none')
-    setLoading(false)
     setCompletedPuzzles(currentPuzzleIndex + 1)
     // React Query will automatically fetch the new puzzle when currentPuzzleIndex changes
   }
@@ -304,7 +296,6 @@ export default function TacticsTrainer(props: {
   })
 
   const exit = async () => {
-    setLoading(true)
     increaseTimeTaken.mutate({
       roundId: currentRound.id,
       timeTaken: (Date.now() - startTime) / 1000,
@@ -314,23 +305,6 @@ export default function TacticsTrainer(props: {
     router.push('/training/tactics/list')
     return
   }
-
-  // Here are all our useEffect functions
-  // useEffect(() => {
-  //   // Set loading based on React Query state
-  //   setLoading(puzzleQuery.isLoading)
-
-  //   return () => {
-  //     // On unmount, log the stats
-  //     if (user) {
-  //       increaseTimeTaken.mutate({
-  //         roundId: currentRound.id,
-  //         timeTaken: (Date.now() - startTime) / 1000,
-  //         setId: props.set.id,
-  //       })
-  //     }
-  //   }
-  // }, [puzzleQuery.isLoading, user, currentRound.id, startTime, props.set.id, increaseTimeTaken])
 
   useEffect(() => {
     // Create a new game from the puzzle whenever it changes
@@ -385,7 +359,14 @@ export default function TacticsTrainer(props: {
 
   return (
     <div className="relative border border-gray-300 dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)]">
-      {loading && (
+      {(
+        // Check if any queries are loading
+        puzzleQuery.isFetching ||
+        increaseCorrect.isPending ||
+        increaseIncorrect.isPending ||
+        increaseTimeTaken.isPending ||
+        createRound.isPending
+      ) && (
         <div className="absolute inset-0 z-50 grid place-items-center bg-[rgba(0,0,0,0.3)]">
           <Spinner />
         </div>

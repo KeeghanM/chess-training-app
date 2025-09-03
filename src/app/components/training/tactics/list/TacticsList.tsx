@@ -2,73 +2,32 @@
 
 import Link from 'next/link'
 
-import { useEffect, useState } from 'react'
-
-import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
-import * as Sentry from '@sentry/nextjs'
-import type { ResponseJson } from '~/app/api/responses'
 import { env } from '~/env'
 
+import { useTacticsQueries } from '@hooks/use-tactics-queries'
 import Button from '~/app/components/_elements/button'
 import Container from '~/app/components/_elements/container'
 import Spinner from '~/app/components/general/Spinner'
-import type { PrismaTacticsSet } from '~/app/components/training/tactics//create/TacticsSetCreator'
 import TacticsSetCreator from '~/app/components/training/tactics//create/TacticsSetCreator'
 
 import SetListItem from './SetListItem'
 
 export default function TacticsList(props: { hasUnlimitedSets: boolean }) {
   const { hasUnlimitedSets } = props
-  const { user } = useKindeBrowserClient()
-  const [sets, setSets] = useState<PrismaTacticsSet[]>([])
-  const [loading, setLoading] = useState(true)
+  const { tacticsSetQuery } = useTacticsQueries()
+  
+  const sets = tacticsSetQuery.data || []
+  const loading = tacticsSetQuery.isLoading
 
-  const getSets = async () => {
-    if (!user) return null
-    setLoading(true)
-    try {
-      const resp = await fetch(`/api/tactics/user`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      const json = (await resp.json()) as ResponseJson
-      if (json.message != 'Sets found') {
-        throw new Error(json.message)
-      }
-
-      return json.data?.sets as PrismaTacticsSet[]
-    } catch (e) {
-      Sentry.captureException(e)
-      return null
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const addSet = (set: PrismaTacticsSet) => {
-    setSets([...sets, set])
+  const addSet = () => {
+    // React Query will automatically refetch and update the list
+    tacticsSetQuery.refetch()
   }
 
   const updateList = () => {
-    setSets([])
-    getSets()
-      .then((sets) => setSets(sets ?? []))
-      .catch((e) => {
-        Sentry.captureException(e)
-        setSets([])
-      })
+    // React Query will automatically refetch the data
+    tacticsSetQuery.refetch()
   }
-
-  useEffect(() => {
-    getSets()
-      .then((sets) => setSets(sets ?? []))
-      .catch((e) => {
-        Sentry.captureException(e)
-        setSets([])
-      })
-  }, [user])
 
   return (
     <Container>

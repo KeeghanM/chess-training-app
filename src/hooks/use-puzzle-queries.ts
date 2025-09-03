@@ -18,43 +18,10 @@ export interface TrainingPuzzle {
 
 // Puzzle Queries
 export function usePuzzleQueries() {
-  // --- Data fetching ---
-  const puzzlesQuery = useQuery({
-    queryKey: ['puzzles'],
-    queryFn: async (): Promise<Puzzle[]> => {
-      const response = await fetch('/api/puzzles/getPuzzles')
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Puzzles found') {
-        throw new Error(json.message || 'Failed to fetch puzzles')
-      }
-      
-      return json.data?.puzzles as unknown as Puzzle[]
-    },
-  })
-
   // Factory function for individual puzzle queries
   const usePuzzleQuery = (puzzleId: string) =>
     useQuery({
       queryKey: ['puzzle', puzzleId],
-      queryFn: async ({ queryKey }): Promise<Puzzle> => {
-        const [, id] = queryKey
-        const response = await fetch(`/api/puzzles/${id}`)
-        const json = (await response.json()) as ResponseJson
-        
-        if (!response.ok || json.message !== 'Puzzle found') {
-          throw new Error(json.message || 'Failed to fetch puzzle')
-        }
-        
-        return json.data as unknown as Puzzle
-      },
-      enabled: !!puzzleId,
-    })
-
-  // Factory function for training puzzle by ID (used in tactics trainer)
-  const useTrainingPuzzleQuery = (puzzleId: string) =>
-    useQuery({
-      queryKey: ['training-puzzle', puzzleId],
       queryFn: async ({ queryKey }): Promise<TrainingPuzzle> => {
         const [, id] = queryKey
         const response = await fetch(`/api/puzzles/getPuzzleById/${id}`)
@@ -69,22 +36,28 @@ export function usePuzzleQueries() {
       enabled: !!puzzleId,
     })
 
-  // Factory function for filtered puzzles
+  // Factory function for filtered puzzles using POST method
   const usePuzzlesQuery = (filters?: { rating?: number; themes?: string[] }) =>
     useQuery({
       queryKey: ['puzzles', filters],
       queryFn: async ({ queryKey }): Promise<Puzzle[]> => {
         const [, filters] = queryKey as [string, { rating?: number; themes?: string[] } | undefined]
-        const searchParams = new URLSearchParams()
         
-        if (filters?.rating) {
-          searchParams.set('rating', filters.rating.toString())
-        }
-        if (filters?.themes?.length) {
-          searchParams.set('themes', filters.themes.join(','))
+        // Prepare POST body with filters
+        const requestBody = {
+          rating: filters?.rating || 1500, // Default rating
+          count: 100, // Default count
+          themesType: filters?.themes?.length ? 'include' : undefined,
+          themes: filters?.themes?.join(','),
         }
         
-        const response = await fetch(`/api/puzzles/getPuzzles?${searchParams}`)
+        const response = await fetch('/api/puzzles/getPuzzles', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody),
+        })
         const json = (await response.json()) as ResponseJson
         
         if (!response.ok || json.message !== 'Puzzles found') {
@@ -93,6 +66,7 @@ export function usePuzzleQueries() {
         
         return json.data?.puzzles as unknown as Puzzle[]
       },
+      enabled: !!filters, // Only enable when filters are provided
     })
 
   // Factory function for random training puzzle with parameters (used by all trainers)
@@ -136,9 +110,7 @@ export function usePuzzleQueries() {
     })
 
   return {
-    puzzlesQuery,
     usePuzzleQuery,
-    useTrainingPuzzleQuery,
     usePuzzlesQuery,
     useRandomTrainingPuzzleQuery,
   }

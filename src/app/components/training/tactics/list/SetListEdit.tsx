@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react'
 
 import * as AlertDialog from '@radix-ui/react-alert-dialog'
 import * as Sentry from '@sentry/nextjs'
-import type { ResponseJson } from '~/app/api/responses'
 
+import { useTacticsQueries } from '@hooks/use-tactics-queries'
 import Button from '~/app/components/_elements/button'
 import Spinner from '~/app/components/general/Spinner'
 import type { PrismaTacticsSet } from '~/app/components/training/tactics/create/TacticsSetCreator'
@@ -27,6 +27,8 @@ export default function SetListEdit(props: {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [name, setName] = useState(set.name)
+  
+  const { deleteTactic, archiveTactic, resetTacticProgress, updateTactic } = useTacticsQueries()
 
   useEffect(() => {
     setName(set.name)
@@ -34,125 +36,89 @@ export default function SetListEdit(props: {
     setError('')
   }, [editOpen])
 
-  const deleteSet = async () => {
+    const deleteSet = async () => {
     setLoading(true)
     try {
       if (!user) throw new Error('Not logged in')
-      const resp = await fetch('/api/tactics/delete', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          setId: set.id,
-        }),
+      await deleteTactic.mutateAsync({ setId: set.id })
+      
+      trackEventOnClient('delete_tactics_set_success', {
+        setName: set.name,
+        setSize: set.size.toString(),
+        rating: set.rating?.toString() ?? 'null',
       })
-
-      const json = (await resp.json()) as ResponseJson
-
-      if (json.message != 'Set Deleted')
-        throw new Error(json?.message ?? 'Unknown error')
-
-      trackEventOnClient('tactics_set_delete', {})
       props.onFinished()
-      close()
     } catch (e) {
       Sentry.captureException(e)
       if (e instanceof Error) setError(e.message)
-      else setError('Unknown error')
+      else setError('An error occurred')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
-  const archiveSet = async () => {
+    const archiveSet = async () => {
     setLoading(true)
     try {
       if (!user) throw new Error('Not logged in')
-      const resp = await fetch('/api/tactics/archive', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          setId: set.id,
-        }),
+      await archiveTactic.mutateAsync({ tacticId: set.id })
+      
+      trackEventOnClient('archive_tactics_set_success', {
+        setName: set.name,
+        setSize: set.size.toString(),
+        rating: set.rating?.toString() ?? 'null',
       })
-
-      const json = (await resp.json()) as ResponseJson
-
-      if (json.message != 'Set Archived')
-        throw new Error(json?.message ?? 'Unknown error')
-
-      trackEventOnClient('tactics_set_archived', {})
       props.onFinished()
-      close()
     } catch (e) {
       Sentry.captureException(e)
       if (e instanceof Error) setError(e.message)
-      else setError('Unknown error')
+      else setError('An error occurred')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   const resetProgress = async () => {
     setLoading(true)
     try {
       if (!user) throw new Error('Not logged in')
-      const resp = await fetch('/api/tactics/resetProgress', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          setId: set.id,
-        }),
+      await resetTacticProgress.mutateAsync({ setId: set.id })
+      
+      trackEventOnClient('reset_tactics_set_success', {
+        setName: set.name,
+        setSize: set.size.toString(),
+        rating: set.rating?.toString() ?? 'null',
       })
-
-      const json = (await resp.json()) as ResponseJson
-
-      if (json.message != 'Progress Reset')
-        throw new Error(json?.message ?? 'Unknown error')
-
-      trackEventOnClient('tactics_set_progress_reset', {})
       props.onFinished()
-      close()
     } catch (e) {
       Sentry.captureException(e)
       if (e instanceof Error) setError(e.message)
-      else setError('Unknown error')
+      else setError('An error occurred')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
-  const updateSet = async () => {
+    const updateSet = async () => {
     setLoading(true)
     try {
       if (!user) throw new Error('Not logged in')
-      const resp = await fetch('/api/tactics/update', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          setId: set.id,
-          name,
-        }),
+      await updateTactic.mutateAsync({ setId: set.id, name })
+      
+      trackEventOnClient('update_tactics_set_success', {
+        setName: set.name,
+        setSize: set.size.toString(),
+        rating: set.rating?.toString() ?? 'null',
       })
-
-      const json = (await resp.json()) as ResponseJson
-
-      if (json.message != 'Set Updated')
-        throw new Error(json?.message ?? 'Unknown error')
-
-      trackEventOnClient('tactics_set_updated', {})
+      setEditOpen(false)
       props.onFinished()
-      close()
     } catch (e) {
       Sentry.captureException(e)
       if (e instanceof Error) setError(e.message)
-      else setError('Unknown error')
+      else setError('An error occurred')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   const DeleteButton = () => {

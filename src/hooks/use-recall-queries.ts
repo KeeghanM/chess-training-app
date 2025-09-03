@@ -19,6 +19,28 @@ export function useRecallQueries() {
   }
 
   // --- Mutations ---
+  const updateRecallStreak = useMutation({
+    mutationFn: async (data: { currentStreak: number }): Promise<void> => {
+      const response = await fetch('/api/recall/streak', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+      
+      const json = (await response.json()) as ResponseJson
+      
+      if (!response.ok || json.message !== 'Streak updated') {
+        throw new Error(json.message || 'Failed to update recall streak')
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['recall-stats'] })
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
+    },
+  })
+
   const logRecallAttempt = useMutation({
     mutationFn: async (data: {
       puzzleId: string
@@ -47,6 +69,7 @@ export function useRecallQueries() {
 
   return {
     useRandomRecallQuery,
+    updateRecallStreak,
     logRecallAttempt,
   }
 }

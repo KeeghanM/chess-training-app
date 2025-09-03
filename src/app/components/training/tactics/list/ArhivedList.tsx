@@ -2,66 +2,36 @@
 
 import Link from 'next/link'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import * as Sentry from '@sentry/nextjs'
 import 'tippy.js/dist/tippy.css'
-import type { ResponseJson } from '~/app/api/responses'
 import { env } from '~/env'
 
+import { useTacticsQueries } from '@hooks/use-tactics-queries'
 import Button from '~/app/components/_elements/button'
 import Spinner from '~/app/components/general/Spinner'
 
-import type { PrismaTacticsSet } from '../create/TacticsSetCreator'
-
 export default function ArchivedSetList(props: { hasUnlimitedSets: boolean }) {
-  const [sets, setSets] = useState<PrismaTacticsSet[]>([])
-  const [activeCount, setActiveCount] = useState(0)
-  const [loading, setLoading] = useState(true)
   const [restoring, setRestoring] = useState(false)
   const { hasUnlimitedSets } = props
   const maxSets = env.NEXT_PUBLIC_MAX_SETS
-
-  const fetchSets = async () => {
-    setLoading(true)
-    setSets([])
-    try {
-      const resp = await fetch(`/api/tactics/user/archived`)
-      const json = (await resp.json()) as ResponseJson
-      if (json?.message != 'Sets found') throw new Error('Failed to fetch Sets')
-
-      setSets(json.data!.sets as PrismaTacticsSet[])
-      setActiveCount(json.data!.activeCount as number)
-    } catch (e) {
-      Sentry.captureException(e)
-      setSets([])
-    }
-    setLoading(false)
-  }
+  
+  const { archivedTacticsQuery, restoreTactic } = useTacticsQueries()
+  
+  const sets = archivedTacticsQuery.data?.sets || []
+  const activeCount = archivedTacticsQuery.data?.activeCount || 0
+  const loading = archivedTacticsQuery.isLoading
 
   const restoreSet = async (setId: string) => {
     setRestoring(true)
     try {
-      const resp = await fetch(`/api/tactics/user/${setId}/restore`, {
-        method: 'POST',
-      })
-      const json = (await resp.json()) as ResponseJson
-      if (json?.message != 'Set restored')
-        throw new Error('Failed to restore Set')
-      await fetchSets()
+      await restoreTactic.mutateAsync({ setId })
     } catch (e) {
       Sentry.captureException(e)
     }
     setRestoring(false)
   }
-
-  useEffect(() => {
-    ;(async () => {
-      await fetchSets()
-    })().catch((e) => {
-      Sentry.captureException(e)
-    })
-  }, [])
 
   return (
     <>

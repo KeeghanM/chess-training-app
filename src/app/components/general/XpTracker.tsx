@@ -39,12 +39,10 @@ export default function XpTracker(props: {
     setShow(false)
     setShow(true)
     
-    // Hide the message after 3.5 seconds
     setTimeout(() => {
       setShow(false)
     }, 2500)
     
-    // Add the XP to the user using React Query mutation
     updateXp.mutate(
       { xp: xpToAdd, type: props.type },
       {
@@ -53,7 +51,7 @@ export default function XpTracker(props: {
         },
       },
     )
-  }, [props.counter, props.type, updateXp])
+  }, [props.counter, props.type])
 
   return show ? (
     <div className="absolute inset-0 grid place-items-center pointer-events-none">

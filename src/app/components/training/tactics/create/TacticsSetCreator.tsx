@@ -7,13 +7,12 @@ import type { TacticsSet, TacticsSetRound } from '@prisma/client'
 import * as AlertDialog from '@radix-ui/react-alert-dialog'
 import * as Sentry from '@sentry/nextjs'
 import Select from 'react-select'
-import type { ResponseJson } from '~/app/api/responses'
 
+import { useTacticsQueries } from '@hooks/use-tactics-queries'
 import Button from '~/app/components/_elements/button'
 import StyledLink from '~/app/components/_elements/styledLink'
 import GetPremiumButton from '~/app/components/ecomm/GetPremiumButton'
 import Spinner from '~/app/components/general/Spinner'
-import type { TrainingPuzzle } from '~/app/components/training/tactics/TacticsTrainer'
 
 import trackEventOnClient from '~/app/_util/trackEventOnClient'
 
@@ -27,6 +26,7 @@ interface TacticsSetCreatorProps {
 }
 export default function TacticsSetCreator(props: TacticsSetCreatorProps) {
   const { user } = useKindeBrowserClient()
+  const { fetchPuzzlesMutation, createTacticsSet } = useTacticsQueries()
   const { setCount, maxSets, setCreated, hasUnlimitedSets } = props
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -68,35 +68,15 @@ export default function TacticsSetCreator(props: TacticsSetCreatorProps) {
     count: number,
     themes: string[],
   ) => {
-    const params: {
-      rating: string
-      count: string
-      themesType: 'ONE' | 'ALL'
-      themes?: string
-    } = {
-      rating: Math.round(rating * difficultyAdjuster(difficulty)).toString(),
+    const params = {
+      rating: Math.round(rating * difficultyAdjuster(difficulty)),
       count: count.toString(),
-      themesType: 'ONE',
-    }
-    if (themes.length > 0) {
-      params.themes = JSON.stringify(themes)
+      themesType: 'ONE' as const,
+      themes: themes.length > 0 ? themes : undefined,
     }
 
     try {
-      const resp = await fetch('/api/puzzles/getPuzzles', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(params),
-      })
-
-      const json = (await resp.json()) as ResponseJson
-      if (json.message != 'Puzzles found') throw new Error(json.message)
-
-      const puzzles = json.data?.puzzles as TrainingPuzzle[]
-      if (!puzzles || puzzles.length == 0) throw new Error('No puzzles found')
-
+      const puzzles = await fetchPuzzlesMutation.mutateAsync(params)
       return puzzles as {
         puzzleid: string
         fen: string
@@ -168,28 +148,12 @@ export default function TacticsSetCreator(props: TacticsSetCreatorProps) {
 
     try {
       if (!user) throw new Error('Not logged in')
-      const resp = await fetch('/api/tactics/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: name,
-          puzzleIds,
-          rating,
-        }),
+      
+      const set = await createTacticsSet.mutateAsync({
+        name: name,
+        puzzleIds,
+        rating,
       })
-      const json = (await resp.json()) as ResponseJson
-
-      if (json.message != 'Set Created') {
-        setError('Oops! Something went wrong: ' + json?.message)
-        return
-      }
-
-      const set = json.data?.set as PrismaTacticsSet | undefined
-      if (!set) {
-        throw new Error('Something went wrong')
-      }
 
       trackEventOnClient('create_tactics_set_success', {
         setName: name,
@@ -200,10 +164,13 @@ export default function TacticsSetCreator(props: TacticsSetCreatorProps) {
           difficulty == 0 ? 'Easy' : difficulty == 1 ? 'Medium' : 'Hard',
       })
       resetForm()
-      setCreated(set)
+      setCreated(set as unknown as PrismaTacticsSet)
       setOpen(false)
     } catch (e) {
       Sentry.captureException(e)
+      if (e instanceof Error) {
+        setError('Oops! Something went wrong: ' + e.message)
+      }
     }
   }
 

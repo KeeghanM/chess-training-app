@@ -21,19 +21,15 @@ export interface XpUpdate {
 export function useProfileQueries() {
   const queryClient = useQueryClient()
 
-  // Get user profile
+  // Get user profile - typically fetched server-side and passed as props
+  // This query is disabled since /api/profile only has PUT method for updates
   const profile = useQuery({
     queryKey: ['profile'],
     queryFn: async (): Promise<UserProfile> => {
-      const response = await fetch('/api/profile')
-      const json = (await response.json()) as ResponseJson
-      
-      if (!response.ok || json.message !== 'Profile found') {
-        throw new Error(json.message || 'Failed to fetch profile')
-      }
-      
-      return json.data as unknown as UserProfile
+      // This endpoint only has PUT method - profile data is typically server-side
+      throw new Error('Profile data should be fetched server-side and passed as props')
     },
+    enabled: false, // Disabled since no GET route exists
   })
 
   // Update XP mutation

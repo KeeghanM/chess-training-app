@@ -1,6 +1,5 @@
 import type { Course as PrismaCourse, UserCourse, UserLine } from '@prisma/client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-
 import type { ResponseJson } from '~/app/api/responses'
 
 // Types
@@ -62,6 +61,27 @@ export function useCourseQueries() {
         }
         
         return json.data?.course as unknown as Course
+      },
+      enabled: !!courseId,
+    })
+
+  // Factory function for user course queries
+  const useUserCourseQuery = (courseId: string) =>
+    useQuery({
+      queryKey: ['user-course', courseId],
+      queryFn: async ({ queryKey }): Promise<{ course: PrismaUserCourse; nextReview?: string }> => {
+        const [, id] = queryKey
+        const response = await fetch(`/api/courses/user/${id}`)
+        const json = (await response.json()) as ResponseJson
+        
+        if (!response.ok || json.message !== 'Course Fetched') {
+          throw new Error(json.message || 'Failed to fetch user course')
+        }
+        
+        return {
+          course: json.data?.course as PrismaUserCourse,
+          nextReview: json.data?.nextReview as string | undefined,
+        }
       },
       enabled: !!courseId,
     })
@@ -224,9 +244,9 @@ export function useCourseQueries() {
     },
   })
 
-  const restoreCourse = useMutation({
-    mutationFn: async (userCourseId: string): Promise<void> => {
-      const response = await fetch(`/api/courses/user/${userCourseId}/restore`, {
+    const restoreCourse = useMutation({
+    mutationFn: async (courseId: string): Promise<void> => {
+      const response = await fetch(`/api/courses/${courseId}/restore`, {
         method: 'POST',
       })
       
@@ -237,8 +257,171 @@ export function useCourseQueries() {
       }
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['courses'] })
       queryClient.invalidateQueries({ queryKey: ['user-courses'] })
       queryClient.invalidateQueries({ queryKey: ['archived-courses'] })
+    },
+  })
+
+  const updateCourse = useMutation({
+    mutationFn: async (data: {
+      courseId: string
+      courseName: string
+      courseDescription: string
+      shortDescription: string
+      linesToDelete: number[]
+      lines: Array<{
+        id: number
+        sortOrder: number
+        trainable: boolean
+      }>
+      groups: Array<{
+        id: number
+        groupName: string
+        sortOrder: number
+      }>
+    }): Promise<void> => {
+      const response = await fetch('/api/courses', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+
+      const json = (await response.json()) as ResponseJson
+      
+      if (!response.ok || json.message !== 'Course updated') {
+        throw new Error(json.message || 'Failed to update course')
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['courses'] })
+    },
+  })
+
+  const addLines = useMutation({
+    mutationFn: async (data: {
+      courseId: string
+      groupNames: string[]
+      lines: Array<{
+        groupName: string
+        colour: string
+        moves: Array<{ move: string; comment?: string }>
+      }>
+    }): Promise<void> => {
+      const response = await fetch('/api/courses/create/addLines', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+
+      const json = (await response.json()) as ResponseJson
+      
+      if (!response.ok || json.message !== 'Lines added') {
+        throw new Error(json.message || 'Failed to add lines')
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['courses'] })
+    },
+  })
+
+  const getCourseLines = useMutation({
+    mutationFn: async (data: { courseId: string }): Promise<unknown> => {
+      const response = await fetch('/api/courses/create/getLines', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+
+      const json = (await response.json()) as ResponseJson
+      
+      if (!response.ok || json.message !== 'Success') {
+        throw new Error(json.message || 'Failed to get course lines')
+      }
+
+      return json.data?.course
+    },
+  })
+
+  const markLineForReview = useMutation({
+    mutationFn: async (data: {
+      courseId: string
+      lineId: string
+      minDate: string
+    }): Promise<void> => {
+      const response = await fetch(
+        `/api/courses/user/${data.courseId}/lines/markLineForReview`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ lineId: data.lineId, minDate: data.minDate }),
+        },
+      )
+
+      const json = (await response.json()) as ResponseJson
+      
+      if (!response.ok || json.message !== 'Lines updated') {
+        throw new Error(json.message || 'Failed to mark line for review')
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-courses'] })
+    },
+  })
+
+  const markGroupForReview = useMutation({
+    mutationFn: async (data: {
+      courseId: string
+      groupId: number
+    }): Promise<void> => {
+      const response = await fetch(
+        `/api/courses/user/${data.courseId}/lines/markGroupForReview`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ groupId: data.groupId }),
+        },
+      )
+
+      const json = (await response.json()) as ResponseJson
+      
+      if (!response.ok || json.message !== 'Lines updated') {
+        throw new Error(json.message || 'Failed to mark group for review')
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-courses'] })
+    },
+  })
+
+  const markAllForReview = useMutation({
+    mutationFn: async (data: { courseId: string }): Promise<void> => {
+      const response = await fetch(
+        `/api/courses/user/${data.courseId}/lines/markAllForReview`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      )
+
+      const json = (await response.json()) as ResponseJson
+      
+      if (!response.ok || json.message !== 'Lines updated') {
+        throw new Error(json.message || 'Failed to mark all lines for review')
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-courses'] })
     },
   })
 
@@ -261,6 +444,7 @@ export function useCourseQueries() {
   return {
     coursesQuery,
     useCourseQuery,
+    useUserCourseQuery,
     purchaseCourse,
     uploadTrainedFens,
     updateLineStats,
@@ -269,6 +453,12 @@ export function useCourseQueries() {
     checkCanCreateCourse,
     deleteCourse,
     restoreCourse,
+    updateCourse,
+    addLines,
+    getCourseLines,
+    markLineForReview,
+    markGroupForReview,
+    markAllForReview,
     useUserCoursesQuery,
   }
 }

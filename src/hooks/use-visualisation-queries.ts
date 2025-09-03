@@ -29,6 +29,28 @@ export function useVisualisationQueries() {
   }
 
   // --- Mutations ---
+  const updateVisualisationStreak = useMutation({
+    mutationFn: async (data: { currentStreak: number }): Promise<void> => {
+      const response = await fetch('/api/visualisation/streak', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+      
+      const json = (await response.json()) as ResponseJson
+      
+      if (!response.ok || json.message !== 'Streak updated') {
+        throw new Error(json.message || 'Failed to update visualisation streak')
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['visualisation-stats'] })
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
+    },
+  })
+
   const logVisualisationAttempt = useMutation({
     mutationFn: async (data: {
       puzzleId: string
@@ -57,6 +79,7 @@ export function useVisualisationQueries() {
 
   return {
     useRandomVisualisationQuery,
+    updateVisualisationStreak,
     logVisualisationAttempt,
   }
 }

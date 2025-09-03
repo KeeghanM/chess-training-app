@@ -55,6 +55,28 @@ export function useEndgameQueries() {
   }
 
   // --- Mutations ---
+  const updateEndgameStreak = useMutation({
+    mutationFn: async (data: { currentStreak: number }): Promise<void> => {
+      const response = await fetch('/api/endgames/streak', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+      
+      const json = (await response.json()) as ResponseJson
+      
+      if (!response.ok || json.message !== 'Streak updated') {
+        throw new Error(json.message || 'Failed to update endgame streak')
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['endgame-stats'] })
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
+    },
+  })
+
   const logEndgameAttempt = useMutation({
     mutationFn: async (data: {
       puzzleId: string
@@ -83,6 +105,7 @@ export function useEndgameQueries() {
 
   return {
     useRandomEndgameQuery,
+    updateEndgameStreak,
     logEndgameAttempt,
   }
 }

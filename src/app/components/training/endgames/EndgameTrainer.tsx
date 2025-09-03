@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
-import * as Sentry from '@sentry/nextjs'
 import Tippy from '@tippyjs/react'
 import type { Move } from 'chess.js'
 import { Chess } from 'chess.js'
@@ -18,6 +17,7 @@ import Spinner from '@components/general/Spinner'
 import XpTracker from '@components/general/XpTracker'
 import ThemeSwitch from '@components/template/header/ThemeSwitch'
 import { useEndgameQueries } from '@hooks/use-endgame-queries'
+import { useProfileQueries } from '@hooks/use-profile-queries'
 import { useAppStore } from '@stores/app-store'
 import trackEventOnClient from '@utils/trackEventOnClient'
 
@@ -27,7 +27,8 @@ export default function EndgameTrainer() {
   const { user } = useKindeBrowserClient()
 
   // --- Hooks ---
-  const { useRandomEndgameQuery, logEndgameAttempt } = useEndgameQueries()
+  const { useRandomEndgameQuery, updateEndgameStreak, logEndgameAttempt } = useEndgameQueries()
+  const { updateStreak } = useProfileQueries()
   const { preferences, setSoundEnabled, setAutoNext } = useAppStore()
   const { soundEnabled, autoNext } = preferences
 
@@ -111,18 +112,13 @@ export default function EndgameTrainer() {
     }
 
     // Increase the "Last Trained" on the profile
-    fetch('/api/profile/streak', {
-      method: 'POST',
-    }).catch((e) => Sentry.captureException(e))
+    updateStreak.mutate()
 
     // Increase the streak if correct
     // and send it to the server incase a badge needs adding
     if (status == 'correct') {
       trackEventOnClient('endgame_correct', {})
-      fetch('/api/endgames/streak', {
-        method: 'POST',
-        body: JSON.stringify({ currentStreak: currentStreak + 1 }),
-      }).catch((e) => Sentry.captureException(e))
+      updateEndgameStreak.mutate({ currentStreak: currentStreak + 1 })
       setCurrentStreak(currentStreak + 1)
     } else if (status == 'incorrect') {
       trackEventOnClient('endgame_incorrect', {})

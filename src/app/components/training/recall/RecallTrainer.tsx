@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
-import * as Sentry from '@sentry/nextjs'
 import Tippy from '@tippyjs/react'
 import { useWindowSize } from '@uidotdev/usehooks'
 import type { Color, PieceSymbol, Square } from 'chess.js'
@@ -17,6 +16,7 @@ import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
 import XpTracker from '@components/general/XpTracker'
 import ThemeSwitch from '@components/template/header/ThemeSwitch'
+import { useProfileQueries } from '@hooks/use-profile-queries'
 import { useRecallQueries } from '@hooks/use-recall-queries'
 import { useAppStore } from '@stores/app-store'
 import trackEventOnClient from '@utils/trackEventOnClient'
@@ -29,7 +29,8 @@ export default function RecallTrainer() {
   const { user } = useKindeBrowserClient()
 
   // --- Hooks ---
-  const { useRandomRecallQuery, logRecallAttempt } = useRecallQueries()
+  const { useRandomRecallQuery, updateRecallStreak, logRecallAttempt } = useRecallQueries()
+  const { updateStreak } = useProfileQueries()
   const { preferences, setSoundEnabled } = useAppStore()
   const { soundEnabled } = preferences
 
@@ -96,18 +97,13 @@ export default function RecallTrainer() {
     }
 
     // Increase the "Last Trained" on the profile
-    fetch('/api/profile/streak', {
-      method: 'POST',
-    }).catch((e) => Sentry.captureException(e))
+    updateStreak.mutate()
 
     // Increase the streak if correct
     // and send it to the server incase a badge needs adding
     if (status == 'correct') {
       trackEventOnClient('recall_correct', {})
-      fetch('/api/recall/streak', {
-        method: 'POST',
-        body: JSON.stringify({ currentStreak: currentStreak + 1 }),
-      }).catch((e) => Sentry.captureException(e))
+      updateRecallStreak.mutate({ currentStreak: currentStreak + 1 })
       setCurrentStreak(currentStreak + 1)
     } else if (status == 'incorrect') {
       trackEventOnClient('recall_incorrect', {})
