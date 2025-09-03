@@ -169,6 +169,7 @@ class KillBillClient {
       const requestData = {
         kbAccountId: accountId,
         successUrl: successUrl,
+        cancelUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard/settings`,
       }
 
       const response = await axios.post(pluginEndpoint, null, {
