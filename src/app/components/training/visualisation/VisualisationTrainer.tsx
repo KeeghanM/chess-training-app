@@ -284,6 +284,13 @@ export default function VisualisationTrainer() {
   })
 
   const exit = async () => {
+    // Reset all puzzle-related state when exiting
+    setPuzzleStatus('none')
+    setPuzzleFinished(false)
+    setReadyForInput(false)
+    setSelectedSquares({})
+    setStartSquare(undefined)
+    setCurrentPuzzle(undefined)
     setMode('settings')
   }
 
@@ -336,6 +343,26 @@ export default function VisualisationTrainer() {
       {mode == 'settings' ? (
         <>
           <div className="border border-gray-300 text-black dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)]">
+            <div className="flex flex-wrap items-center justify-between px-2 py-1 border-b border-gray-300 dark:border-slate-600 font-bold text-orange-500">
+              <p id="tooltip-0">How to Use</p>
+            </div>
+            <div className="flex flex-col p-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <p>
+                  Welcome to the Visualisation Trainer! This tool is designed to help
+                  you improve your ability to visualize chess moves without seeing
+                  the pieces. Here's how to get started:
+                </p>
+                <ul className="list-inside list-disc">
+                  <li>Set your desired rating and difficulty level using the controls below.</li>
+                  <li>Click "Start Training" to begin a puzzle.</li>
+                  <li>The board will show the starting position of the puzzle.</li>
+                  <li>A list of moves, starting with your opponent's move, will be displayed beside the board.</li>
+                  <li>Your task is to visualize the position after all the moves have been played.</li>
+                  <li>Finally, once you have it - click the squares to indicate where the last move <em>should</em> be played.</li>
+                </ul>
+                </div>
+                </div>
             <div className="flex flex-wrap items-center justify-between px-2 py-1 border-b border-gray-300 dark:border-slate-600 font-bold text-orange-500">
               <p id="tooltip-0">Adjust your settings</p>
             </div>
