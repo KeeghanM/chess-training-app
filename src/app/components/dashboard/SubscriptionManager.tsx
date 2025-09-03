@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import * as Sentry from '@sentry/react'
 
@@ -24,11 +24,7 @@ export default function SubscriptionManager() {
   const [actionLoading, setActionLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchSubscriptionStatus()
-  }, [])
-
-  const fetchSubscriptionStatus = async () => {
+  const fetchSubscriptionStatus = useCallback(async () => {
     try {
       const response = await fetch('/api/subscription-status')
       const result = await response.json()
@@ -44,7 +40,11 @@ export default function SubscriptionManager() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    fetchSubscriptionStatus()
+  }, [fetchSubscriptionStatus])
 
   const cancelSubscription = async () => {
     if (!confirm('Are you sure you want to cancel your subscription?')) {
@@ -61,7 +61,7 @@ export default function SubscriptionManager() {
 
       if (response.ok) {
         await fetchSubscriptionStatus() // Refresh status
-        alert('Subscription canceled successfully')
+        window.location.reload()
       } else {
         throw new Error(result.message || 'Failed to cancel subscription')
       }
@@ -76,9 +76,16 @@ export default function SubscriptionManager() {
 
   if (loading) {
     return (
-      <div className="flex flex-col gap-0 border border-gray-300 dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)] space-y-4">
-        <Heading as="h2">Subscription Management</Heading>
-        <p className="text-gray-600">Loading subscription status...</p>
+      <div className="flex flex-col gap-0 border border-gray-300 dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)]">
+        <div className="flex flex-col md:flex-row px-2 py-1 border-b border-gray-300 dark:border-slate-600 items-center justify-between">
+          <Heading color="text-orange-500 !m-0 !p-0" as={'h2'}>
+            Subscription Management
+          </Heading>
+        </div>
+
+        <div className="p-2">
+          <p>Loading subscription status...</p>
+        </div>
       </div>
     )
   }
@@ -127,7 +134,7 @@ export default function SubscriptionManager() {
             <p className="text-sm text-gray-600 dark:text-gray-300">
               Upgrade to Premium for unlimited access to all features
             </p>
-            <GetPremiumButton returnUrl={'dashboard/settings'} />
+            <GetPremiumButton />
           </div>
         )}
 
@@ -148,8 +155,7 @@ export default function SubscriptionManager() {
             <Button
               onClick={cancelSubscription}
               disabled={actionLoading}
-              variant="secondary"
-              className="text-red-600 hover:text-red-700"
+              variant="danger"
             >
               {actionLoading ? (
                 <>
@@ -161,23 +167,6 @@ export default function SubscriptionManager() {
             </Button>
           </div>
         )}
-
-        {subscriptionStatus.subscriptions &&
-          subscriptionStatus.subscriptions.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="font-medium">Active Subscriptions</h4>
-              <div className="space-y-1">
-                {subscriptionStatus.subscriptions.map((sub) => (
-                  <div
-                    key={sub.subscriptionId}
-                    className="text-sm text-gray-600 dark:text-gray-300"
-                  >
-                    {sub.productName} - {sub.state}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
       </div>
     </div>
   )

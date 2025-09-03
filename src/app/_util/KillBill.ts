@@ -92,21 +92,12 @@ class KillBillClient {
         currency: 'GBP',
       }
 
-      console.log('Creating KillBill account with data:', accountData)
-
       const response = await killBillAccountApi.createAccount(
         accountData,
         this.auditData.user,
         this.auditData.reason,
         this.auditData.comment,
       )
-
-      console.log(
-        'KillBill account creation response:',
-        JSON.stringify(response, null, 2),
-      )
-      console.log('Response data:', response.data)
-      console.log('Response status:', response.status)
 
       if (!response.data || !response.data.accountId) {
         console.error('Invalid response structure:', {
@@ -134,13 +125,7 @@ class KillBillClient {
     externalKey: string,
   ): Promise<KBAccount | null> {
     try {
-      console.log(
-        'Looking for KillBill account with external key:',
-        externalKey,
-      )
       const response = await killBillAccountApi.getAccountByKey(externalKey)
-
-      console.log('Found existing KillBill account:', response.data)
 
       return {
         accountId: response.data.accountId!,
@@ -150,7 +135,6 @@ class KillBillClient {
       }
     } catch (error: any) {
       if (error.response?.status === 404) {
-        console.log('No existing KillBill account found, will create new one')
         return null // Account not found
       }
       console.error('Error in findAccountByExternalKey:', error)
@@ -200,22 +184,13 @@ class KillBillClient {
         },
       })
 
-      console.log(
-        'KillBill Stripe plugin response:',
-        JSON.stringify(response.data, null, 2),
-      )
-
       // Extract session ID from response (following Ruby example)
       const formFields = response.data.formFields || []
       const sessionIdField = formFields.find((field: any) => field.key === 'id')
 
-      console.log('Session ID field:', sessionIdField)
-
       if (!sessionIdField) {
         throw new Error('No session ID returned from KillBill Stripe plugin')
       }
-
-      console.log('Returning session ID:', sessionIdField.value)
 
       return sessionIdField.value
     } catch (error) {

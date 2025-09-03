@@ -154,7 +154,7 @@ export default async function PremiumPage() {
               Unlimited access to everything else
             </li>
           </ul>
-          <GetPremiumButton returnUrl="premium" />
+          <GetPremiumButton />
         </MultiColItem>
       </MultiCol>
       <TextWall title="Just £2.99/month" background="light">
@@ -164,7 +164,7 @@ export default async function PremiumPage() {
             ChessTraining.app Premium is available for just £2.99/month.
           </p>
           <div>
-            <GetPremiumButton returnUrl="premium" />
+            <GetPremiumButton />
           </div>
         </div>
       </TextWall>

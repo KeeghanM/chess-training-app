@@ -24,7 +24,7 @@ declare global {
 const PUBLIC_STRIPE_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function GetPremiumButton(props: { returnUrl: string }) {
+export default function GetPremiumButton() {
   const { user } = useKindeBrowserClient()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
@@ -48,8 +48,6 @@ export default function GetPremiumButton(props: { returnUrl: string }) {
 
       const result = (await response.json()) as ResponseJson
 
-      console.log('Subscription API response:', { response, result })
-
       if (!response.ok || !result?.data?.sessionId) {
         console.error('Checkout creation failed:', {
           responseOk: response.ok,
@@ -59,8 +57,6 @@ export default function GetPremiumButton(props: { returnUrl: string }) {
         })
         throw new Error(result?.message || 'Failed to create checkout session')
       }
-
-      console.log('Session ID received:', result.data.sessionId)
 
       // The subscription endpoint gives us a Stripe SessionID
       // Which we now need to manually redirect the user to
@@ -77,15 +73,8 @@ export default function GetPremiumButton(props: { returnUrl: string }) {
         )
       }
 
-      console.log(
-        'Initializing Stripe with key:',
-        PUBLIC_STRIPE_PUBLISHABLE_KEY,
-      )
       const stripe = window.Stripe(PUBLIC_STRIPE_PUBLISHABLE_KEY)
-      console.log(
-        'Redirecting to checkout with session ID:',
-        result.data.sessionId,
-      )
+
       await stripe.redirectToCheckout({
         sessionId: result.data.sessionId as string,
       })

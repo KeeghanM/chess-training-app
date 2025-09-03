@@ -30,8 +30,6 @@ export async function POST(request: Request) {
         user.email!,
       )
 
-      console.log('KBAccount result:', kbAccount)
-
       if (!kbAccount || !kbAccount.accountId) {
         return errorResponse('Failed to create KillBill account', 500)
       }
@@ -43,8 +41,6 @@ export async function POST(request: Request) {
         kbAccount.accountId,
         successUrl,
       )
-
-      console.log('Session creation result:', sessionId)
 
       return successResponse(
         'Checkout Session Created',

@@ -374,7 +374,7 @@ export default function TacticsSetCreator(props: TacticsSetCreatorProps) {
                   You get both unlimited tactics sets and openings courses plus
                   a <strong>5%</strong> discount on all products.
                 </p>
-                <GetPremiumButton returnUrl="training/tactics/list" />
+                <GetPremiumButton />
                 <Button variant="secondary" onClick={close}>
                   Cancel
                 </Button>
