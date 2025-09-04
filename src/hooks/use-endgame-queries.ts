@@ -48,7 +48,7 @@ export function useEndgameQueries() {
     return useRandomTrainingPuzzleQuery({
       rating: adjustedRating,
       themesType: 'ALL',
-      themes: [theme],
+      themes: JSON.stringify([theme]),
       count: '1',
     })
   }
@@ -70,29 +70,8 @@ export function useEndgameQueries() {
     },
   })
 
-  const logEndgameAttempt = useMutation({
-    mutationFn: async (data: {
-      puzzleId: string
-      correct: boolean
-      timeTaken: number
-    }): Promise<void> => {
-      await fetch('/api/endgames/attempt', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      })
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['endgame-stats'] })
-      queryClient.invalidateQueries({ queryKey: ['profile'] })
-    },
-  })
-
   return {
     useRandomEndgameQuery,
     updateEndgameStreak,
-    logEndgameAttempt,
   }
 }

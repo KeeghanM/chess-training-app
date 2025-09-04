@@ -284,13 +284,17 @@ export default function VisualisationTrainer() {
   })
 
   const exit = async () => {
-    // Reset all puzzle-related state when exiting
     setPuzzleStatus('none')
     setPuzzleFinished(false)
     setReadyForInput(false)
     setSelectedSquares({})
     setStartSquare(undefined)
     setCurrentPuzzle(undefined)
+    setXpCounter(0)
+    setCurrentStreak(0)
+    setPuzzleFinished(false)
+    setReadyForInput(false)
+    setGame(new Chess())
     setMode('settings')
   }
 

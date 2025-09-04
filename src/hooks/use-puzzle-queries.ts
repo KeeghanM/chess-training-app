@@ -66,7 +66,7 @@ export function usePuzzleQueries() {
   // Factory function for random training puzzle with parameters (used by all trainers)
   const useRandomTrainingPuzzleQuery = (params?: {
     rating?: number
-    themes?: string[]
+    themes?: string
     themesType?: string
     count?: string
     playerMoves?: number

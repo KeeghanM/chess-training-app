@@ -46,29 +46,8 @@ export function useVisualisationQueries() {
     },
   })
 
-  const logVisualisationAttempt = useMutation({
-    mutationFn: async (data: {
-      puzzleId: string
-      correct: boolean
-      timeTaken: number
-    }): Promise<void> => {
-      await fetch('/api/visualisation/attempt', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      })
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['visualisation-stats'] })
-      queryClient.invalidateQueries({ queryKey: ['profile'] })
-    },
-  })
-
   return {
     useRandomVisualisationQuery,
     updateVisualisationStreak,
-    logVisualisationAttempt,
   }
 }

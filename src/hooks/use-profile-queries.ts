@@ -53,7 +53,7 @@ export function useProfileQueries() {
   const updateStreak = useMutation({
     mutationFn: async (): Promise<void> => {
       await fetch('/api/profile/streak', {
-        method: 'PUT',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },

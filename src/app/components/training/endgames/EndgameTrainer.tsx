@@ -27,7 +27,7 @@ export default function EndgameTrainer() {
   const { user } = useKindeBrowserClient()
 
   // --- Hooks ---
-  const { useRandomEndgameQuery, updateEndgameStreak, logEndgameAttempt } =
+  const { useRandomEndgameQuery, updateEndgameStreak } =
     useEndgameQueries()
   const { updateStreak } = useProfileQueries()
   const { preferences, setSoundEnabled, setAutoNext } = useAppStore()
@@ -102,15 +102,6 @@ export default function EndgameTrainer() {
 
   const goToNextPuzzle = async (status: string) => {
     setLoading(true)
-
-    // Log the attempt using React Query mutation
-    if (currentPuzzle) {
-      logEndgameAttempt.mutate({
-        puzzleId: currentPuzzle.puzzleid,
-        correct: status === 'correct',
-        timeTaken: 0, // You may want to track this
-      })
-    }
 
     // Increase the "Last Trained" on the profile
     updateStreak.mutate()

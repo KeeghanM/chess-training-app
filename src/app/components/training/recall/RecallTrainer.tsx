@@ -29,7 +29,7 @@ export default function RecallTrainer() {
   const { user } = useKindeBrowserClient()
 
   // --- Hooks ---
-  const { useRandomRecallQuery, updateRecallStreak, logRecallAttempt } =
+  const { useRandomRecallQuery, updateRecallStreak } =
     useRecallQueries()
   const { updateStreak } = useProfileQueries()
   const { preferences, setSoundEnabled } = useAppStore()
@@ -87,15 +87,6 @@ export default function RecallTrainer() {
   const goToNextPuzzle = async (status: string) => {
     setLoading(true)
     setPuzzleStatus('none')
-
-    // Log the attempt using React Query mutation
-    if (currentPuzzle) {
-      logRecallAttempt.mutate({
-        puzzleId: currentPuzzle.puzzleid,
-        correct: status === 'correct',
-        timeTaken: 0, // You may want to track this
-      })
-    }
 
     // Increase the "Last Trained" on the profile
     updateStreak.mutate()
@@ -161,17 +152,28 @@ export default function RecallTrainer() {
   }
 
   const markImReady = () => {
-    setHiddenSquares({
-      ...SQUARES.reduce(
-        (acc, square) => {
-          acc[square] = {
-            opacity: 0,
-          }
-          return acc
-        },
-        {} as Record<string, React.CSSProperties>,
-      ),
-    })
+    // Hide all pieces (but not the squares themselves)
+    const allPieceSquares = game.board().flatMap((row, rowIndex) =>
+      row.map((piece, colIndex) => {
+        if (piece) {
+          const square = SQUARES[rowIndex * 8 + colIndex] as Square
+          return square
+        }
+        return null
+      }).filter(Boolean)
+    ) as Square[]
+    
+    const hidePieces = allPieceSquares.reduce(
+      (acc, square) => {
+        acc[square] = {
+          opacity: 0,
+        }
+        return acc
+      },
+      {} as Record<string, React.CSSProperties>,
+    )
+    
+    setHiddenSquares(hidePieces)
     setReadyForInput(true)
   }
 
@@ -210,6 +212,17 @@ export default function RecallTrainer() {
   const exit = async () => {
     setMode('settings')
     setXpCounter(0)
+    setCurrentStreak(0)
+    setSelectedSquares({})
+    setHiddenSquares({})
+    setAvailableSquares([])
+    setCorrectSquares([])
+    setCounter(0)
+    setReadyForInput(false)
+    setPuzzleFinished(false)
+    setTimer(timerLength)
+    setPuzzleStatus('none')
+    recallQuery.refetch()
   }
 
   const windowSize = useWindowSize() as { width: number; height: number }
@@ -294,15 +307,19 @@ export default function RecallTrainer() {
 
   useEffect(() => {
     if (mode == 'settings' || !timed || !currentPuzzle) return
-    if (timer > 0) {
-      const interval = setInterval(() => {
-        setTimer(timer - 1)
-      }, 1000)
-      return () => clearInterval(interval)
-    } else {
-      markImReady()
-    }
-  }, [timer, currentPuzzle])
+    
+    const interval = setInterval(() => {
+      setTimer(prevTimer => {
+        if (prevTimer <= 1) {
+          markImReady()
+          return 0
+        }
+        return prevTimer - 1
+      })
+    }, 1000)
+    
+    return () => clearInterval(interval)
+  }, [mode, timed, currentPuzzle])
 
   if (!user) return null
 

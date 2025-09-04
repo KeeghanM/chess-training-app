@@ -1,5 +1,5 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { usePuzzleQueries } from './use-puzzle-queries'
 
 // Recall Queries
@@ -12,7 +12,7 @@ export function useRecallQueries() {
     return useRandomTrainingPuzzleQuery({
       rating: 1500,
       count: '1',
-      themes: ['middlegame'],
+      themes: JSON.stringify(['middlegame']),
       themesType: 'ALL',
     })
   }
@@ -34,29 +34,8 @@ export function useRecallQueries() {
     },
   })
 
-  const logRecallAttempt = useMutation({
-    mutationFn: async (data: {
-      puzzleId: string
-      correct: boolean
-      timeTaken: number
-    }): Promise<void> => {
-      await fetch('/api/recall/attempt', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      })
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['recall-stats'] })
-      queryClient.invalidateQueries({ queryKey: ['profile'] })
-    },
-  })
-
   return {
     useRandomRecallQuery,
-    updateRecallStreak,
-    logRecallAttempt,
+    updateRecallStreak
   }
 }
