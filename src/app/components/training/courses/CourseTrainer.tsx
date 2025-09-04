@@ -4,32 +4,35 @@ import { useRouter } from 'next/navigation'
 
 import { useEffect, useState } from 'react'
 
+import {
+  PrismaUserCourse,
+  type TrainingFen,
+  useCourseQueries,
+} from '@hooks/use-course-queries'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import type { Comment, Move, UserFen } from '@prisma/client'
 import * as Sentry from '@sentry/nextjs'
+import { useAppStore } from '@stores/app-store'
 import Tippy from '@tippyjs/react'
 import { useWindowSize } from '@uidotdev/usehooks'
+import getArrows from '@utils/StringToArrows'
+import trackEventOnClient from '@utils/trackEventOnClient'
 import type { Move as ChessMove } from 'chess.js'
 import { Chess } from 'chess.js'
 import type { Arrow } from 'react-chessboard/dist/chessboard/types'
 import Toggle from 'react-toggle'
 import 'react-toggle/style.css'
 import useSound from 'use-sound'
-import type { ResponseJson } from '~/app/api/responses'
 import type { PrismaUserLine } from '~/app/training/courses/[userCourseId]/page'
 
-import ThemeSwitch from '~/app/components//template/header/ThemeSwitch'
-import Button from '~/app/components/_elements/button'
-import Spinner from '~/app/components/general/Spinner'
-import XpTracker from '~/app/components/general/XpTracker'
+import Button from '@components/_elements/button'
+import Heading from '@components/_elements/heading'
+import StyledLink from '@components/_elements/styledLink'
+import Spinner from '@components/general/Spinner'
+import XpTracker from '@components/general/XpTracker'
+import ThemeSwitch from '@components/template/header/ThemeSwitch'
 
-import getArrows from '~/app/_util/StringToArrows'
-import trackEventOnClient from '~/app/_util/trackEventOnClient'
-
-import Heading from '../../_elements/heading'
-import StyledLink from '../../_elements/styledLink'
 import ChessBoard from '../ChessBoard'
-import type { PrismaUserCourse } from './list/CoursesList'
 
 // TODO: Add delay on wrong move jumping
 // TODO: Modal for confirming exit
@@ -45,6 +48,11 @@ export default function CourseTrainer(props: {
 }) {
   const router = useRouter()
   const { user } = useKindeBrowserClient()
+
+  // --- Hooks ---
+  const { uploadTrainedFens, updateLineStats } = useCourseQueries()
+  const { preferences, setSoundEnabled, setAutoNext } = useAppStore()
+  const { soundEnabled, autoNext } = preferences
 
   // Line/Course State
   const [lines, setLines] = useState<PrismaUserLine[]>(props.userLines)
@@ -80,18 +88,16 @@ export default function CourseTrainer(props: {
   const [currentWrongMove, setCurrentWrongMove] = useState(0)
   const [hadTeachingMove, setHadTeachingMove] = useState(false)
   const [lineCorrect, setLineCorrect] = useState(true)
-  const [autoNext, setAutoNext] = useState(false)
   const [correctCounter, setCorrectCounter] = useState(0)
   const [incorrectCounter, setIncorrectCounter] = useState(0)
 
   // Tracking/Stats State
-  type trainingFen = { fen: string; commentId?: number }
-  const [existingFens, setExistingFens] = useState<trainingFen[]>(
+  const [existingFens, setExistingFens] = useState<TrainingFen[]>(
     props.userFens.map((fen) => {
       return { fen: fen.fen, commentId: fen.commentId ?? undefined }
     }),
   )
-  const [trainedFens, setTrainedFens] = useState<trainingFen[]>([])
+  const [trainedFens, setTrainedFens] = useState<TrainingFen[]>([])
   const [wrongFens, setWrongFens] = useState<string[]>([])
   const [wrongMoves, setWrongMoves] = useState<{ move: string; fen: string }[]>(
     [],
@@ -102,7 +108,6 @@ export default function CourseTrainer(props: {
   const [loading, setLoading] = useState(false)
   const [interactive, setInteractive] = useState(true)
   const [xpCounter, setXpCounter] = useState(0)
-  const [soundEnabled, setSoundEnabled] = useState(true)
   const [showComment, setShowComment] = useState(false)
   const [error, setError] = useState('')
 
@@ -375,7 +380,7 @@ export default function CourseTrainer(props: {
     // it misses the last move out due to the update sequence of State
     const seenFens = (() => {
       const newGame = new Chess()
-      const fens = [] as trainingFen[]
+      const fens = [] as TrainingFen[]
 
       // Add the starting position
       const commentId = currentLineMoves[0]?.comment?.id
@@ -412,22 +417,17 @@ export default function CourseTrainer(props: {
       // This is not using await, because actually we want this to run in the background
       // and not block the user from continuing. If this errors, all it means is that the user
       // will have to re-do some moves, next time they train which isn't a big deal.
-      fetch(`/api/courses/user/${props.userCourse.id}/fens/upload`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      uploadTrainedFens.mutate(
+        {
+          userCourseId: props.userCourse.id,
           fens: fensToUpload,
-        }),
-      })
-        .then((resp) => resp.json() as Promise<ResponseJson>)
-        .then((json) => {
-          if (json?.message != 'Fens uploaded') {
-            throw new Error(json?.message ?? 'Unknown error')
-          }
-        })
-        .catch((e) => Sentry.captureException(e)) // Don't do anything with the error, just log it
+        },
+        {
+          onError: (error) => {
+            Sentry.captureException(error) // Don't do anything with the error, just log it
+          },
+        },
+      )
     }
   }
 
@@ -476,27 +476,20 @@ export default function CourseTrainer(props: {
     setLines(updatedLines)
 
     // Send the update to the server in the background
-    fetch(`/api/courses/user/${props.userCourse.id}/stats/${currentLine.id}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    updateLineStats.mutate(
+      {
+        userCourseId: props.userCourse.id,
+        lineId: currentLine.id.toString(),
         lineCorrect,
         revisionDate,
-      }),
-    })
-      .then((resp) => resp.json() as Promise<ResponseJson>)
-      .then((json) => {
-        if (json?.message != 'Stats updated') {
-          throw new Error(json?.message ?? 'Unknown error')
-        }
-        // Optionally handle the successful response
-      })
-      .catch((e) => {
-        Sentry.captureException(e)
-        // Revert to the previous state or handle the error
-      })
+      },
+      {
+        onError: (error) => {
+          Sentry.captureException(error)
+          // Revert to the previous state or handle the error
+        },
+      },
+    )
 
     return updatedLines // Return the optimistically updated lines
   }

@@ -4,50 +4,57 @@ import Link from 'next/link'
 
 import { useEffect, useState } from 'react'
 
+import { useEndgameQueries } from '@hooks/use-endgame-queries'
+import { useProfileQueries } from '@hooks/use-profile-queries'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
-import * as Sentry from '@sentry/nextjs'
+import { useAppStore } from '@stores/app-store'
 import Tippy from '@tippyjs/react'
+import trackEventOnClient from '@utils/trackEventOnClient'
 import type { Move } from 'chess.js'
 import { Chess } from 'chess.js'
 import Toggle from 'react-toggle'
 import 'react-toggle/style.css'
 import useSound from 'use-sound'
-import type { ResponseJson } from '~/app/api/responses'
 
-import Button from '~/app/components/_elements/button'
-import Spinner from '~/app/components/general/Spinner'
-import XpTracker from '~/app/components/general/XpTracker'
-import ThemeSwitch from '~/app/components/template/header/ThemeSwitch'
-import type { TrainingPuzzle } from '~/app/components/training/tactics/TacticsTrainer'
-
-import trackEventOnClient from '~/app/_util/trackEventOnClient'
+import Button from '@components/_elements/button'
+import Spinner from '@components/general/Spinner'
+import XpTracker from '@components/general/XpTracker'
+import ThemeSwitch from '@components/template/header/ThemeSwitch'
 
 import ChessBoard from '../ChessBoard'
-
-// TODO: "Show solution" button
 
 export default function EndgameTrainer() {
   const { user } = useKindeBrowserClient()
 
-  // Setup main state for the game/puzzles
-  const [currentPuzzle, setCurrentPuzzle] = useState<TrainingPuzzle>()
-  const [game, setGame] = useState(new Chess())
-  const [gameReady, setGameReady] = useState(false)
-  const [orientation, setOrientation] = useState<'white' | 'black'>('white')
-  const [position, setPosition] = useState(game.fen())
-  const [soundEnabled, setSoundEnabled] = useState(true)
+  // --- Hooks ---
+  const { useRandomEndgameQuery, updateEndgameStreak } =
+    useEndgameQueries()
+  const { updateStreak } = useProfileQueries()
+  const { preferences, setSoundEnabled, setAutoNext } = useAppStore()
+  const { soundEnabled, autoNext } = preferences
+
+  // Setup state for endgame filters
   const [type, setType] = useState<
     'Queen' | 'Rook' | 'Knight' | 'Bishop' | 'Pawn' | 'All'
   >('All')
   const [rating, setRating] = useState(1500)
   const [difficulty, setDifficulty] = useState(1)
 
+  // Get random endgame using React Query
+  const endgameQuery = useRandomEndgameQuery({ type, rating, difficulty })
+  const currentPuzzle = endgameQuery.data
+
+  // Setup main state for the game/puzzles
+  const [game, setGame] = useState(new Chess())
+  const [gameReady, setGameReady] = useState(false)
+  const [orientation, setOrientation] = useState<'white' | 'black'>('white')
+  const [position, setPosition] = useState(game.fen())
+
   // SFX
   const [correctSound] = useSound('/sfx/correct.mp3')
   const [incorrectSound] = useSound('/sfx/incorrect.mp3')
 
   // Setup state for the settings/general
-  const [autoNext, setAutoNext] = useState(false)
   const [loading, setLoading] = useState(true)
   const [readyForInput, setReadyForInput] = useState(false)
   const [puzzleFinished, setPuzzleFinished] = useState(false)
@@ -55,62 +62,9 @@ export default function EndgameTrainer() {
     'none' | 'correct' | 'incorrect'
   >('none')
   const [mode, setMode] = useState<'training' | 'settings'>('settings')
-  const [error, setError] = useState('')
 
   const [xpCounter, setXpCounter] = useState(0)
   const [currentStreak, setCurrentStreak] = useState(0)
-
-  const difficultyAdjuster = (d: number) => {
-    return d == 0 ? 0.9 : d == 1 ? 1 : 1.2
-  }
-
-  const getPuzzle = async () => {
-    const trueRating = Math.round(rating * difficultyAdjuster(difficulty))
-    if (trueRating < 500 || trueRating > 3000) {
-      setError(
-        'Puzzle ratings must be between 500 & 3000, try adjusting the difficulty or the base rating',
-      )
-      return undefined
-    }
-
-    const getTheme = () => {
-      switch (type) {
-        case 'Queen':
-          return 'queenEndgame'
-        case 'Rook':
-          return 'rookEndgame'
-        case 'Bishop':
-          return 'bishopEndgame'
-        case 'Knight':
-          return 'knightEndgame'
-        case 'Pawn':
-          return 'pawnEndgame'
-        default:
-          return 'endgame'
-      }
-    }
-    try {
-      const params = {
-        rating: trueRating.toString(),
-        themesType: 'ALL',
-        themes: `["${getTheme()}"]`,
-        count: '1',
-      }
-      const resp = await fetch('/api/puzzles/getPuzzles', {
-        method: 'POST',
-        body: JSON.stringify(params),
-      })
-      const json = (await resp.json()) as ResponseJson
-      if (json?.message != 'Puzzles found') throw new Error('No puzzles found')
-      const puzzles = json.data!.puzzles as TrainingPuzzle[]
-
-      return puzzles[0]
-    } catch (e) {
-      Sentry.captureException(e)
-      if (e instanceof Error) setError(e.message)
-      else setError('Oops! Something went wrong')
-    }
-  }
 
   const makeMove = (move: string) => {
     try {
@@ -150,29 +104,23 @@ export default function EndgameTrainer() {
     setLoading(true)
 
     // Increase the "Last Trained" on the profile
-    fetch('/api/profile/streak', {
-      method: 'POST',
-    }).catch((e) => Sentry.captureException(e))
+    updateStreak.mutate()
 
     // Increase the streak if correct
     // and send it to the server incase a badge needs adding
     if (status == 'correct') {
       trackEventOnClient('endgame_correct', {})
-      fetch('/api/endgames/streak', {
-        method: 'POST',
-        body: JSON.stringify({ currentStreak: currentStreak + 1 }),
-      }).catch((e) => Sentry.captureException(e))
+      updateEndgameStreak.mutate({ currentStreak: currentStreak + 1 })
       setCurrentStreak(currentStreak + 1)
     } else if (status == 'incorrect') {
       trackEventOnClient('endgame_incorrect', {})
     }
-    const newPuzzle = await getPuzzle()
 
-    if (!newPuzzle) return
+    // Refetch a new puzzle instead of calling getPuzzle
+    await endgameQuery.refetch()
 
     setPuzzleStatus('none')
     setLoading(false)
-    setCurrentPuzzle(newPuzzle)
   }
 
   const checkEndOfLine = async () => {
@@ -303,19 +251,10 @@ export default function EndgameTrainer() {
   // Here are all our useEffect functions
   useEffect(() => {
     if (mode == 'settings') return
-    ;(async () => {
-      const puzzle = await getPuzzle()
-      if (!puzzle) {
-        setMode('settings')
-        return
-      }
-      setCurrentPuzzle(puzzle)
-      setLoading(false)
-    })().catch((e) => {
-      Sentry.captureException(e)
-      throw new Error('Unable to load puzzle')
-    })
-  }, [mode])
+    // The puzzle data will be fetched automatically by React Query
+    // when the component mounts or filters change
+    setLoading(endgameQuery.isLoading)
+  }, [mode, endgameQuery.isLoading])
 
   useEffect(() => {
     // Create a new game from the puzzle whenever it changes
@@ -441,8 +380,10 @@ export default function EndgameTrainer() {
           >
             Start Training
           </Button>
-          {error && (
-            <p className="bg-red-500 italic text-sm p-2 text-white">{error}</p>
+          {endgameQuery.error && (
+            <p className="bg-red-500 italic text-sm p-2 text-white">
+              {endgameQuery.error.message}
+            </p>
           )}
         </div>
       </div>

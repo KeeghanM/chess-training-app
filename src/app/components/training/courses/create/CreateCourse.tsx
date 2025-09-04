@@ -4,16 +4,15 @@ import { useRouter } from 'next/navigation'
 
 import { useState } from 'react'
 
+import { useCourseQueries } from '@hooks/use-course-queries'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import * as Sentry from '@sentry/nextjs'
-import type { ResponseJson } from '~/app/api/responses'
+import GenerateSlug from '@utils/GenerateSlug'
+import trackEventOnClient from '@utils/trackEventOnClient'
 
-import Button from '~/app/components/_elements/button'
-import Container from '~/app/components/_elements/container'
-import Heading from '~/app/components/_elements/heading'
-
-import GenerateSlug from '~/app/_util/GenerateSlug'
-import trackEventOnClient from '~/app/_util/trackEventOnClient'
+import Button from '@components/_elements/button'
+import Container from '@components/_elements/container'
+import Heading from '@components/_elements/heading'
 
 import DetailsForm from './DetailsForm'
 import GroupSelector from './GroupSelector'
@@ -31,6 +30,9 @@ export default function CreateCourseForm() {
   const [lines, setLines] = useState<Line[]>([])
   const { user } = useKindeBrowserClient()
 
+  // React Query hook
+  const { createCourse } = useCourseQueries()
+
   const upload = async (
     courseName: string,
     description: string,
@@ -41,27 +43,24 @@ export default function CreateCourseForm() {
 
     try {
       const courseData = transformCourseData(group, lines, courseName)
-      const response = await fetch('/api/courses/create/upload', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ...courseData, description }),
+      
+      await createCourse.mutateAsync({
+        ...courseData,
+        description,
       })
-      const json = (await response.json()) as ResponseJson
 
-      if (json?.message == 'Course name is not available') {
+      trackEventOnClient('create_course_success', {})
+      router.push('/training/courses/')
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message === 'Course name is not available'
+      ) {
         // TODO: Show name field with error
         return
       }
 
-      if (json?.message != 'Course created')
-        throw new Error(json?.message ?? 'Unknown error')
-
-      trackEventOnClient('create_course_success', {})
-      router.push('/training/courses/')
-    } catch (e) {
-      Sentry.captureException(e)
+      Sentry.captureException(error)
       setCurrentStep('error')
     }
   }
@@ -133,10 +132,10 @@ export default function CreateCourseForm() {
   )
 }
 
-export function transformCourseData(
+function transformCourseData(
   group: string,
   lines: Line[],
-  courseName?: string,
+  courseName: string,
 ) {
   // Extract the unique group names from the lines
   // into an array of objects with a groupName property
@@ -164,7 +163,7 @@ export function transformCourseData(
 
   return {
     courseName,
-    slug: courseName ? GenerateSlug(courseName) : undefined,
+    slug: GenerateSlug(courseName),
     groupNames,
     lines: processedLines,
   }

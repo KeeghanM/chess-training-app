@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 
+import { useCourseQueries } from '@hooks/use-course-queries'
 import type { Group, Line, Move, UserLine } from '@prisma/client'
-import type { ResponseJson } from '~/app/api/responses'
 
 import Button from '~/app/components/_elements/button'
 import PrettyPrintLine from '~/app/components/general/PrettyPrintLine'
@@ -30,26 +30,17 @@ export default function LineRow({
 }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { markLineForReview } = useCourseQueries()
 
   const markForReview = async (lineId: number) => {
     setLoading(true)
     setError(null)
     try {
-      const resp = await fetch(
-        `/api/courses/user/${courseId}/lines/markLineForReview`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ lineId, minDate }),
-        },
-      )
-
-      const data = (await resp.json()) as ResponseJson
-      if (data.message !== 'Lines updated') {
-        throw new Error('Failed to mark line for review')
-      }
+      await markLineForReview.mutateAsync({
+        courseId,
+        lineId: lineId.toString(),
+        minDate: minDate.toISOString(),
+      })
       onUpdate(lineId)
     } catch (e) {
       if (e instanceof Error) setError(e.message)

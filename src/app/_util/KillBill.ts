@@ -328,7 +328,7 @@ class KillBillClient {
   }
 
   // Cancel subscription by subscription ID
-  private async cancelSubscription(subscriptionId: string): Promise<void> {
+  private async cancelSubscription(subscriptionId: string) {
     await killBillSubscriptionApi.cancelSubscriptionPlan(
       subscriptionId,
       this.auditData.user,
@@ -348,7 +348,7 @@ class KillBillClient {
   async cancelSubscriptionByType(
     userExternalKey: string,
     planId: TPlanId,
-  ): Promise<void> {
+  ) {
     const account = await this.findAccountByExternalKey(userExternalKey)
     if (!account) {
       throw new Error('Account not found')

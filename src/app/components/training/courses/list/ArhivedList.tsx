@@ -2,67 +2,26 @@
 
 import Link from 'next/link'
 
-import { useEffect, useState } from 'react'
-
-import * as Sentry from '@sentry/nextjs'
+import { useCourseQueries } from '@hooks/use-course-queries'
 import 'tippy.js/dist/tippy.css'
-import type { ResponseJson } from '~/app/api/responses'
-import { env } from '~/env'
 
-import Button from '~/app/components/_elements/button'
-import Spinner from '~/app/components/general/Spinner'
+import Button from '@components/_elements/button'
+import Spinner from '@components/general/Spinner'
 
-import type { PrismaUserCourse } from './CoursesList'
+export default function ArchivedList() {
+  // React Query hooks
+  const { useUserCoursesQuery, restoreCourse } = useCourseQueries()
+  const { data: courses = [], isLoading: loading } =
+    useUserCoursesQuery('archived')
 
-export default function ArchivedList(props: { hasUnlimitedCourses: boolean }) {
-  const [courses, setCourses] = useState<PrismaUserCourse[]>([])
-  const [activeCount, setActiveCount] = useState(0)
-  const [loading, setLoading] = useState(true)
-  const [restoring, setRestoring] = useState(false)
-  const { hasUnlimitedCourses } = props
-  const maxCourses = env.NEXT_PUBLIC_MAX_COURSES
-
-  const fetchCourses = async () => {
-    setLoading(true)
-    setCourses([])
+  const handleRestoreCourse = async (courseId: string) => {
     try {
-      const resp = await fetch(`/api/courses/user/archived`)
-      const json = (await resp.json()) as ResponseJson
-      if (json?.message != 'Courses found')
-        throw new Error('Failed to fetch courses')
-
-      setCourses(json.data!.courses as PrismaUserCourse[])
-      setActiveCount(json.data!.activeCount as number)
-    } catch (e) {
-      Sentry.captureException(e)
-      setCourses([])
+      await restoreCourse.mutateAsync(courseId)
+    } catch (error) {
+      // Error handling is done in the mutation
+      console.error('Failed to restore course:', error)
     }
-    setLoading(false)
   }
-
-  const restoreCourse = async (courseId: string) => {
-    setRestoring(true)
-    try {
-      const resp = await fetch(`/api/courses/user/${courseId}/restore`, {
-        method: 'POST',
-      })
-      const json = (await resp.json()) as ResponseJson
-      if (json?.message != 'Course restored')
-        throw new Error('Failed to restore course')
-      await fetchCourses()
-    } catch (e) {
-      Sentry.captureException(e)
-    }
-    setRestoring(false)
-  }
-
-  useEffect(() => {
-    ;(async () => {
-      await fetchCourses()
-    })().catch((e) => {
-      Sentry.captureException(e)
-    })
-  }, [])
 
   return (
     <>
@@ -97,14 +56,11 @@ export default function ArchivedList(props: { hasUnlimitedCourses: boolean }) {
                 <p>{course.course.courseName}</p>
 
                 <Button
-                  disabled={
-                    (activeCount >= maxCourses && !hasUnlimitedCourses) ||
-                    restoring
-                  }
+                  disabled={restoreCourse.isPending}
                   variant="primary"
-                  onClick={() => restoreCourse(course.id)}
+                  onClick={() => handleRestoreCourse(course.id)}
                 >
-                  {restoring ? (
+                  {restoreCourse.isPending ? (
                     <>
                       Restoring... <Spinner />
                     </>

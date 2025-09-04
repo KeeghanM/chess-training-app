@@ -2,25 +2,24 @@
 
 import { useEffect, useState } from 'react'
 
+import { useProfileQueries } from '@hooks/use-profile-queries'
+import { useRecallQueries } from '@hooks/use-recall-queries'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
-import * as Sentry from '@sentry/nextjs'
+import { useAppStore } from '@stores/app-store'
 import Tippy from '@tippyjs/react'
 import { useWindowSize } from '@uidotdev/usehooks'
-import { Chess, SQUARES } from 'chess.js'
+import trackEventOnClient from '@utils/trackEventOnClient'
 import type { Color, PieceSymbol, Square } from 'chess.js'
+import { Chess, SQUARES } from 'chess.js'
 import { Chessboard } from 'react-chessboard'
 import 'react-toggle/style.css'
 import 'tippy.js/dist/tippy.css'
 import useSound from 'use-sound'
-import type { ResponseJson } from '~/app/api/responses'
 
-import Button from '~/app/components/_elements/button'
-import Spinner from '~/app/components/general/Spinner'
-import XpTracker from '~/app/components/general/XpTracker'
-import ThemeSwitch from '~/app/components/template/header/ThemeSwitch'
-import type { TrainingPuzzle } from '~/app/components/training/tactics/TacticsTrainer'
-
-import trackEventOnClient from '~/app/_util/trackEventOnClient'
+import Button from '@components/_elements/button'
+import Spinner from '@components/general/Spinner'
+import XpTracker from '@components/general/XpTracker'
+import ThemeSwitch from '@components/template/header/ThemeSwitch'
 
 // TODO: On multiple recalls, show a temporary green/red border on square clicked for feedback
 // TODO: On multiple recalls, have the piece to select flash on change to alert that it's changed
@@ -29,8 +28,18 @@ import trackEventOnClient from '~/app/_util/trackEventOnClient'
 export default function RecallTrainer() {
   const { user } = useKindeBrowserClient()
 
+  // --- Hooks ---
+  const { useRandomRecallQuery, updateRecallStreak } =
+    useRecallQueries()
+  const { updateStreak } = useProfileQueries()
+  const { preferences, setSoundEnabled } = useAppStore()
+  const { soundEnabled } = preferences
+
+  // Get random recall puzzle using React Query
+  const recallQuery = useRandomRecallQuery()
+  const currentPuzzle = recallQuery.data
+
   // Setup main state for the game/puzzles
-  const [currentPuzzle, setCurrentPuzzle] = useState<TrainingPuzzle>()
   const [game, setGame] = useState(new Chess())
   const [position, setPosition] = useState(game.fen())
   const [difficulty, setDifficulty] = useState(1)
@@ -61,7 +70,6 @@ export default function RecallTrainer() {
   >([])
 
   // Setup SFX
-  const [soundEnabled, setSoundEnabled] = useState(true)
   const [correctSound] = useSound('/sfx/correct.mp3')
   const [incorrectSound] = useSound('/sfx/incorrect.mp3')
 
@@ -70,65 +78,34 @@ export default function RecallTrainer() {
   const [readyForInput, setReadyForInput] = useState(false)
   const [puzzleFinished, setPuzzleFinished] = useState(false)
   const [mode, setMode] = useState<'training' | 'settings'>('settings')
-  const [error, setError] = useState('')
   const [puzzleStatus, setPuzzleStatus] = useState<
     'none' | 'correct' | 'incorrect'
   >('none')
   const [xpCounter, setXpCounter] = useState(0)
   const [currentStreak, setCurrentStreak] = useState(0)
 
-  const getPuzzle = async () => {
-    try {
-      const params = {
-        rating: 1500,
-        count: '1',
-        themes: '["middlegame"]',
-        themesType: 'ALL',
-      }
-      const resp = await fetch('/api/puzzles/getPuzzles', {
-        method: 'POST',
-        body: JSON.stringify(params),
-      })
-      const json = (await resp.json()) as ResponseJson
-      if (json?.message != 'Puzzles found') throw new Error('No puzzles found')
-      const puzzles = json.data!.puzzles as TrainingPuzzle[]
-
-      return puzzles[0]
-    } catch (e) {
-      Sentry.captureException(e)
-      if (e instanceof Error) setError(e.message)
-      else setError('Oops! Something went wrong')
-    }
-  }
-
   const goToNextPuzzle = async (status: string) => {
     setLoading(true)
     setPuzzleStatus('none')
 
     // Increase the "Last Trained" on the profile
-    fetch('/api/profile/streak', {
-      method: 'POST',
-    }).catch((e) => Sentry.captureException(e))
+    updateStreak.mutate()
 
     // Increase the streak if correct
     // and send it to the server incase a badge needs adding
     if (status == 'correct') {
       trackEventOnClient('recall_correct', {})
-      fetch('/api/recall/streak', {
-        method: 'POST',
-        body: JSON.stringify({ currentStreak: currentStreak + 1 }),
-      }).catch((e) => Sentry.captureException(e))
+      updateRecallStreak.mutate({ currentStreak: currentStreak + 1 })
       setCurrentStreak(currentStreak + 1)
     } else if (status == 'incorrect') {
       trackEventOnClient('recall_incorrect', {})
     }
-    const newPuzzle = await getPuzzle()
 
-    if (!newPuzzle) return
+    // Refetch a new puzzle instead of calling getPuzzle
+    await recallQuery.refetch()
 
     setSelectedSquares({})
     setLoading(false)
-    setCurrentPuzzle(newPuzzle)
     setTimer(timerLength)
   }
 
@@ -175,17 +152,28 @@ export default function RecallTrainer() {
   }
 
   const markImReady = () => {
-    setHiddenSquares({
-      ...SQUARES.reduce(
-        (acc, square) => {
-          acc[square] = {
-            opacity: 0,
-          }
-          return acc
-        },
-        {} as Record<string, React.CSSProperties>,
-      ),
-    })
+    // Hide all pieces (but not the squares themselves)
+    const allPieceSquares = game.board().flatMap((row, rowIndex) =>
+      row.map((piece, colIndex) => {
+        if (piece) {
+          const square = SQUARES[rowIndex * 8 + colIndex] as Square
+          return square
+        }
+        return null
+      }).filter(Boolean)
+    ) as Square[]
+    
+    const hidePieces = allPieceSquares.reduce(
+      (acc, square) => {
+        acc[square] = {
+          opacity: 0,
+        }
+        return acc
+      },
+      {} as Record<string, React.CSSProperties>,
+    )
+    
+    setHiddenSquares(hidePieces)
     setReadyForInput(true)
   }
 
@@ -224,6 +212,17 @@ export default function RecallTrainer() {
   const exit = async () => {
     setMode('settings')
     setXpCounter(0)
+    setCurrentStreak(0)
+    setSelectedSquares({})
+    setHiddenSquares({})
+    setAvailableSquares([])
+    setCorrectSquares([])
+    setCounter(0)
+    setReadyForInput(false)
+    setPuzzleFinished(false)
+    setTimer(timerLength)
+    setPuzzleStatus('none')
+    recallQuery.refetch()
   }
 
   const windowSize = useWindowSize() as { width: number; height: number }
@@ -245,20 +244,10 @@ export default function RecallTrainer() {
   useEffect(() => {
     setSelectedSquares({})
     if (mode == 'settings') return
-    ;(async () => {
-      setLoading(true)
-      const puzzle = await getPuzzle()
-      if (!puzzle) {
-        setMode('settings')
-        return
-      }
-      setCurrentPuzzle(puzzle)
-      setLoading(false)
-    })().catch((e) => {
-      Sentry.captureException(e)
-      throw new Error('Unable to load puzzle')
-    })
-  }, [mode])
+    // The puzzle data will be fetched automatically by React Query
+    // when the component mounts or mode changes
+    setLoading(recallQuery.isLoading)
+  }, [mode, recallQuery.isLoading])
 
   useEffect(() => {
     // Create a new game from the puzzle whenever it changes
@@ -318,24 +307,28 @@ export default function RecallTrainer() {
 
   useEffect(() => {
     if (mode == 'settings' || !timed || !currentPuzzle) return
-    if (timer > 0) {
-      const interval = setInterval(() => {
-        setTimer(timer - 1)
-      }, 1000)
-      return () => clearInterval(interval)
-    } else {
-      markImReady()
-    }
-  }, [timer, currentPuzzle])
+    
+    const interval = setInterval(() => {
+      setTimer(prevTimer => {
+        if (prevTimer <= 1) {
+          markImReady()
+          return 0
+        }
+        return prevTimer - 1
+      })
+    }, 1000)
+    
+    return () => clearInterval(interval)
+  }, [mode, timed, currentPuzzle])
 
   if (!user) return null
 
-  return error ? (
+  return recallQuery.error ? (
     <div className="border border-gray-300 dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)]">
       <div className="flex flex-wrap items-center justify-between px-2 py-1 border-b border-gray-300 dark:border-slate-600 font-bold text-red-500">
         <p>Oops, something went wrong</p>
       </div>
-      <div className="p-2 text-white">{error}</div>
+      <div className="p-2 text-white">{recallQuery.error.message}</div>
     </div>
   ) : (
     <>

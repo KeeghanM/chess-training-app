@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 
+import { useCourseQueries } from '@hooks/use-course-queries'
 import * as AlertDialog from '@radix-ui/react-alert-dialog'
-import type { ResponseJson } from '~/app/api/responses'
 
 import Button from '~/app/components/_elements/button'
 import Spinner from '~/app/components/general/Spinner'
@@ -23,28 +23,21 @@ export default function ResetButtons({ groups, courseId }: ResetButtonProps) {
   const [selectedGroup, setSelectedGroup] = useState<string>('')
   const [open, setOpen] = useState(false)
 
+  const {
+    markGroupForReview: markGroupMutation,
+    markAllForReview: markAllMutation,
+  } = useCourseQueries()
+
   const markGroupForReview = async () => {
     setGroupLoading(true)
     setError(null)
 
     try {
       if (!selectedGroup) throw new Error('No group selected')
-      const resp = await fetch(
-        `/api/courses/user/${courseId}/lines/markGroupForReview`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ groupId: selectedGroup }),
-        },
-      )
-
-      const data = (await resp.json()) as ResponseJson
-      if (data.message !== 'Lines updated') {
-        throw new Error('Failed to mark group for review')
-      }
-      setOpen(false)
+      await markGroupMutation.mutateAsync({
+        courseId,
+        groupId: parseInt(selectedGroup),
+      })
       window.location.reload()
     } catch (e) {
       if (e instanceof Error) setError(e.message)
@@ -61,20 +54,7 @@ export default function ResetButtons({ groups, courseId }: ResetButtonProps) {
     setError(null)
 
     try {
-      const resp = await fetch(
-        `/api/courses/user/${courseId}/lines/markAllForReview`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      )
-
-      const data = (await resp.json()) as ResponseJson
-      if (data.message !== 'Lines updated') {
-        throw new Error('Failed to mark group for review')
-      }
+      await markAllMutation.mutateAsync({ courseId })
       window.location.reload()
     } catch (e) {
       if (e instanceof Error) setError(e.message)

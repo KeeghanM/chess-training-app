@@ -2,56 +2,27 @@
 
 import Link from 'next/link'
 
-import { useEffect, useState } from 'react'
+import { useCourseQueries } from '@hooks/use-course-queries'
 
-import type { Course, UserCourse, UserLine } from '@prisma/client'
-import * as Sentry from '@sentry/nextjs'
-import type { ResponseJson } from '~/app/api/responses'
-
-import Button from '~/app/components/_elements/button'
-import Heading from '~/app/components/_elements/heading'
-import StyledLink from '~/app/components/_elements/styledLink'
-import Spinner from '~/app/components/general/Spinner'
+import Button from '@components/_elements/button'
+import Heading from '@components/_elements/heading'
+import StyledLink from '@components/_elements/styledLink'
+import Spinner from '@components/general/Spinner'
 
 import PremiumSubscribe from '../../../ecomm/PremiumSubscribe'
 import CourseListItem from './CourseListItem'
 
-export type PrismaUserCourse = UserCourse & {
-  course: Course
-} & {
-  lines?: UserLine[]
-}
-
 export default function CourseList(props: { hasUnlimitedCourses: boolean }) {
-  const [courses, setCourses] = useState<PrismaUserCourse[]>([])
-  const [loading, setLoading] = useState(true)
   const { hasUnlimitedCourses } = props
   const maxCourses = 2
 
-  const fetchCourses = async () => {
-    setLoading(true)
-    try {
-      const resp = await fetch(`/api/courses/user/active`)
-      const data = (await resp.json()) as ResponseJson
-      if (data?.message != 'Courses found')
-        throw new Error('Failed to fetch courses')
-
-      setCourses(data.data!.courses as PrismaUserCourse[])
-    } catch (e) {
-      Sentry.captureException(e)
-      setCourses([])
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    ;(async () => {
-      await fetchCourses()
-    })().catch((e) => {
-      Sentry.captureException(e)
-    })
-  }, [])
+  // React Query hooks
+  const { useUserCoursesQuery } = useCourseQueries()
+  const {
+    data: courses = [],
+    isLoading: loading,
+    refetch,
+  } = useUserCoursesQuery('active')
 
   return (
     <>
@@ -152,7 +123,7 @@ export default function CourseList(props: { hasUnlimitedCourses: boolean }) {
                 key={index}
                 courseId={course.id}
                 courseName={course.course.courseName}
-                update={fetchCourses}
+                update={() => refetch()}
                 hasPremium={hasUnlimitedCourses}
               />
             ))

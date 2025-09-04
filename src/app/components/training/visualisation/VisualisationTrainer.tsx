@@ -4,10 +4,14 @@ import Link from 'next/link'
 
 import { useEffect, useState } from 'react'
 
+import { useProfileQueries } from '@hooks/use-profile-queries'
+import { type TrainingPuzzle } from '@hooks/use-puzzle-queries'
+import { useVisualisationQueries } from '@hooks/use-visualisation-queries'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import * as Sentry from '@sentry/nextjs'
 import Tippy from '@tippyjs/react'
 import { useWindowSize } from '@uidotdev/usehooks'
+import trackEventOnClient from '@utils/trackEventOnClient'
 import type { Square } from 'chess.js'
 import { Chess } from 'chess.js'
 import { Chessboard } from 'react-chessboard'
@@ -15,15 +19,11 @@ import Toggle from 'react-toggle'
 import 'react-toggle/style.css'
 import 'tippy.js/dist/tippy.css'
 import useSound from 'use-sound'
-import type { ResponseJson } from '~/app/api/responses'
 
-import Button from '~/app/components/_elements/button'
-import Spinner from '~/app/components/general/Spinner'
-import XpTracker from '~/app/components/general/XpTracker'
-import ThemeSwitch from '~/app/components/template/header/ThemeSwitch'
-import type { TrainingPuzzle } from '~/app/components/training/tactics/TacticsTrainer'
-
-import trackEventOnClient from '~/app/_util/trackEventOnClient'
+import Button from '@components/_elements/button'
+import Spinner from '@components/general/Spinner'
+import XpTracker from '@components/general/XpTracker'
+import ThemeSwitch from '@components/template/header/ThemeSwitch'
 
 /**
  * Renders the chess training visualization interface.
@@ -37,8 +37,14 @@ import trackEventOnClient from '~/app/_util/trackEventOnClient'
 export default function VisualisationTrainer() {
   const { user } = useKindeBrowserClient()
 
+  // --- Hooks ---
+  const { updateStreak } = useProfileQueries()
+  const { useRandomVisualisationQuery, updateVisualisationStreak } =
+    useVisualisationQueries()
+
   // Setup main state for the game/puzzles
   const [currentPuzzle, setCurrentPuzzle] = useState<TrainingPuzzle>()
+  const [fetchPuzzle, setFetchPuzzle] = useState(false)
   const [game, setGame] = useState(new Chess())
   const [orientation, setOrientation] = useState<'white' | 'black'>('white')
   const [position, setPosition] = useState(game.fen())
@@ -56,6 +62,32 @@ export default function VisualisationTrainer() {
   const [soundEnabled, setSoundEnabled] = useState(true)
   const [correctSound] = useSound('/sfx/correct.mp3')
   const [incorrectSound] = useSound('/sfx/incorrect.mp3')
+
+  // React Query for puzzle fetching
+  const puzzleQuery = useRandomVisualisationQuery({
+    rating,
+    difficulty,
+    length,
+  })
+
+  // Update current puzzle when query succeeds
+  useEffect(() => {
+    if (puzzleQuery.data && fetchPuzzle) {
+      setCurrentPuzzle(puzzleQuery.data)
+      setFetchPuzzle(false)
+      setLoading(false)
+      setError('')
+    }
+  }, [puzzleQuery.data, fetchPuzzle])
+
+  // Handle query errors
+  useEffect(() => {
+    if (puzzleQuery.error) {
+      Sentry.captureException(puzzleQuery.error)
+      setError(puzzleQuery.error.message || 'Failed to fetch puzzle')
+      setLoading(false)
+    }
+  }, [puzzleQuery.error])
 
   // Setup state for the settings/general
   const [autoNext, setAutoNext] = useState(false)
@@ -75,7 +107,7 @@ export default function VisualisationTrainer() {
     return d == 0 ? 0.9 : d == 1 ? 1 : 1.2
   }
 
-  const getPuzzle = async () => {
+  const getNewPuzzle = () => {
     const trueRating = Math.max(
       Math.round(rating * difficultyAdjuster(difficulty)),
       500,
@@ -84,59 +116,40 @@ export default function VisualisationTrainer() {
       setError(
         'Puzzle ratings must be between 500 & 3000, try adjusting the difficulty or the base rating',
       )
-      return undefined
+      return
     }
 
-    try {
-      const params = {
-        rating: trueRating,
-        count: '1',
-        playerMoves: length / 2,
-      }
-      const resp = await fetch('/api/puzzles/getPuzzles', {
-        method: 'POST',
-        body: JSON.stringify(params),
-      })
-      const json = (await resp.json()) as ResponseJson
-      if (json?.message != 'Puzzles found') throw new Error('No puzzles found')
-      const puzzles = json.data!.puzzles as TrainingPuzzle[]
-
-      return puzzles[0]
-    } catch (e) {
-      Sentry.captureException(e)
-      if (e instanceof Error) setError(e.message)
-      else setError('Oops! Something went wrong')
-    }
+    setFetchPuzzle(true)
+    setLoading(true)
+    puzzleQuery.refetch()
   }
 
   const goToNextPuzzle = async (status: string) => {
     setLoading(true)
 
     // Increase the "Last Trained" on the profile
-    fetch('/api/profile/streak', {
-      method: 'POST',
-    }).catch((e) => Sentry.captureException(e))
+    updateStreak.mutate(undefined, {
+      onError: (e) => Sentry.captureException(e),
+    })
 
     // Increase the streak if correct
     // and send it to the server incase a badge needs adding
     if (status == 'correct') {
       trackEventOnClient('Visualisation_correct', {})
-      fetch('/api/visualisation/streak', {
-        method: 'POST',
-        body: JSON.stringify({ currentStreak: currentStreak + 1 }),
-      }).catch((e) => Sentry.captureException(e))
+      updateVisualisationStreak.mutate(
+        { currentStreak: currentStreak + 1 },
+        {
+          onError: (e) => Sentry.captureException(e),
+        },
+      )
       setCurrentStreak(currentStreak + 1)
     } else if (status == 'incorrect') {
       trackEventOnClient('visualisation_incorrect', {})
     }
-    const newPuzzle = await getPuzzle()
-
-    if (!newPuzzle) return
+    getNewPuzzle()
 
     setPuzzleStatus('none')
     setSelectedSquares({})
-    setLoading(false)
-    setCurrentPuzzle(newPuzzle)
   }
 
   const markMoveAs = async (status: 'correct' | 'incorrect') => {
@@ -271,6 +284,17 @@ export default function VisualisationTrainer() {
   })
 
   const exit = async () => {
+    setPuzzleStatus('none')
+    setPuzzleFinished(false)
+    setReadyForInput(false)
+    setSelectedSquares({})
+    setStartSquare(undefined)
+    setCurrentPuzzle(undefined)
+    setXpCounter(0)
+    setCurrentStreak(0)
+    setPuzzleFinished(false)
+    setReadyForInput(false)
+    setGame(new Chess())
     setMode('settings')
   }
 
@@ -292,19 +316,7 @@ export default function VisualisationTrainer() {
   // Here are all our useEffect functions
   useEffect(() => {
     if (mode == 'settings') return
-    ;(async () => {
-      setLoading(true)
-      const puzzle = await getPuzzle()
-      if (!puzzle) {
-        setMode('settings')
-        return
-      }
-      setCurrentPuzzle(puzzle)
-      setLoading(false)
-    })().catch((e) => {
-      Sentry.captureException(e)
-      throw new Error('Unable to load puzzle')
-    })
+    getNewPuzzle()
   }, [mode])
 
   useEffect(() => {
@@ -335,6 +347,26 @@ export default function VisualisationTrainer() {
       {mode == 'settings' ? (
         <>
           <div className="border border-gray-300 text-black dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)]">
+            <div className="flex flex-wrap items-center justify-between px-2 py-1 border-b border-gray-300 dark:border-slate-600 font-bold text-orange-500">
+              <p id="tooltip-0">How to Use</p>
+            </div>
+            <div className="flex flex-col p-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <p>
+                  Welcome to the Visualisation Trainer! This tool is designed to help
+                  you improve your ability to visualize chess moves without seeing
+                  the pieces. Here's how to get started:
+                </p>
+                <ul className="list-inside list-disc">
+                  <li>Set your desired rating and difficulty level using the controls below.</li>
+                  <li>Click "Start Training" to begin a puzzle.</li>
+                  <li>The board will show the starting position of the puzzle.</li>
+                  <li>A list of moves, starting with your opponent's move, will be displayed beside the board.</li>
+                  <li>Your task is to visualize the position after all the moves have been played.</li>
+                  <li>Finally, once you have it - click the squares to indicate where the last move <em>should</em> be played.</li>
+                </ul>
+                </div>
+                </div>
             <div className="flex flex-wrap items-center justify-between px-2 py-1 border-b border-gray-300 dark:border-slate-600 font-bold text-orange-500">
               <p id="tooltip-0">Adjust your settings</p>
             </div>

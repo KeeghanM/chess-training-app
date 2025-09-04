@@ -40,7 +40,9 @@ export default function Button(props: ButtonProps) {
       className={
         'flex min-w-[145px] items-center justify-center gap-2 text-sm ' +
         styles[props.variant] +
-        (props.disabled ? ' cursor-not-allowed opacity-50' : '') +
+        (props.disabled
+          ? ' cursor-not-allowed opacity-50 pointer-events-none'
+          : '') +
         (props.className ? ' ' + props.className : '')
       }
       onClick={props.onClick ? props.onClick : undefined}

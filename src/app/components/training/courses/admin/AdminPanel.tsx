@@ -4,11 +4,11 @@ import Link from 'next/link'
 
 import { useEffect, useMemo, useState } from 'react'
 
+import { useCourseQueries } from '@hooks/use-course-queries'
 import type { Course, Group } from '@prisma/client'
 import * as Sentry from '@sentry/nextjs'
 import Tippy from '@tippyjs/react'
 import 'tippy.js/dist/tippy.css'
-import type { ResponseJson } from '~/app/api/responses'
 
 import Button from '~/app/components/_elements/button'
 import Spinner from '~/app/components/general/Spinner'
@@ -32,6 +32,8 @@ export default function CourseAdminPanel(props: CourseAdminPanelProps) {
     return [...lines].sort((a, b) => a.sortOrder - b.sortOrder)
   }, [lines])
   const [linesToDelete, setLinesToDelete] = useState<number[]>([])
+
+  const { updateCourse } = useCourseQueries()
   const [groups, setGroups] = useState(course.groups)
   const [courseName, setCourseName] = useState(course.courseName)
   const [courseDescription, setCourseDescription] = useState(
@@ -47,30 +49,23 @@ export default function CourseAdminPanel(props: CourseAdminPanelProps) {
 
     setSaving(true)
     try {
-      const res = await fetch('/api/courses', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          courseId: course.id,
-          courseName,
-          courseDescription,
-          shortDescription,
-          linesToDelete,
-          lines: lines.map((line) => ({
-            id: line.id,
-            sortOrder: line.sortOrder,
-            trainable: line.trainable,
-          })),
-          groups: groups.map((group) => ({
-            id: group.id,
-            groupName: group.groupName,
-            sortOrder: group.sortOrder,
-          })),
-        }),
+      await updateCourse.mutateAsync({
+        courseId: course.id,
+        courseName,
+        courseDescription,
+        shortDescription,
+        linesToDelete,
+        lines: lines.map((line) => ({
+          id: line.id,
+          sortOrder: line.sortOrder,
+          trainable: line.trainable,
+        })),
+        groups: groups.map((group) => ({
+          id: parseInt(group.id),
+          groupName: group.groupName,
+          sortOrder: group.sortOrder,
+        })),
       })
-      const json = (await res.json()) as ResponseJson
-      if (json?.message != 'Course updated')
-        throw new Error(json.message ?? 'Course not updated')
 
       setLines(lines.filter((line) => !linesToDelete.includes(line.id)))
       setLinesToDelete([])

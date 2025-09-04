@@ -4,9 +4,9 @@ import Link from 'next/link'
 
 import { useState } from 'react'
 
+import { useCourseQueries } from '@hooks/use-course-queries'
 import type { Course, Move } from '@prisma/client'
 import * as Sentry from '@sentry/nextjs'
-import type { ResponseJson } from '~/app/api/responses'
 
 import Button from '~/app/components/_elements/button'
 import Heading from '~/app/components/_elements/heading'
@@ -28,31 +28,22 @@ export default function AddLines(props: { courseId: string }) {
   )
   const [lines, setLines] = useState<Line[]>([])
 
+  const { addLines, getCourseLines } = useCourseQueries()
+
   const uploadLines = async (group: string, lines: Line[]) => {
     try {
       const cleanLines = lines.map((line) => ({
-        groupName: line.tags[group],
-        colour: line.tags.Colour,
+        groupName: line.tags[group]!,
+        colour: line.tags.Colour!,
         moves: line.moves,
       }))
       const allGroups = [...new Set(cleanLines.map((line) => line.groupName))]
 
-      const resp = await fetch('/api/courses/create/addLines', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          courseId: props.courseId,
-          groupNames: allGroups,
-          lines: cleanLines,
-        }),
+      await addLines.mutateAsync({
+        courseId: props.courseId,
+        groupNames: allGroups,
+        lines: cleanLines,
       })
-
-      const json = (await resp.json()) as ResponseJson
-
-      if (json?.message != 'Lines added')
-        throw new Error(json?.message ?? 'Unknown error')
 
       trackEventOnClient('course_lines_added', {})
       setStep('success')
@@ -64,32 +55,27 @@ export default function AddLines(props: { courseId: string }) {
 
   const processLines = async (lines: Line[]) => {
     // Download existing data
-    const lineResp = await fetch('/api/courses/create/getLines', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ courseId: props.courseId }),
-    })
-    const lineJson = (await lineResp.json()) as ResponseJson
+    try {
+      const existingCourseData = (await getCourseLines.mutateAsync({
+        courseId: props.courseId,
+      })) as FullCourseData
 
-    if (lineJson?.message != 'Success')
-      throw new Error(lineJson?.message ?? 'Unknown error')
-
-    const existingCourseData = lineJson.data!.course as FullCourseData
-
-    // Now filter out any lines that already exist
-    setLines(
-      lines.filter(
-        (line) =>
-          !existingCourseData.lines.some(
-            (existingLine) =>
-              existingLine.moves.map((move) => move.move).join('') ===
-              line.moves.map((move) => move.notation).join(''),
-          ),
-      ),
-    )
-    setStep('groups')
+      // Now filter out any lines that already exist
+      setLines(
+        lines.filter(
+          (line) =>
+            !existingCourseData.lines.some(
+              (existingLine) =>
+                existingLine.moves.map((move) => move.move).join('') ===
+                line.moves.map((move) => move.notation).join(''),
+            ),
+        ),
+      )
+      setStep('groups')
+    } catch (e) {
+      Sentry.captureException(e)
+      setStep('error')
+    }
   }
 
   return (
