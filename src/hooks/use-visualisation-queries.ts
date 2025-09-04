@@ -31,7 +31,7 @@ export function useVisualisationQueries() {
 
   // --- Mutations ---
   const updateVisualisationStreak = useMutation({
-    mutationFn: async (data: { currentStreak: number }): Promise<void> => {
+    mutationFn: async (data: { currentStreak: number }) => {
       await fetch('/api/visualisation/streak', {
         method: 'POST',
         headers: {

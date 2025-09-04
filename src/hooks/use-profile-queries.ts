@@ -34,7 +34,7 @@ export function useProfileQueries() {
 
   // Update XP mutation
   const updateXp = useMutation({
-    mutationFn: async (data: XpUpdate): Promise<void> => {
+    mutationFn: async (data: XpUpdate) => {
       await fetch('/api/profile/xp', {
         method: 'PUT',
         headers: {
@@ -51,7 +51,7 @@ export function useProfileQueries() {
 
   // Update streak mutation
   const updateStreak = useMutation({
-    mutationFn: async (): Promise<void> => {
+    mutationFn: async () => {
       await fetch('/api/profile/streak', {
         method: 'POST',
         headers: {

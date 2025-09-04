@@ -39,31 +39,17 @@ export function useCourseQueries() {
   const queryClient = useQueryClient()
 
   // --- Data fetching ---
-  const coursesQuery = useQuery({
-    queryKey: ['courses'],
-    queryFn: async (): Promise<Course[]> => {
-      const response = await fetch('/api/courses')
-      const json = (await response.json()) as ResponseJson
-
-      return json.data?.courses as unknown as Course[]
-    },
-  })
-
-  // Factory function for individual course queries
-  const useCourseQuery = (courseId: string) =>
+  const useUserCoursesQuery = (type: 'active' | 'archived' = 'active') =>
     useQuery({
-      queryKey: ['course', courseId],
-      queryFn: async ({ queryKey }): Promise<Course> => {
-        const [, id] = queryKey
-        const response = await fetch(`/api/courses/${id}`)
+      queryKey: ['user-courses', type],
+      queryFn: async (): Promise<PrismaUserCourse[]> => {
+        const response = await fetch(`/api/courses/user/${type}`)
         const json = (await response.json()) as ResponseJson
 
-        return json.data?.course as unknown as Course
+        return (json.data?.courses as PrismaUserCourse[]) || []
       },
-      enabled: !!courseId,
     })
 
-  // Factory function for user course queries
   const useUserCourseQuery = (courseId: string) =>
     useQuery({
       queryKey: ['user-course', courseId],
@@ -84,7 +70,7 @@ export function useCourseQueries() {
 
   // --- Mutations ---
   const purchaseCourse = useMutation({
-    mutationFn: async ({ courseId }: { courseId: string }): Promise<void> => {
+    mutationFn: async ({ courseId }: { courseId: string }) => {
       await fetch('/api/ecomm/purchaseCourse', {
         method: 'POST',
         headers: {
@@ -94,7 +80,7 @@ export function useCourseQueries() {
       })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['courses'] })
+      queryClient.invalidateQueries({ queryKey: ['user-courses'] })
       queryClient.invalidateQueries({ queryKey: ['profile'] })
     },
   })
@@ -104,7 +90,7 @@ export function useCourseQueries() {
     mutationFn: async (data: {
       userCourseId: string
       fens: TrainingFen[]
-    }): Promise<void> => {
+    }) => {
       await fetch(`/api/courses/user/${data.userCourseId}/fens/upload`, {
         method: 'POST',
         headers: {
@@ -117,7 +103,7 @@ export function useCourseQueries() {
     },
     onSuccess: () => {
       // Invalidate course-related queries
-      queryClient.invalidateQueries({ queryKey: ['courses'] })
+      queryClient.invalidateQueries({ queryKey: ['user-courses'] })
       queryClient.invalidateQueries({ queryKey: ['profile'] })
     },
   })
@@ -129,7 +115,7 @@ export function useCourseQueries() {
       lineId: string
       lineCorrect: boolean
       revisionDate: Date
-    }): Promise<void> => {
+    }) => {
       await fetch(
         `/api/courses/user/${data.userCourseId}/stats/${data.lineId}`,
         {
@@ -146,7 +132,7 @@ export function useCourseQueries() {
     },
     onSuccess: () => {
       // Invalidate course-related queries
-      queryClient.invalidateQueries({ queryKey: ['courses'] })
+      queryClient.invalidateQueries({ queryKey: ['user-courses'] })
       queryClient.invalidateQueries({ queryKey: ['user-lines'] })
       queryClient.invalidateQueries({ queryKey: ['profile'] })
     },
@@ -156,9 +142,17 @@ export function useCourseQueries() {
   const createCourse = useMutation({
     mutationFn: async (data: {
       courseName: string
+      slug: string
       description: string
-      courseData: Record<string, unknown> // Generic object type instead of any
-    }): Promise<void> => {
+      groupNames: {
+        groupName: string
+      }[]
+      lines: {
+        groupName: string
+        colour: string
+        moves: CleanMove[]
+      }[]
+    }) => {
       await fetch('/api/courses/create/upload', {
         method: 'POST',
         headers: {
@@ -168,7 +162,7 @@ export function useCourseQueries() {
       })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['courses'] })
+      queryClient.invalidateQueries({ queryKey: ['user-courses'] })
     },
   })
 
@@ -179,11 +173,9 @@ export function useCourseQueries() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ courseName }),
+        body: JSON.stringify({ name: courseName }),
       })
-
-      const json = (await response.json()) as ResponseJson
-      return json.message === 'Course name is available'
+      return response.ok
     },
   })
 
@@ -191,32 +183,31 @@ export function useCourseQueries() {
     queryKey: ['can-create-course'],
     queryFn: async (): Promise<boolean> => {
       const response = await fetch('/api/courses/user/canCreate')
-      const json = (await response.json()) as ResponseJson
-      return response.ok && json.message === 'User can create course'
+      return response.ok
     },
   })
 
   // Course management mutations
   const deleteCourse = useMutation({
-    mutationFn: async (userCourseId: string): Promise<void> => {
+    mutationFn: async (userCourseId: string) => {
       await fetch(`/api/courses/user/${userCourseId}`, {
         method: 'DELETE',
       })
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-courses'] })
-      queryClient.invalidateQueries({ queryKey: ['courses'] })
+      queryClient.invalidateQueries({ queryKey: ['user-courses'] })
     },
   })
 
   const restoreCourse = useMutation({
-    mutationFn: async (courseId: string): Promise<void> => {
-      await fetch(`/api/courses/${courseId}/restore`, {
+    mutationFn: async (userCourseId: string) => {
+      await fetch(`/api/courses/user/${userCourseId}/restore`, {
         method: 'POST',
       })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['courses'] })
+      queryClient.invalidateQueries({ queryKey: ['user-courses'] })
       queryClient.invalidateQueries({ queryKey: ['user-courses'] })
       queryClient.invalidateQueries({ queryKey: ['archived-courses'] })
     },
@@ -239,7 +230,7 @@ export function useCourseQueries() {
         groupName: string
         sortOrder: number
       }>
-    }): Promise<void> => {
+    }) => {
       await fetch('/api/courses', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -247,7 +238,7 @@ export function useCourseQueries() {
       })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['courses'] })
+      queryClient.invalidateQueries({ queryKey: ['user-courses'] })
     },
   })
 
@@ -260,7 +251,7 @@ export function useCourseQueries() {
         colour: string
         moves: CleanMove[]
       }>
-    }): Promise<void> => {
+    }) => {
       await fetch('/api/courses/create/addLines', {
         method: 'POST',
         headers: {
@@ -270,7 +261,7 @@ export function useCourseQueries() {
       })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['courses'] })
+      queryClient.invalidateQueries({ queryKey: ['user-courses'] })
     },
   })
 
@@ -295,7 +286,7 @@ export function useCourseQueries() {
       courseId: string
       lineId: string
       minDate: string
-    }): Promise<void> => {
+    }) => {
       await fetch(
         `/api/courses/user/${data.courseId}/lines/markLineForReview`,
         {
@@ -316,7 +307,7 @@ export function useCourseQueries() {
     mutationFn: async (data: {
       courseId: string
       groupId: number
-    }): Promise<void> => {
+    }) => {
       await fetch(
         `/api/courses/user/${data.courseId}/lines/markGroupForReview`,
         {
@@ -334,7 +325,7 @@ export function useCourseQueries() {
   })
 
   const markAllForReview = useMutation({
-    mutationFn: async (data: { courseId: string }): Promise<void> => {
+    mutationFn: async (data: { courseId: string }) => {
       await fetch(`/api/courses/user/${data.courseId}/lines/markAllForReview`, {
         method: 'POST',
         headers: {
@@ -347,21 +338,7 @@ export function useCourseQueries() {
     },
   })
 
-  // Query for user courses
-  const useUserCoursesQuery = (type: 'active' | 'archived' = 'active') =>
-    useQuery({
-      queryKey: ['user-courses', type],
-      queryFn: async (): Promise<PrismaUserCourse[]> => {
-        const response = await fetch(`/api/courses/user/${type}`)
-        const json = (await response.json()) as ResponseJson
-
-        return (json.data?.courses as PrismaUserCourse[]) || []
-      },
-    })
-
   return {
-    coursesQuery,
-    useCourseQuery,
     useUserCourseQuery,
     purchaseCourse,
     uploadTrainedFens,

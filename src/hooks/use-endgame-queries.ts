@@ -55,7 +55,7 @@ export function useEndgameQueries() {
 
   // --- Mutations ---
   const updateEndgameStreak = useMutation({
-    mutationFn: async (data: { currentStreak: number }): Promise<void> => {
+    mutationFn: async (data: { currentStreak: number }) => {
       await fetch('/api/endgames/streak', {
         method: 'POST',
         headers: {

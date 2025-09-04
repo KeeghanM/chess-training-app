@@ -43,11 +43,10 @@ export default function CreateCourseForm() {
 
     try {
       const courseData = transformCourseData(group, lines, courseName)
-
+      
       await createCourse.mutateAsync({
-        courseName,
+        ...courseData,
         description,
-        courseData,
       })
 
       trackEventOnClient('create_course_success', {})
@@ -133,10 +132,10 @@ export default function CreateCourseForm() {
   )
 }
 
-export function transformCourseData(
+function transformCourseData(
   group: string,
   lines: Line[],
-  courseName?: string,
+  courseName: string,
 ) {
   // Extract the unique group names from the lines
   // into an array of objects with a groupName property
@@ -164,7 +163,7 @@ export function transformCourseData(
 
   return {
     courseName,
-    slug: courseName ? GenerateSlug(courseName) : undefined,
+    slug: GenerateSlug(courseName),
     groupNames,
     lines: processedLines,
   }

@@ -92,7 +92,7 @@ export function useTacticsQueries() {
 
   // --- Mutations ---
   const createRound = useMutation({
-    mutationFn: async (data: CreateRoundData): Promise<void> => {
+    mutationFn: async (data: CreateRoundData) => {
       await fetch('/api/tactics/createRound', {
         method: 'POST',
         headers: {
@@ -110,7 +110,7 @@ export function useTacticsQueries() {
   })
 
   const increaseCorrect = useMutation({
-    mutationFn: async (data: UpdateStatsData): Promise<void> => {
+    mutationFn: async (data: UpdateStatsData) => {
       const response = await fetch('/api/tactics/stats/increaseCorrect', {
         method: 'POST',
         headers: {
@@ -131,7 +131,7 @@ export function useTacticsQueries() {
   })
 
   const increaseIncorrect = useMutation({
-    mutationFn: async (data: { roundId: string }): Promise<void> => {
+    mutationFn: async (data: { roundId: string }) => {
       const response = await fetch('/api/tactics/stats/increaseIncorrect', {
         method: 'POST',
         headers: {
@@ -152,7 +152,7 @@ export function useTacticsQueries() {
   })
 
   const increaseTimeTaken = useMutation({
-    mutationFn: async (data: UpdateTimeData): Promise<void> => {
+    mutationFn: async (data: UpdateTimeData) => {
       const response = await fetch('/api/tactics/stats/increaseTimeTaken', {
         method: 'POST',
         headers: {
@@ -220,7 +220,7 @@ export function useTacticsQueries() {
   })
 
   const archiveTactic = useMutation({
-    mutationFn: async ({ setId }: { setId: string }): Promise<void> => {
+    mutationFn: async ({ setId }: { setId: string }) => {
       await fetch('/api/tactics/archive', {
         method: 'POST',
         headers: {
@@ -235,7 +235,7 @@ export function useTacticsQueries() {
   })
 
   const deleteTactic = useMutation({
-    mutationFn: async ({ setId }: { setId: string }): Promise<void> => {
+    mutationFn: async ({ setId }: { setId: string }) => {
       await fetch('/api/tactics/delete', {
         method: 'POST',
         headers: {
@@ -250,7 +250,7 @@ export function useTacticsQueries() {
   })
 
   const resetTacticProgress = useMutation({
-    mutationFn: async ({ setId }: { setId: string }): Promise<void> => {
+    mutationFn: async ({ setId }: { setId: string }) => {
       await fetch('/api/tactics/resetProgress', {
         method: 'POST',
         headers: {
@@ -271,7 +271,7 @@ export function useTacticsQueries() {
     }: {
       setId: string
       name: string
-    }): Promise<void> => {
+    }) => {
       await fetch('/api/tactics/update', {
         method: 'POST',
         headers: {
@@ -286,7 +286,7 @@ export function useTacticsQueries() {
   })
 
   const restoreTactic = useMutation({
-    mutationFn: async ({ setId }: { setId: string }): Promise<void> => {
+    mutationFn: async ({ setId }: { setId: string }) => {
       await fetch(`/api/tactics/user/${setId}/restore`, {
         method: 'POST',
       })

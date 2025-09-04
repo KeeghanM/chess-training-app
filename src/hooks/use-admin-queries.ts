@@ -76,7 +76,7 @@ export function useAdminQueries() {
 
   // --- Mutations ---
   const createBadge = useMutation({
-    mutationFn: async (newBadge: Omit<Badge, 'id'>): Promise<void> => {
+    mutationFn: async (newBadge: Omit<Badge, 'id'>) => {
       await fetch('/api/admin/badges', {
         method: 'POST',
         headers: {
@@ -91,7 +91,7 @@ export function useAdminQueries() {
   })
 
   const updateBadge = useMutation({
-    mutationFn: async (updatedBadge: Badge): Promise<void> => {
+    mutationFn: async (updatedBadge: Badge) => {
       await fetch(`/api/admin/badges/${updatedBadge.id}`, {
         method: 'PUT',
         headers: {
@@ -106,7 +106,7 @@ export function useAdminQueries() {
   })
 
   const updateBadgeOrder = useMutation({
-    mutationFn: async (badges: Badge[]): Promise<void> => {
+    mutationFn: async (badges: Badge[]) => {
       await fetch('/api/admin/badges/order', {
         method: 'PUT',
         headers: {
@@ -121,7 +121,7 @@ export function useAdminQueries() {
   })
 
   const createCustomPuzzle = useMutation({
-    mutationFn: async (puzzleData: Record<string, unknown>): Promise<void> => {
+    mutationFn: async (puzzleData: Record<string, unknown>) => {
       await fetch('/api/admin/puzzles/create', {
         method: 'POST',
         headers: {

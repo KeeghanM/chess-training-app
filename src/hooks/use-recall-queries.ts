@@ -19,7 +19,7 @@ export function useRecallQueries() {
 
   // --- Mutations ---
   const updateRecallStreak = useMutation({
-    mutationFn: async (data: { currentStreak: number }): Promise<void> => {
+    mutationFn: async (data: { currentStreak: number }) => {
       await fetch('/api/recall/streak', {
         method: 'POST',
         headers: {
