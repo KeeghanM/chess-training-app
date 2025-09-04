@@ -35,6 +35,7 @@ export async function POST(request: Request) {
       }
 
       const successUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/subscription-success?kbAccountId=${kbAccount.accountId}&sessionId={CHECKOUT_SESSION_ID}`
+
       const sessionId = await killBillClient.createSession(
         kbAccount.accountId,
         successUrl,
