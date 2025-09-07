@@ -31,7 +31,7 @@
     "@radix-ui/react-tabs": "^1.1.13",
     "@sentry/nextjs": "^8.55.0",
     "@sentry/react": "^8.34.0",
-    "@t3-oss/env-nextjs": "^0.12.0",
+    "@t3-oss/env-nextjs": "^0.13.8",
     "@tanstack/react-query": "^5.85.9",
     "@tippyjs/react": "^4.2.6",
     "@uidotdev/usehooks": "^2.4.1",
