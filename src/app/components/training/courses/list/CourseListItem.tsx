@@ -9,6 +9,7 @@ import type { Course, UserCourse } from '@prisma/client'
 import * as Sentry from '@sentry/nextjs'
 import Tippy from '@tippyjs/react'
 import type { ResponseJson } from '~/app/api/responses'
+import { PrismaUserCourse } from '~/hooks/use-course-queries'
 
 import Button from '~/app/components/_elements/button'
 import StyledLink from '~/app/components/_elements/styledLink'
@@ -19,7 +20,6 @@ import TimeSince from '~/app/components/general/TimeSince'
 import trackEventOnClient from '~/app/_util/trackEventOnClient'
 
 import CourseSettings from './CourseSettings'
-import type { PrismaUserCourse } from './CoursesList'
 
 // TODO: Add revision schedule viewer
 
