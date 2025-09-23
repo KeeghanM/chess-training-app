@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import globalAxios from 'axios'
 import * as killbill from 'killbill'
 
@@ -345,10 +346,7 @@ class KillBillClient {
   }
 
   // Cancel specific add-on subscription
-  async cancelSubscriptionByType(
-    userExternalKey: string,
-    planId: TPlanId,
-  ) {
+  async cancelSubscriptionByType(userExternalKey: string, planId: TPlanId) {
     const account = await this.findAccountByExternalKey(userExternalKey)
     if (!account) {
       throw new Error('Account not found')

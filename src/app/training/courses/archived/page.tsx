@@ -11,7 +11,7 @@ export const metadata = {
 }
 
 export default async function ArchivedCoursesPage() {
-  const { user, isPremium } = await getUserServer()
+  const { user } = await getUserServer()
 
   if (!user) redirect('/auth/signin')
   return (
@@ -25,7 +25,7 @@ export default async function ArchivedCoursesPage() {
       />
       <div className="dark:bg-slate-800">
         <Container>
-          <ArchivedList hasUnlimitedCourses={isPremium} />
+          <ArchivedList />
         </Container>
       </div>
     </>
