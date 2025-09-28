@@ -311,13 +311,6 @@ export default function TacticsTrainer(props: {
   })
 
   const exit = async () => {
-    const newTime = Date.now()
-    increaseTimeTaken.mutate({
-      roundId: currentRound.id,
-      timeTaken: (newTime - startTime) / 1000,
-      setId: props.set.id,
-    })
-    setStartTime(newTime)
     queryClient.invalidateQueries({ queryKey: ['tactics', 'sets'] })
     trackEventOnClient('tactics_set_closed', {})
     router.push('/training/tactics/list')
