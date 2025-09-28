@@ -79,7 +79,7 @@ export default function TacticsTrainer(props: {
   // Setup state for the game and training
   const [readyForInput, setReadyForInput] = useState(false)
   const [puzzleFinished, setPuzzleFinished] = useState(false)
-  const [startTime] = useState(Date.now())
+  const [startTime, setStartTime] = useState(Date.now())
   const [sessionTimeStarted] = useState(new Date())
   const [puzzleStatus, setPuzzleStatus] = useState<
     'none' | 'correct' | 'incorrect'
@@ -181,11 +181,14 @@ export default function TacticsTrainer(props: {
       setPuzzleFinished(true)
       setXpCounter(xpCounter + 1)
 
+      const newTime = Date.now()
       increaseTimeTaken.mutate({
         roundId: currentRound.id,
-        timeTaken: (Date.now() - startTime) / 1000,
+        timeTaken: (newTime - startTime) / 1000,
         setId: props.set.id,
       })
+      setStartTime(newTime)
+
       increaseCorrect.mutate({
         roundId: currentRound.id,
         currentStreak: currentStreak + 1,
@@ -252,7 +255,7 @@ export default function TacticsTrainer(props: {
         ...currentRound,
         incorrect: currentRound.incorrect + 1,
       })
-      
+
       return false
     }
     setPosition(game.fen())
@@ -308,11 +311,13 @@ export default function TacticsTrainer(props: {
   })
 
   const exit = async () => {
+    const newTime = Date.now()
     increaseTimeTaken.mutate({
       roundId: currentRound.id,
-      timeTaken: (Date.now() - startTime) / 1000,
+      timeTaken: (newTime - startTime) / 1000,
       setId: props.set.id,
     })
+    setStartTime(newTime)
     queryClient.invalidateQueries({ queryKey: ['tactics', 'sets'] })
     trackEventOnClient('tactics_set_closed', {})
     router.push('/training/tactics/list')
@@ -372,16 +377,18 @@ export default function TacticsTrainer(props: {
 
   return (
     <div className="relative border border-gray-300 dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)]">
-      {// Check if any queries are loading
-      (puzzleQuery.isFetching ||
-        increaseCorrect.isPending ||
-        increaseIncorrect.isPending ||
-        increaseTimeTaken.isPending ||
-        createRound.isPending) && (
-        <div className="absolute inset-0 z-50 grid place-items-center bg-[rgba(0,0,0,0.3)]">
-          <Spinner />
-        </div>
-      )}
+      {
+        // Check if any queries are loading
+        (puzzleQuery.isFetching ||
+          increaseCorrect.isPending ||
+          increaseIncorrect.isPending ||
+          increaseTimeTaken.isPending ||
+          createRound.isPending) && (
+          <div className="absolute inset-0 z-50 grid place-items-center bg-[rgba(0,0,0,0.3)]">
+            <Spinner />
+          </div>
+        )
+      }
       <div className="flex flex-wrap items-center justify-between px-2 py-1 border-b border-gray-300 dark:border-slate-600 font-bold text-orange-500">
         <p className="text-lg font-bold">{props.set.name}</p>
         <div className="flex items-center gap-2 text-black dark:text-white">
