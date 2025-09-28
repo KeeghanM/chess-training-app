@@ -181,13 +181,11 @@ export default function TacticsTrainer(props: {
       setPuzzleFinished(true)
       setXpCounter(xpCounter + 1)
 
-      const newTime = Date.now()
       increaseTimeTaken.mutate({
         roundId: currentRound.id,
-        timeTaken: (newTime - startTime) / 1000,
+        timeTaken: (Date.now() - startTime) / 1000,
         setId: props.set.id,
       })
-      setStartTime(newTime)
 
       increaseCorrect.mutate({
         roundId: currentRound.id,
@@ -365,18 +363,30 @@ export default function TacticsTrainer(props: {
     }
   }, [puzzleFinished, puzzleStatus])
 
+  // Increase timer whenever puzzle is finished
+  useEffect(() => {
+    // Performance API is more accurate if available
+    const newTime =
+      typeof performance !== 'undefined' ? performance.now() : Date.now()
+    if (puzzleFinished) {
+      increaseTimeTaken.mutate({
+        roundId: currentRound.id,
+        timeTaken: (newTime - startTime) / 1000,
+        setId: props.set.id,
+      })
+    } else {
+      setStartTime(newTime)
+    }
+  }, [puzzleFinished])
+
   // Last check to ensure we have a user
   if (!user) return null
 
   return (
     <div className="relative border border-gray-300 dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)]">
       {
-        // Check if any queries are loading
-        (puzzleQuery.isFetching ||
-          increaseCorrect.isPending ||
-          increaseIncorrect.isPending ||
-          increaseTimeTaken.isPending ||
-          createRound.isPending) && (
+        // While we are loading a new puzzle or creating a new round, we don't want the user to interact so we show a full overlay spinner
+        (puzzleQuery.isFetching || createRound.isPending) && (
           <div className="absolute inset-0 z-50 grid place-items-center bg-[rgba(0,0,0,0.3)]">
             <Spinner />
           </div>
