@@ -365,9 +365,7 @@ export default function TacticsTrainer(props: {
 
   // Increase timer whenever puzzle is finished
   useEffect(() => {
-    // Performance API is more accurate if available
-    const newTime =
-      typeof performance !== 'undefined' ? performance.now() : Date.now()
+    const newTime = Date.now()
     if (puzzleFinished) {
       increaseTimeTaken.mutate({
         roundId: currentRound.id,
