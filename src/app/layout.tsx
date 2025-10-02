@@ -63,6 +63,13 @@ export default async function RootLayout({
         if (d.head) d.head.appendChild(s);
       })(document, window, 'BrevoConversations');`}
       </Script>
+      <Script
+        nitro-exclude
+        type="text/javascript"
+        id="sa-dynamic-optimization"
+        data-uuid="49d40f8d-1f37-4d5d-96c5-0a3506278f1c"
+        src="data:text/javascript;base64,dmFyIHNjcmlwdCA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoInNjcmlwdCIpO3NjcmlwdC5zZXRBdHRyaWJ1dGUoIm5vd3Byb2NrZXQiLCAiIik7c2NyaXB0LnNldEF0dHJpYnV0ZSgibml0cm8tZXhjbHVkZSIsICIiKTtzY3JpcHQuc3JjID0gImh0dHBzOi8vZGFzaGJvYXJkLnNlYXJjaGF0bGFzLmNvbS9zY3JpcHRzL2R5bmFtaWNfb3B0aW1pemF0aW9uLmpzIjtzY3JpcHQuZGF0YXNldC51dWlkID0gIjQ5ZDQwZjhkLTFmMzctNGQ1ZC05NmM1LTBhMzUwNjI3OGYxYyI7c2NyaXB0LmlkID0gInNhLWR5bmFtaWMtb3B0aW1pemF0aW9uLWxvYWRlciI7ZG9jdW1lbnQuaGVhZC5hcHBlbmRDaGlsZChzY3JpcHQpOw=="
+      />
       <html lang="en" suppressHydrationWarning={true}>
         <Suspense>
           <PostHogPageview />
