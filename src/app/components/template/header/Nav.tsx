@@ -6,11 +6,15 @@ import Link from 'next/link'
 import { useState } from 'react'
 
 import { LogoutLink } from '@kinde-oss/kinde-auth-nextjs'
-import Tippy from '@tippyjs/react'
-import 'tippy.js/dist/tippy.css'
 
 import CalculateXpRank from '~/app/_util/CalculateXpRank'
 import type { KindeUser } from '~/app/_util/getUserServer'
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '../../_elements/tooltip'
 
 export default function Nav(props: {
   user: KindeUser | null
@@ -95,32 +99,35 @@ export default function Nav(props: {
         <div className="relative flex items-center space-x-3 lg:order-2 lg:space-x-0">
           {user && (
             <>
-              <Tippy content="Your Profile">
-                <button
-                  type="button"
-                  className="flex overflow-hidden rounded-full text-sm focus:ring-4 focus:ring-gray-600 lg:me-0"
-                  onClick={() => setUserOpen(!userOpen)}
-                >
-                  <span className="sr-only">Open user menu</span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="40"
-                    height="40"
-                    viewBox="0 0 24 24"
+              <Tooltip>
+                <TooltipTrigger>
+                  <button
+                    type="button"
+                    className="flex overflow-hidden rounded-full text-sm focus:ring-4 focus:ring-gray-600 lg:me-0"
+                    onClick={() => setUserOpen(!userOpen)}
                   >
-                    <g
-                      fill="none"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="1.5"
+                    <span className="sr-only">Open user menu</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="40"
+                      height="40"
+                      viewBox="0 0 24 24"
                     >
-                      <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10s10-4.477 10-10S17.523 2 12 2" />
-                      <path d="M4.271 18.346S6.5 15.5 12 15.5s7.73 2.846 7.73 2.846M12 12a3 3 0 1 0 0-6a3 3 0 0 0 0 6" />
-                    </g>
-                  </svg>
-                </button>
-              </Tippy>
+                      <g
+                        fill="none"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="1.5"
+                      >
+                        <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10s10-4.477 10-10S17.523 2 12 2" />
+                        <path d="M4.271 18.346S6.5 15.5 12 15.5s7.73 2.846 7.73 2.846M12 12a3 3 0 1 0 0-6a3 3 0 0 0 0 6" />
+                      </g>
+                    </svg>
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>Your Profile</TooltipContent>
+              </Tooltip>
               {userOpen && (
                 <>
                   <div

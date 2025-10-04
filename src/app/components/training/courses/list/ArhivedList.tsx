@@ -3,7 +3,6 @@
 import Link from 'next/link'
 
 import { useCourseQueries } from '@hooks/use-course-queries'
-import 'tippy.js/dist/tippy.css'
 
 import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
@@ -34,7 +33,7 @@ export default function ArchivedList() {
         </Link>
       </div>
       {loading ? (
-        <div className="relative dark:text-white w-full h-16 flex items-center justify-center">
+        <div className="relative  w-full h-16 flex items-center justify-center">
           <div className="absolute inset-0 bg-gray-500 opacity-30"></div>
           <p className="flex items-center gap-4">
             Loading... <Spinner />
@@ -44,14 +43,14 @@ export default function ArchivedList() {
         <div
           className={
             'flex flex-col gap-4 ' +
-            (courses.length == 0 ? ' bg-gray-100 dark:bg-slate-900' : '')
+            (courses.length == 0 ? ' bg-gray-100 ' : '')
           }
         >
           {courses.length > 0 ? (
             courses.map((course, index) => (
               <div
                 key={index}
-                className="flex relative flex-col items-center gap-4 bg-gray-100 p-2 md:px-6  dark:bg-slate-900 dark:text-white md:flex-row md:justify-between"
+                className="flex relative flex-col items-center gap-4 bg-gray-100 p-2 md:px-6    md:flex-row md:justify-between"
               >
                 <p>{course.course.courseName}</p>
 
@@ -72,7 +71,7 @@ export default function ArchivedList() {
             ))
           ) : (
             <div className="p-2">
-              <p className="text-gray-500  dark:text-white">
+              <p className="text-gray-500  ">
                 You don't have any archived courses.
               </p>
             </div>

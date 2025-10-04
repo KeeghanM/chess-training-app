@@ -11,11 +11,12 @@ import Heading from '~/app/components/_elements/heading'
 import StyledLink from '~/app/components/_elements/styledLink'
 import GetCuratedSet from '~/app/components/ecomm/GetCuratedSet'
 
-export default async function CuratedSetPage({
-  params,
-}: {
-  params: { slug: string }
-}) {
+export default async function CuratedSetPage(
+  props: {
+    params: Promise<{ slug: string }>
+  }
+) {
+  const params = await props.params;
   const { slug } = params
   const session = getKindeServerSession()
   const user = await session.getUser()

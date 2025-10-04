@@ -43,7 +43,7 @@ export default function CreateCourseForm() {
 
     try {
       const courseData = transformCourseData(group, lines, courseName)
-      
+
       await createCourse.mutateAsync({
         ...courseData,
         description,
@@ -66,9 +66,9 @@ export default function CreateCourseForm() {
   }
 
   return (
-    <div className="dark:bg-slate-800">
+    <div className="">
       <Container>
-        <div className="bg-gray-100 dark:bg-slate-900 p-2 md:p-4">
+        <div className="bg-gray-100  p-2 md:p-4">
           {courseName && (
             <Heading as={'h2'} color="text-orange-500">
               {courseName}
@@ -132,11 +132,7 @@ export default function CreateCourseForm() {
   )
 }
 
-function transformCourseData(
-  group: string,
-  lines: Line[],
-  courseName: string,
-) {
+function transformCourseData(group: string, lines: Line[], courseName: string) {
   // Extract the unique group names from the lines
   // into an array of objects with a groupName property
   const groupNames = lines.reduce((acc: { groupName: string }[], line) => {

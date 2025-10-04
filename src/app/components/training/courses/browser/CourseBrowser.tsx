@@ -43,7 +43,7 @@ export default function CourseBrowser(props: CourseBrowserProps) {
 
   return (
     <div className="flex flex-col gap-1 md:flex-row">
-      <div className="border lg:border-4 border-purple-700 bg-purple-100 dark:bg-slate-700 text-black dark:text-white p-2">
+      <div className="border lg:border-4 border-purple-700 bg-purple-100  text-black  p-2">
         <div className="flex flex-col gap-2 lg:max-w-500px overflow-y-auto max-h-full">
           {groups
             .filter((group) =>

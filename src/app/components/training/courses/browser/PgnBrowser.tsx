@@ -44,7 +44,7 @@ export default function PgnBrowser(props: PgnBrowserProps) {
           <span>
             {move.notation}
             {!mainLine && move.comment ? (
-              <span className="italic text-xs text-slate-500 dark:text-gray-300">
+              <span className="italic text-xs text-slate-500 ">
                 {move.comment}
               </span>
             ) : (
@@ -77,7 +77,7 @@ export default function PgnBrowser(props: PgnBrowserProps) {
 
   const Variation = (props: { moves: Move[] }) => {
     return (
-      <div className="col-span-2 flex flex-row items-center flex-wrap gap-0.5 text-xs bg-purple-100 text-black dark:text-white dark:bg-slate-600 border border-slate-800 px-2 md:px-4 py-1">
+      <div className="col-span-2 flex flex-row items-center flex-wrap gap-0.5 text-xs bg-purple-100 text-black   border border-slate-800 px-2 md:px-4 py-1">
         {props.moves.map((move, i) => (
           <Move
             key={
@@ -92,7 +92,7 @@ export default function PgnBrowser(props: PgnBrowserProps) {
   }
 
   return (
-    <div className="grid grid-cols-2 auto-rows-min w-full text-sm h-full border lg:border-4 border-purple-700 bg-purple-700 bg-opacity-20 text-black dark:text-white flex-1 max-h-[70vh] overflow-y-auto">
+    <div className="grid grid-cols-2 auto-rows-min w-full text-sm h-full border lg:border-4 border-purple-700 bg-purple-700 bg-opacity-20 text-black  flex-1 max-h-[70vh] overflow-y-auto">
       {pgn.moves.map((move) => (
         <Move
           key={move.number.toString() + move.colour ? 'w' : 'b' + move.notation}

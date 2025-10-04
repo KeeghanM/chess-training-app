@@ -48,7 +48,5 @@ export default async function getPuzzleById(puzzleid: string) {
   } catch (e) {
     Sentry.captureException(e)
     return undefined
-  } finally {
-    await prisma.$disconnect()
   }
 }

@@ -9,11 +9,10 @@ import Container from '~/app/components/_elements/container'
 import PageHeader from '~/app/components/_layouts/pageHeader'
 import CourseAdminPanel from '~/app/components/training/courses/admin/AdminPanel'
 
-export default async function CourseAdminPage({
-  params,
-}: {
-  params: { courseId: string }
+export default async function CourseAdminPage(props: {
+  params: Promise<{ courseId: string }>
 }) {
+  const params = await props.params
   const { getUser } = getKindeServerSession()
   const user = await getUser()
   if (!user) redirect('/auth/signin')
@@ -69,7 +68,7 @@ export default async function CourseAdminPage({
           alt: 'Wooden chess pieces on a chess board',
         }}
       />
-      <div className="dark:bg-slate-800">
+      <div className="">
         <Container>
           <CourseAdminPanel course={course} />
         </Container>

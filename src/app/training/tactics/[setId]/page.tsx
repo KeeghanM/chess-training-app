@@ -5,16 +5,15 @@ import { prisma } from '~/server/db'
 import * as Sentry from '@sentry/nextjs'
 
 import Container from '~/app/components/_elements/container'
-import TacticsTrainer from '~/app/components/training/tactics/TacticsTrainer'
 import type { PrismaTacticsSetWithPuzzles } from '~/app/components/training/tactics/TacticsTrainer'
+import TacticsTrainer from '~/app/components/training/tactics/TacticsTrainer'
 
 import { getUserServer } from '~/app/_util/getUserServer'
 
-export default async function TacticsTrainPage({
-  params,
-}: {
-  params: { setId: string }
+export default async function TacticsTrainPage(props: {
+  params: Promise<{ setId: string }>
 }) {
+  const params = await props.params
   const { user, profile } = await getUserServer()
   if (!user) redirect('/auth/signin')
   let set: PrismaTacticsSetWithPuzzles | null = null
@@ -42,8 +41,6 @@ export default async function TacticsTrainPage({
   } catch (e) {
     Sentry.captureException(e)
     return redirect('/training/tactics/list')
-  } finally {
-    await prisma.$disconnect()
   }
 
   if (!set) {
@@ -55,7 +52,7 @@ export default async function TacticsTrainPage({
   }
 
   return (
-    <div className="dark:bg-slate-800">
+    <div className="">
       <Container>
         <TacticsTrainer set={set} />
       </Container>

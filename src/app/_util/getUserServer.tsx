@@ -100,7 +100,5 @@ export async function createUserProfile(user: KindeUser) {
     })
   } catch (e) {
     Sentry.captureException(e)
-  } finally {
-    await prisma.$disconnect()
   }
 }

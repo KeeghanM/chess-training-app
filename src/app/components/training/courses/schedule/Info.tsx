@@ -5,7 +5,7 @@ import { useState } from 'react'
 export default function Info() {
   const [open, setOpen] = useState(false)
   return (
-    <div className="flex flex-col gap-1 dark:text-white mb-4">
+    <div className="flex flex-col gap-1  mb-4">
       {open ? (
         <div className="flex flex-col gap-4">
           <p>
@@ -31,7 +31,7 @@ export default function Info() {
           </p>
           <div>
             <button
-              className="text-purple-700 dark:text-purple-300 underline hover:no-underline"
+              className="text-purple-700  underline hover:no-underline"
               onClick={() => setOpen(false)}
             >
               Read Less
@@ -47,7 +47,7 @@ export default function Info() {
           </p>
           <div>
             <button
-              className="text-purple-700 dark:text-purple-300 underline hover:no-underline"
+              className="text-purple-700  underline hover:no-underline"
               onClick={() => setOpen(true)}
             >
               Read More

@@ -3,11 +3,15 @@
 import { useContext, useState } from 'react'
 
 import { useMutation } from '@tanstack/react-query'
-import Tippy from '@tippyjs/react'
 import { Chess } from 'chess.js'
 import type { ResponseJson } from '~/app/api/responses'
 
 import Button from '../../_elements/button'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '../../_elements/tooltip'
 import Spinner from '../../general/Spinner'
 import ChessBoard from '../../training/ChessBoard'
 import {
@@ -120,7 +124,7 @@ export default function PuzzleDisplay() {
       {puzzle && (
         <div className="flex flex-row">
           {/* PGN Display */}
-          <div className="flex flex-1 h-full flex-wrap content-start gap-1 border lg:border-4 border-purple-700 p-2 bg-purple-700 bg-opacity-20 text-black dark:text-white">
+          <div className="flex flex-1 h-full flex-wrap content-start gap-1 border lg:border-4 border-purple-700 p-2 bg-purple-700 bg-opacity-20 text-black ">
             <button
               className="h-max max-h-fit bg-none p-1 hover:bg-purple-800 hover:text-white"
               onClick={() => {
@@ -133,7 +137,7 @@ export default function PuzzleDisplay() {
           </div>
 
           {mode === 'list' && (
-            <div className="flex flex-1 flex-col gap-2 border lg:border-4 border-purple-700 p-2 bg-purple-700 bg-opacity-20 text-black dark:text-white">
+            <div className="flex flex-1 flex-col gap-2 border lg:border-4 border-purple-700 p-2 bg-purple-700 bg-opacity-20 text-black ">
               <>
                 {/* Puzzle Details Editor */}
                 <div>
@@ -146,9 +150,15 @@ export default function PuzzleDisplay() {
                   />
                 </div>
                 <div>
-                  <Tippy content="This is the comment that will be displayed to the user if they get it wrong">
-                    <label htmlFor="rating">Puzzle Comment</label>
-                  </Tippy>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <label htmlFor="rating">Puzzle Comment</label>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      This is the comment that will be displayed to the user if
+                      they get it wrong
+                    </TooltipContent>
+                  </Tooltip>
                   <textarea
                     className="w-full border border-gray-300 px-4 py-2 bg-gray-100 text-black"
                     value={comment}

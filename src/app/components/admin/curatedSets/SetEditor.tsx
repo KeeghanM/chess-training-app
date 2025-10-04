@@ -56,7 +56,7 @@ export default function SetEditor() {
   })
 
   return (
-    <div className="flex flex-1 flex-col gap-2 border lg:border-4 border-purple-700 p-2 bg-purple-700 bg-opacity-20 max-h-[70vh] text-black dark:text-white">
+    <div className="flex flex-1 flex-col gap-2 border lg:border-4 border-purple-700 p-2 bg-purple-700 bg-opacity-20 max-h-[70vh] text-black ">
       <div className="flex max-h-[60vh] flex-col gap-2 overflow-y-auto">
         <div className="">
           <label htmlFor="name">Name</label>

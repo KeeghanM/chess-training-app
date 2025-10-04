@@ -1,6 +1,6 @@
 'use client'
 
-import Tippy from '@tippyjs/react'
+import { Tooltip, TooltipContent } from '~/app/components/_elements/tooltip'
 
 import type { UserLineWithData } from './CourseBrowser'
 
@@ -47,7 +47,7 @@ export default function GroupListItem(props: {
   return (
     <div
       className={
-        'flex flex-col gap-0 border-2 dark:text-white dark:border-slate-600 cursor-pointer ' +
+        'flex flex-col gap-0 border-2   cursor-pointer ' +
         (open
           ? 'bg-orange-500 bg-opacity-10 border-orange-500'
           : 'bg-purple-200 border-purple-700 hover:border-orange-500 hover:bg-orange-500 hover:bg-opacity-10')
@@ -71,20 +71,10 @@ export default function GroupListItem(props: {
           </svg>
         </div>
         <div className="flex items-center gap-2">
-          <p className="text-black dark:text-white">
+          <p className="text-black ">
             {lines.length - linesUnseen}/{lines.length}
           </p>
-          <Tippy
-            className="text-base"
-            content={
-              <div className="flex flex-col gap-2">
-                <p className="text-gray-300">{linesUnseen} lines unseen</p>
-                <p className="text-green-500">{linesLearned} lines learned</p>
-                <p className="text-blue-600">{linesLearning} lines learning</p>
-                <p className="text-red-500">{linesHard} lines hard</p>
-              </div>
-            }
-          >
+          <Tooltip>
             <div
               className="grid h-16 w-16 place-items-center rounded-full"
               style={{
@@ -93,7 +83,15 @@ export default function GroupListItem(props: {
             >
               <div className="h-12 w-12 rounded-full bg-purple-700"></div>
             </div>
-          </Tippy>
+            <TooltipContent className="text-base">
+              <div className="flex flex-col gap-2">
+                <p className="text-gray-300">{linesUnseen} lines unseen</p>
+                <p className="text-green-500">{linesLearned} lines learned</p>
+                <p className="text-blue-600">{linesLearning} lines learning</p>
+                <p className="text-red-500">{linesHard} lines hard</p>
+              </div>
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
     </div>

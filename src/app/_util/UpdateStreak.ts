@@ -61,7 +61,5 @@ export async function UpdateStreak(userId: string) {
     return
   } catch (e) {
     Sentry.captureException(e)
-  } finally {
-    await prisma.$disconnect()
   }
 }

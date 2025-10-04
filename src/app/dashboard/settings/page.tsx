@@ -12,7 +12,7 @@ export default async function AccountSettingsPage() {
   if (!profile) redirect('/dashboard/new')
 
   return (
-    <div className="dark:bg-slate-800">
+    <div className="">
       <Container>
         <div className="space-y-8">
           <AccountForm profile={profile} />

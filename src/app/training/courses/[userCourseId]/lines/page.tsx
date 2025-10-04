@@ -10,11 +10,10 @@ import Button from '~/app/components/_elements/button'
 import Heading from '~/app/components/_elements/heading'
 import CourseBrowser from '~/app/components/training/courses/browser/CourseBrowser'
 
-export default async function CourseTrainPage({
-  params,
-}: {
-  params: { userCourseId: string }
+export default async function CourseTrainPage(props: {
+  params: Promise<{ userCourseId: string }>
 }) {
+  const params = await props.params
   const { getUser } = getKindeServerSession()
   const user = await getUser()
   if (!user) redirect('/auth/signin')
@@ -81,7 +80,7 @@ export default async function CourseTrainPage({
 
   return (
     <>
-      <div className="dark:bg-slate-800 p-2 md:p-4 lg:px-6">
+      <div className=" p-2 md:p-4 lg:px-6">
         <Heading as="h1">
           {userCourse.course.courseName}
           <Link className="ml-2" href={`/training/courses/`}>

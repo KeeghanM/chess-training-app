@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 
 import { Chess } from 'chess.js'
-import type { Arrow } from 'react-chessboard/dist/chessboard/types'
+import type { Arrow } from 'react-chessboard'
 
 import type { Move } from '~/app/_util/BuildPgn'
 import BuildPGN from '~/app/_util/BuildPgn'

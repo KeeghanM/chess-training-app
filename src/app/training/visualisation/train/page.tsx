@@ -19,7 +19,7 @@ export default async function VisualisationTrainPage() {
           alt: 'Strategic chess endgame setup on a chess board',
         }}
       />
-      <div className="bg-gray-100 dark:bg-slate-800">
+      <div className="bg-gray-100 ">
         <Container>
           <VisualisationTrainer />
         </Container>

@@ -4,7 +4,6 @@ import { createContext, useEffect, useState } from 'react'
 
 import type { CuratedSet } from '@prisma/client'
 import 'react-toggle/style.css'
-import 'tippy.js/dist/tippy.css'
 
 import Button from '~/app/components/_elements/button'
 import Heading from '~/app/components/_elements/heading'

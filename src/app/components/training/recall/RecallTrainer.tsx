@@ -6,20 +6,23 @@ import { useProfileQueries } from '@hooks/use-profile-queries'
 import { useRecallQueries } from '@hooks/use-recall-queries'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import { useAppStore } from '@stores/app-store'
-import Tippy from '@tippyjs/react'
 import { useWindowSize } from '@uidotdev/usehooks'
 import trackEventOnClient from '@utils/trackEventOnClient'
 import type { Color, PieceSymbol, Square } from 'chess.js'
 import { Chess, SQUARES } from 'chess.js'
-import { Chessboard } from 'react-chessboard'
+import { Chessboard, SquareHandlerArgs } from 'react-chessboard'
 import 'react-toggle/style.css'
-import 'tippy.js/dist/tippy.css'
 import useSound from 'use-sound'
 
 import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
 import XpTracker from '@components/general/XpTracker'
-import ThemeSwitch from '@components/template/header/ThemeSwitch'
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '../../_elements/tooltip'
 
 // TODO: On multiple recalls, show a temporary green/red border on square clicked for feedback
 // TODO: On multiple recalls, have the piece to select flash on change to alert that it's changed
@@ -29,8 +32,7 @@ export default function RecallTrainer() {
   const { user } = useKindeBrowserClient()
 
   // --- Hooks ---
-  const { useRandomRecallQuery, updateRecallStreak } =
-    useRecallQueries()
+  const { useRandomRecallQuery, updateRecallStreak } = useRecallQueries()
   const { updateStreak } = useProfileQueries()
   const { preferences, setSoundEnabled } = useAppStore()
   const { soundEnabled } = preferences
@@ -154,15 +156,17 @@ export default function RecallTrainer() {
   const markImReady = () => {
     // Hide all pieces (but not the squares themselves)
     const allPieceSquares = game.board().flatMap((row, rowIndex) =>
-      row.map((piece, colIndex) => {
-        if (piece) {
-          const square = SQUARES[rowIndex * 8 + colIndex] as Square
-          return square
-        }
-        return null
-      }).filter(Boolean)
+      row
+        .map((piece, colIndex) => {
+          if (piece) {
+            const square = SQUARES[rowIndex * 8 + colIndex] as Square
+            return square
+          }
+          return null
+        })
+        .filter(Boolean),
     ) as Square[]
-    
+
     const hidePieces = allPieceSquares.reduce(
       (acc, square) => {
         acc[square] = {
@@ -172,18 +176,18 @@ export default function RecallTrainer() {
       },
       {} as Record<string, React.CSSProperties>,
     )
-    
+
     setHiddenSquares(hidePieces)
     setReadyForInput(true)
   }
 
-  const squareClicked = async (square: Square) => {
+  const squareClicked = async ({ square }: SquareHandlerArgs) => {
     if (puzzleFinished) return
     if (!readyForInput) return
 
     const correctSquare = correctSquares[counter]! // We know this will always be defined, as we only allow clicks when readyForInput is true
 
-    const pieceClicked = game.get(square)
+    const pieceClicked = game.get(square as Square)
     const pieceString = pieceClicked
       ? pieceClicked.color + pieceClicked.type
       : ''
@@ -307,9 +311,9 @@ export default function RecallTrainer() {
 
   useEffect(() => {
     if (mode == 'settings' || !timed || !currentPuzzle) return
-    
+
     const interval = setInterval(() => {
-      setTimer(prevTimer => {
+      setTimer((prevTimer) => {
         if (prevTimer <= 1) {
           markImReady()
           return 0
@@ -317,15 +321,15 @@ export default function RecallTrainer() {
         return prevTimer - 1
       })
     }, 1000)
-    
+
     return () => clearInterval(interval)
   }, [mode, timed, currentPuzzle])
 
   if (!user) return null
 
   return recallQuery.error ? (
-    <div className="border border-gray-300 dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)]">
-      <div className="flex flex-wrap items-center justify-between px-2 py-1 border-b border-gray-300 dark:border-slate-600 font-bold text-red-500">
+    <div className="border border-gray-300   shadow-md  bg-[rgba(0,0,0,0.03)] ">
+      <div className="flex flex-wrap items-center justify-between px-2 py-1 border-b border-gray-300  font-bold text-red-500">
         <p>Oops, something went wrong</p>
       </div>
       <div className="p-2 text-white">{recallQuery.error.message}</div>
@@ -334,27 +338,32 @@ export default function RecallTrainer() {
     <>
       {mode == 'settings' ? (
         <>
-          <div className="border border-gray-300 text-black dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)]">
-            <div className="flex flex-wrap items-center justify-between px-2 py-1 border-b border-gray-300 dark:border-slate-600 font-bold text-orange-500">
+          <div className="border border-gray-300 text-black   shadow-md  bg-[rgba(0,0,0,0.03)] ">
+            <div className="flex flex-wrap items-center justify-between px-2 py-1 border-b border-gray-300  font-bold text-orange-500">
               <p id="tooltip-0">Adjust your settings</p>
             </div>
             <div className="flex flex-col gap-2 md:gap-4 p-2">
               <div>
                 <label className="font-bold flex items-center gap-1 w-fit">
                   <span id="tooltip-1">Difficulty</span>
-                  <Tippy content="Difficulty sets how many pieces are on the board">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        fill="currentColor"
-                        d="M11.5 16.5h1V11h-1zm.5-6.923q.262 0 .438-.177q.177-.177.177-.438q0-.262-.177-.439q-.176-.177-.438-.177t-.438.177q-.177.177-.177.439q0 .261.177.438q.176.177.438.177M12.003 21q-1.866 0-3.51-.708q-1.643-.709-2.859-1.924q-1.216-1.214-1.925-2.856Q3 13.87 3 12.003q0-1.866.708-3.51q.709-1.643 1.924-2.859q1.214-1.216 2.856-1.925Q10.13 3 11.997 3q1.866 0 3.51.708q1.643.709 2.859 1.924q1.216 1.214 1.925 2.856Q21 10.13 21 11.997q0 1.866-.708 3.51q-.709 1.643-1.924 2.859q-1.214 1.216-2.856 1.925Q13.87 21 12.003 21M12 20q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20m0-8"
-                      />
-                    </svg>
-                  </Tippy>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          fill="currentColor"
+                          d="M11.5 16.5h1V11h-1zm.5-6.923q.262 0 .438-.177q.177-.177.177-.438q0-.262-.177-.439q-.176-.177-.438-.177t-.438.177q-.177.177-.177.439q0 .261.177.438q.176.177.438.177M12.003 21q-1.866 0-3.51-.708q-1.643-.709-2.859-1.924q-1.216-1.214-1.925-2.856Q3 13.87 3 12.003q0-1.866.708-3.51q.709-1.643 1.924-2.859q1.214-1.216 2.856-1.925Q10.13 3 11.997 3q1.866 0 3.51.708q1.643.709 2.859 1.924q1.216 1.214 1.925 2.856Q21 10.13 21 11.997q0 1.866-.708 3.51q-.709 1.643-1.924 2.859q-1.214 1.216-2.856 1.925Q13.87 21 12.003 21M12 20q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20m0-8"
+                        />
+                      </svg>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Difficulty sets how many pieces are on the board
+                    </TooltipContent>
+                  </Tooltip>
                 </label>
                 <div className="flex flex-col gap-2 lg:flex-row lg:gap-4">
                   <Button
@@ -380,19 +389,25 @@ export default function RecallTrainer() {
               <div>
                 <label className=" w-fit font-bold flex items-center h-fit gap-1">
                   <span id="tooltip-2">Number to recall</span>
-                  <Tippy content="The number of pieces in a row you'll have to recall from a single position">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        fill="currentColor"
-                        d="M11.5 16.5h1V11h-1zm.5-6.923q.262 0 .438-.177q.177-.177.177-.438q0-.262-.177-.439q-.176-.177-.438-.177t-.438.177q-.177.177-.177.439q0 .261.177.438q.176.177.438.177M12.003 21q-1.866 0-3.51-.708q-1.643-.709-2.859-1.924q-1.216-1.214-1.925-2.856Q3 13.87 3 12.003q0-1.866.708-3.51q.709-1.643 1.924-2.859q1.214-1.216 2.856-1.925Q10.13 3 11.997 3q1.866 0 3.51.708q1.643.709 2.859 1.924q1.216 1.214 1.925 2.856Q21 10.13 21 11.997q0 1.866-.708 3.51q-.709 1.643-1.924 2.859q-1.214 1.216-2.856 1.925Q13.87 21 12.003 21M12 20q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20m0-8"
-                      />
-                    </svg>
-                  </Tippy>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          fill="currentColor"
+                          d="M11.5 16.5h1V11h-1zm.5-6.923q.262 0 .438-.177q.177-.177.177-.438q0-.262-.177-.439q-.176-.177-.438-.177t-.438.177q-.177.177-.177.439q0 .261.177.438q.176.177.438.177M12.003 21q-1.866 0-3.51-.708q-1.643-.709-2.859-1.924q-1.216-1.214-1.925-2.856Q3 13.87 3 12.003q0-1.866.708-3.51q.709-1.643 1.924-2.859q1.214-1.216 2.856-1.925Q10.13 3 11.997 3q1.866 0 3.51.708q1.643.709 2.859 1.924q1.216 1.214 1.925 2.856Q21 10.13 21 11.997q0 1.866-.708 3.51q-.709 1.643-1.924 2.859q-1.214 1.216-2.856 1.925Q13.87 21 12.003 21M12 20q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20m0-8"
+                        />
+                      </svg>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      The number of pieces in a row you'll have to recall from a
+                      single position
+                    </TooltipContent>
+                  </Tooltip>
                 </label>
                 <div className="mt-2 flex items-center gap-2">
                   <input
@@ -417,19 +432,25 @@ export default function RecallTrainer() {
                     className=" w-fit font-bold flex items-center h-fit gap-1"
                   >
                     <span>Timed Mode</span>
-                    <Tippy content="Timed mode will give you a set amount of time to remember the position before you have to recall it.">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          fill="currentColor"
-                          d="M11.5 16.5h1V11h-1zm.5-6.923q.262 0 .438-.177q.177-.177.177-.438q0-.262-.177-.439q-.176-.177-.438-.177t-.438.177q-.177.177-.177.439q0 .261.177.438q.176.177.438.177M12.003 21q-1.866 0-3.51-.708q-1.643-.709-2.859-1.924q-1.216-1.214-1.925-2.856Q3 13.87 3 12.003q0-1.866.708-3.51q.709-1.643 1.924-2.859q1.214-1.216 2.856-1.925Q10.13 3 11.997 3q1.866 0 3.51.708q1.643.709 2.859 1.924q1.216 1.214 1.925 2.856Q21 10.13 21 11.997q0 1.866-.708 3.51q-.709 1.643-1.924 2.859q-1.214 1.216-2.856 1.925Q13.87 21 12.003 21M12 20q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20m0-8"
-                        />
-                      </svg>
-                    </Tippy>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            fill="currentColor"
+                            d="M11.5 16.5h1V11h-1zm.5-6.923q.262 0 .438-.177q.177-.177.177-.438q0-.262-.177-.439q-.176-.177-.438-.177t-.438.177q-.177.177-.177.439q0 .261.177.438q.176.177.438.177M12.003 21q-1.866 0-3.51-.708q-1.643-.709-2.859-1.924q-1.216-1.214-1.925-2.856Q3 13.87 3 12.003q0-1.866.708-3.51q.709-1.643 1.924-2.859q1.214-1.216 2.856-1.925Q10.13 3 11.997 3q1.866 0 3.51.708q1.643.709 2.859 1.924q1.216 1.214 1.925 2.856Q21 10.13 21 11.997q0 1.866-.708 3.51q-.709 1.643-1.924 2.859q-1.214 1.216-2.856 1.925Q13.87 21 12.003 21M12 20q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20m0-8"
+                          />
+                        </svg>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        Timed mode will give you a set amount of time to
+                        remember the position before you have to recall it.
+                      </TooltipContent>
+                    </Tooltip>
                   </label>
                   <input
                     id="timed"
@@ -469,7 +490,7 @@ export default function RecallTrainer() {
         </>
       ) : (
         <>
-          <div className="relative border border-gray-300 text-black dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)] w-fit mx-auto">
+          <div className="relative border border-gray-300 text-black   shadow-md  bg-[rgba(0,0,0,0.03)]  w-fit mx-auto">
             {loading && (
               <div className="absolute inset-0 z-50 grid place-items-center bg-[rgba(0,0,0,0.3)]">
                 <Spinner />
@@ -477,20 +498,20 @@ export default function RecallTrainer() {
             )}
             <div className="flex flex-wrap items-center justify-between text-sm">
               <div className="flex gap-1 p-2 pb-0 justify-center text-xs md:text-sm lg:text-base">
-                <div className="flex flex-col items-center border border-gray-300 dark:border-slate-600">
-                  <p className="w-full text-center font-bold py-1 px-1 border-b border-gray-300 dark:border-slate-600">
+                <div className="flex flex-col items-center border border-gray-300 ">
+                  <p className="w-full text-center font-bold py-1 px-1 border-b border-gray-300 ">
                     Difficulty:
                   </p>
                   <p>{getDifficulty()}</p>
                 </div>
-                <div className="flex flex-col items-center border border-gray-300 dark:border-slate-600">
-                  <p className="font-bold py-1 px-1 border-b border-gray-300 dark:border-slate-600">
+                <div className="flex flex-col items-center border border-gray-300 ">
+                  <p className="font-bold py-1 px-1 border-b border-gray-300 ">
                     Recall Count:
                   </p>
                   <p>{piecesToRecall}</p>
                 </div>
-                <div className="flex flex-col items-center border border-gray-300 dark:border-slate-600">
-                  <p className="font-bold py-1 px-1 border-b border-gray-300 dark:border-slate-600">
+                <div className="flex flex-col items-center border border-gray-300 ">
+                  <p className="font-bold py-1 px-1 border-b border-gray-300 ">
                     Timer:
                   </p>
                   <p>{timed ? <>{timerLength}s</> : 'none'}</p>
@@ -498,66 +519,66 @@ export default function RecallTrainer() {
                 <XpTracker counter={xpCounter} type={'tactic'} />
               </div>
               <div className="flex items-center gap-2 w-fit mx-auto md:mx-0">
-                <ThemeSwitch />
                 <div
                   className="ml-auto flex cursor-pointer flex-row items-center gap-2 hover:text-orange-500"
                   onClick={() => setSoundEnabled(!soundEnabled)}
                 >
-                  <Tippy content={`Sound ${soundEnabled ? 'On' : 'Off'}`}>
-                    {soundEnabled ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 16 16"
-                      >
-                        <path
-                          fill="none"
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="1.5"
-                          d="M1.75 5.75v4.5h2.5l4 3V2.75l-4 3zm9 .5s1 .5 1 1.75s-1 1.75-1 1.75"
-                        />
-                      </svg>
-                    ) : (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 16 16"
-                      >
-                        <path
-                          fill="none"
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="1.5"
-                          d="M1.75 5.75v4.5h2.5l4 3V2.75l-4 3zm12.5 0l-3.5 4.5m0-4.5l3.5 4.5"
-                        />
-                      </svg>
-                    )}
-                  </Tippy>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      {soundEnabled ? (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            fill="none"
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="1.5"
+                            d="M1.75 5.75v4.5h2.5l4 3V2.75l-4 3zm9 .5s1 .5 1 1.75s-1 1.75-1 1.75"
+                          />
+                        </svg>
+                      ) : (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            fill="none"
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="1.5"
+                            d="M1.75 5.75v4.5h2.5l4 3V2.75l-4 3zm12.5 0l-3.5 4.5m0-4.5l3.5 4.5"
+                          />
+                        </svg>
+                      )}
+                    </TooltipTrigger>
+                    <TooltipContent>{`Sound ${soundEnabled ? 'On' : 'Off'}`}</TooltipContent>
+                  </Tooltip>
                 </div>
               </div>
             </div>
             <div className="flex flex-col-reverse lg:flex-row p-2 gap-2">
               <div className="flex flex-col gap-2 w-fit mx-auto">
                 <Chessboard
-                  onSquareClick={squareClicked}
-                  arePiecesDraggable={false}
-                  position={position}
-                  boardOrientation={'white'}
-                  boardWidth={Math.min(
-                    (windowSize.height ?? 800) * 0.7,
-                    (windowSize.width ?? 300) * 0.9,
-                  )}
-                  customBoardStyle={{
-                    marginInline: 'auto',
-                  }}
-                  customSquareStyles={{
-                    ...selectedSquares,
-                    ...hiddenSquares,
+                  options={{
+                    onSquareClick: squareClicked,
+                    allowDragging: false,
+                    position: position,
+                    boardOrientation: 'white',
+                    boardStyle: {
+                      marginInline: 'auto',
+                    },
+                    squareStyles: {
+                      ...selectedSquares,
+                      ...hiddenSquares,
+                    },
                   }}
                 />
                 <Button className="lg:hidden" variant="danger" onClick={exit}>
@@ -601,7 +622,7 @@ export default function RecallTrainer() {
                 )}
                 <div className="flex flex-1 flex-col-reverse gap-2 lg:flex-col">
                   {!puzzleFinished && (
-                    <div className="h-full flex-wrap content-start gap-1 border lg:border-4 border-purple-700 p-2 bg-purple-700 bg-opacity-20 text-black dark:text-white flex flex-col">
+                    <div className="h-full flex-wrap content-start gap-1 border lg:border-4 border-purple-700 p-2 bg-purple-700 bg-opacity-20 text-black  flex flex-col">
                       {!readyForInput && (
                         <>
                           <p className="text-sm italic text-center">

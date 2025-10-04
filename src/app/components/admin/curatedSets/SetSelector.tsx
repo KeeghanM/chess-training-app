@@ -23,7 +23,7 @@ export default function SetSelector() {
             {sets.map((set) => (
               <div
                 key={set.id}
-                className="flex flex-col gap-0 border border-gray-300 dark:text-white shadow-md bg-[rgba(0,0,0,0.03)] hover:shadow-lg cursor-pointer"
+                className="flex flex-col gap-0 border border-gray-300  shadow-md bg-[rgba(0,0,0,0.03)] hover:shadow-lg cursor-pointer"
                 onClick={() => setSelectedSet(set)}
               >
                 <div className="px-2 py-1 border-b border-gray-300 font-bold  text-orange-500 flex items-center flex-wrap justify-between">

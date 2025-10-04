@@ -40,7 +40,7 @@ export default function PuzzleSearch() {
   }, [mode])
 
   return (
-    <div className="flex flex-1 flex-col gap-2 border lg:border-4 border-purple-700 p-2 bg-purple-700 bg-opacity-20 text-black dark:text-white max-h-[70vh]">
+    <div className="flex flex-1 flex-col gap-2 border lg:border-4 border-purple-700 p-2 bg-purple-700 bg-opacity-20 text-black  max-h-[70vh]">
       <div className="flex items-center justify-around text-sm">
         <p
           className={

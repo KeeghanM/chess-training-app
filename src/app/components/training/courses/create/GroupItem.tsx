@@ -80,7 +80,7 @@ export function GroupItem(props: {
             <Heading as={'h4'}>Set All Lines In Group: {groupKey}</Heading>
             <p>This will set all lines in this group to the same colour.</p>
             <select
-              className="border border-gray-300 p-2  dark:bg-gray-100"
+              className="border border-gray-300 p-2  "
               defaultValue={selectedColor}
               onChange={(e) => setSelectedColor(e.target.value)}
             >
@@ -118,14 +118,14 @@ export function GroupItem(props: {
             .map((line) => {
               return (
                 <div
-                  className="flex flex-col justify-center gap-2 bg-purple-100 dark:bg-gray-200 p-2"
+                  className="flex flex-col justify-center gap-2 bg-purple-100  p-2"
                   key={line.moves.join('')}
                 >
                   <div className="flex items-center gap-2 text-sm">
                     <PrettyPrintLine line={line} />
                     <div className="ml-auto flex flex-col gap-1">
                       <select
-                        className="border border-gray-300 p-2  dark:bg-gray-100"
+                        className="border border-gray-300 p-2  "
                         defaultValue={line.tags.Colour}
                         onChange={async (e) => {
                           const v = e.target.value

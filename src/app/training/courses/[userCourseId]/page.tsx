@@ -17,11 +17,10 @@ export type PrismaUserLine = UserLine & {
   }
 }
 
-export default async function CourseTrainPage({
-  params,
-}: {
-  params: { userCourseId: string }
+export default async function CourseTrainPage(props: {
+  params: Promise<{ userCourseId: string }>
 }) {
+  const params = await props.params
   const { getUser } = getKindeServerSession()
   const user = await getUser()
   if (!user) redirect('/auth/signin')
@@ -109,7 +108,7 @@ export default async function CourseTrainPage({
           alt: 'Wooden chess pieces on a chess board',
         }}
       />
-      <div className="dark:bg-slate-800">
+      <div className="">
         <Container>
           {userCourse && (
             <CourseTrainer

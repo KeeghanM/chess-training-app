@@ -39,12 +39,12 @@ export default function TacticsList(props: { hasUnlimitedSets: boolean }) {
       <div className="mt-4 flex flex-col gap-4">
         {tacticsSetsQuery.isLoading ? (
           <>
-            <div className="flex flex-col h-24 gap-0 border border-gray-300 dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)] hover:shadow-lg transition-shadow duration-300 opacity-50">
+            <div className="flex flex-col h-24 gap-0 border border-gray-300   shadow-md  bg-[rgba(0,0,0,0.03)]  hover:shadow-lg transition-shadow duration-300 opacity-50">
               <p className="w-fit m-auto flex gap-1">
                 Loading... <Spinner />
               </p>
             </div>
-            <div className="flex flex-col h-24 gap-0 border border-gray-300 dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)] hover:shadow-lg transition-shadow duration-300  opacity-50">
+            <div className="flex flex-col h-24 gap-0 border border-gray-300   shadow-md  bg-[rgba(0,0,0,0.03)]  hover:shadow-lg transition-shadow duration-300  opacity-50">
               {' '}
               <p className="w-fit m-auto flex gap-1">
                 Loading... <Spinner />
@@ -52,7 +52,7 @@ export default function TacticsList(props: { hasUnlimitedSets: boolean }) {
             </div>
           </>
         ) : tacticsSetsQuery.data?.length === 0 ? (
-          <p className="text-center dark:text-white">
+          <p className="text-center ">
             You don't have any sets yet. Create one above!
           </p>
         ) : (

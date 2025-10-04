@@ -13,13 +13,12 @@ import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import type { Comment, Move, UserFen } from '@prisma/client'
 import * as Sentry from '@sentry/nextjs'
 import { useAppStore } from '@stores/app-store'
-import Tippy from '@tippyjs/react'
 import { useWindowSize } from '@uidotdev/usehooks'
 import getArrows from '@utils/StringToArrows'
 import trackEventOnClient from '@utils/trackEventOnClient'
 import type { Move as ChessMove } from 'chess.js'
 import { Chess } from 'chess.js'
-import type { Arrow } from 'react-chessboard/dist/chessboard/types'
+import type { Arrow } from 'react-chessboard'
 import Toggle from 'react-toggle'
 import 'react-toggle/style.css'
 import useSound from 'use-sound'
@@ -30,8 +29,12 @@ import Heading from '@components/_elements/heading'
 import StyledLink from '@components/_elements/styledLink'
 import Spinner from '@components/general/Spinner'
 import XpTracker from '@components/general/XpTracker'
-import ThemeSwitch from '@components/template/header/ThemeSwitch'
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '../../_elements/tooltip'
 import ChessBoard from '../ChessBoard'
 
 // TODO: Add delay on wrong move jumping
@@ -699,16 +702,16 @@ export default function CourseTrainer(props: {
       </p>
     </div>
   ) : (
-    <div className="relative border border-gray-300 text-black dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)]">
+    <div className="relative border border-gray-300 text-black   shadow-md  bg-[rgba(0,0,0,0.03)] ">
       {loading && (
         <div className="absolute inset-0 z-50 grid place-items-center bg-[rgba(0,0,0,0.3)]">
           <Spinner />
         </div>
       )}
-      <div className="flex flex-wrap items-center justify-between px-2 py-1 border-b border-gray-300 dark:border-slate-600 font-bold text-orange-500">
+      <div className="flex flex-wrap items-center justify-between px-2 py-1 border-b border-gray-300  font-bold text-orange-500">
         <div className="flex flex-col gap-2">
           <p className="font-bold">{currentLine?.line.group.groupName}</p>
-          <div className="flex gap-2 md:gap-4 lg:gap-6 flex-wrap italic text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex gap-2 md:gap-4 lg:gap-6 flex-wrap italic text-sm text-gray-600 ">
             <p className="flex items-center gap-1">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -770,47 +773,49 @@ export default function CourseTrainer(props: {
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2 text-black dark:text-white">
-          <ThemeSwitch />
+        <div className="flex items-center gap-2 text-black ">
           <div
             className="flex cursor-pointer flex-row items-center gap-2 hover:text-orange-500"
             onClick={() => setSoundEnabled(!soundEnabled)}
           >
-            <Tippy content={`Sound ${soundEnabled ? 'On' : 'Off'}`}>
-              {soundEnabled ? (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 16 16"
-                >
-                  <path
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="1.5"
-                    d="M1.75 5.75v4.5h2.5l4 3V2.75l-4 3zm9 .5s1 .5 1 1.75s-1 1.75-1 1.75"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 16 16"
-                >
-                  <path
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="1.5"
-                    d="M1.75 5.75v4.5h2.5l4 3V2.75l-4 3zm12.5 0l-3.5 4.5m0-4.5l3.5 4.5"
-                  />
-                </svg>
-              )}
-            </Tippy>
+            <Tooltip>
+              <TooltipTrigger>
+                {soundEnabled ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fill="none"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="1.5"
+                      d="M1.75 5.75v4.5h2.5l4 3V2.75l-4 3zm9 .5s1 .5 1 1.75s-1 1.75-1 1.75"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fill="none"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="1.5"
+                      d="M1.75 5.75v4.5h2.5l4 3V2.75l-4 3zm12.5 0l-3.5 4.5m0-4.5l3.5 4.5"
+                    />
+                  </svg>
+                )}
+              </TooltipTrigger>
+              <TooltipContent>{`Sound ${soundEnabled ? 'On' : 'Off'}`}</TooltipContent>
+            </Tooltip>
           </div>
         </div>
       </div>
@@ -851,13 +856,12 @@ export default function CourseTrainer(props: {
                 : '100%',
             }}
             className={
-              'flex h-full flex-wrap content-start gap-1 border lg:border-4 border-purple-700 p-2 bg-purple-700 bg-opacity-20 text-black dark:text-white flex-1 overflow-y-auto'
+              'flex h-full flex-wrap content-start gap-1 border lg:border-4 border-purple-700 p-2 bg-purple-700 bg-opacity-20 text-black  flex-1 overflow-y-auto'
             }
           >
             {PgnDisplay.map((item) => item)}
           </div>
           <label className="ml-auto flex items-center gap-2 text-sm">
-            {/* @ts-expect-error - react-toggle type compatibility issue */}
             <Toggle
               defaultChecked={autoNext}
               onChange={async () => {

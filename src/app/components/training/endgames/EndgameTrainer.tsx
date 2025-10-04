@@ -8,7 +8,6 @@ import { useEndgameQueries } from '@hooks/use-endgame-queries'
 import { useProfileQueries } from '@hooks/use-profile-queries'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import { useAppStore } from '@stores/app-store'
-import Tippy from '@tippyjs/react'
 import trackEventOnClient from '@utils/trackEventOnClient'
 import type { Move } from 'chess.js'
 import { Chess } from 'chess.js'
@@ -19,16 +18,19 @@ import useSound from 'use-sound'
 import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
 import XpTracker from '@components/general/XpTracker'
-import ThemeSwitch from '@components/template/header/ThemeSwitch'
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '../../_elements/tooltip'
 import ChessBoard from '../ChessBoard'
 
 export default function EndgameTrainer() {
   const { user } = useKindeBrowserClient()
 
   // --- Hooks ---
-  const { useRandomEndgameQuery, updateEndgameStreak } =
-    useEndgameQueries()
+  const { useRandomEndgameQuery, updateEndgameStreak } = useEndgameQueries()
   const { updateStreak } = useProfileQueries()
   const { preferences, setSoundEnabled, setAutoNext } = useAppStore()
   const { soundEnabled, autoNext } = preferences
@@ -286,8 +288,8 @@ export default function EndgameTrainer() {
 
   return mode == 'settings' ? (
     <>
-      <div className="border border-gray-300 text-black dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)]">
-        <div className="flex flex-wrap items-center justify-between px-2 py-1 border-b border-gray-300 dark:border-slate-600 font-bold text-orange-500">
+      <div className="border border-gray-300 text-black   shadow-md  bg-[rgba(0,0,0,0.03)] ">
+        <div className="flex flex-wrap items-center justify-between px-2 py-1 border-b border-gray-300  font-bold text-orange-500">
           <p>Adjust your settings</p>
         </div>
         <div className="flex flex-col p-2 gap-4">
@@ -390,7 +392,7 @@ export default function EndgameTrainer() {
     </>
   ) : (
     <>
-      <div className="relative border border-gray-300 text-black dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)]">
+      <div className="relative border border-gray-300 text-black   shadow-md  bg-[rgba(0,0,0,0.03)] ">
         {loading && (
           <div className="absolute inset-0 z-50 grid place-items-center bg-[rgba(0,0,0,0.3)]">
             <Spinner />
@@ -398,20 +400,20 @@ export default function EndgameTrainer() {
         )}
         <div className="flex flex-wrap items-center justify-between text-sm">
           <div className="flex gap-1 p-2 pb-0 justify-center text-xs md:text-sm lg:text-base">
-            <div className="flex flex-col items-center border border-gray-300 dark:border-slate-600">
-              <p className="w-full text-center font-bold py-1 px-1 border-b border-gray-300 dark:border-slate-600">
+            <div className="flex flex-col items-center border border-gray-300 ">
+              <p className="w-full text-center font-bold py-1 px-1 border-b border-gray-300 ">
                 Type:
               </p>
               <p className="px-1">{type} Endgames</p>
             </div>
-            <div className="flex flex-col items-center border border-gray-300 dark:border-slate-600">
-              <p className="font-bold py-1 px-1 border-b border-gray-300 dark:border-slate-600">
+            <div className="flex flex-col items-center border border-gray-300 ">
+              <p className="font-bold py-1 px-1 border-b border-gray-300 ">
                 Rating:
               </p>
               <p>{rating}</p>
             </div>
-            <div className="flex flex-col items-center border border-gray-300 dark:border-slate-600">
-              <p className="font-bold py-1 px-1 border-b border-gray-300 dark:border-slate-600">
+            <div className="flex flex-col items-center border border-gray-300 ">
+              <p className="font-bold py-1 px-1 border-b border-gray-300 ">
                 Difficulty:
               </p>
               <p>{getDifficulty()}</p>
@@ -419,46 +421,48 @@ export default function EndgameTrainer() {
             <XpTracker counter={xpCounter} type={'tactic'} />
           </div>
           <div className="flex items-center gap-2 w-fit mx-auto md:mx-0">
-            <ThemeSwitch />
             <div
               className="ml-auto flex cursor-pointer flex-row items-center gap-2 hover:text-orange-500"
               onClick={() => setSoundEnabled(!soundEnabled)}
             >
-              <Tippy content={`Sound ${soundEnabled ? 'On' : 'Off'}`}>
-                {soundEnabled ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      fill="none"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="1.5"
-                      d="M1.75 5.75v4.5h2.5l4 3V2.75l-4 3zm9 .5s1 .5 1 1.75s-1 1.75-1 1.75"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      fill="none"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="1.5"
-                      d="M1.75 5.75v4.5h2.5l4 3V2.75l-4 3zm12.5 0l-3.5 4.5m0-4.5l3.5 4.5"
-                    />
-                  </svg>
-                )}
-              </Tippy>
+              <Tooltip>
+                <TooltipTrigger>
+                  {soundEnabled ? (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        fill="none"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="1.5"
+                        d="M1.75 5.75v4.5h2.5l4 3V2.75l-4 3zm9 .5s1 .5 1 1.75s-1 1.75-1 1.75"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        fill="none"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="1.5"
+                        d="M1.75 5.75v4.5h2.5l4 3V2.75l-4 3zm12.5 0l-3.5 4.5m0-4.5l3.5 4.5"
+                      />
+                    </svg>
+                  )}
+                </TooltipTrigger>
+                <TooltipContent>{`Sound ${soundEnabled ? 'On' : 'Off'}`}</TooltipContent>
+              </Tooltip>
             </div>
           </div>
         </div>
@@ -575,11 +579,10 @@ export default function EndgameTrainer() {
               )}
             </div>
             <div className="flex flex-1 flex-col-reverse gap-2 lg:flex-col">
-              <div className="flex h-full flex-wrap content-start gap-1 border lg:border-4 border-purple-700 p-2 bg-purple-700 bg-opacity-20 text-black dark:text-white">
+              <div className="flex h-full flex-wrap content-start gap-1 border lg:border-4 border-purple-700 p-2 bg-purple-700 bg-opacity-20 text-black ">
                 {PgnDisplay.map((item) => item)}
               </div>
               <label className="ml-auto flex items-center gap-2 text-sm">
-                {/* @ts-expect-error - react-toggle type compatibility issue */}
                 <Toggle
                   defaultChecked={autoNext}
                   onChange={async () => {

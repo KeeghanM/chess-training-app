@@ -9,7 +9,6 @@ import Heading from '~/app/components/_elements/heading'
 import StreakDisplay from '~/app/components/dashboard/StreakDisplay'
 import ToolGrid from '~/app/components/dashboard/ToolGrid'
 import XpDisplay from '~/app/components/dashboard/XpDisplay'
-import ThemeSwitch from '~/app/components/template/header/ThemeSwitch'
 
 import CalculateStreakBadge from '../_util/CalculateStreakBadge'
 import CalculateXpRank from '../_util/CalculateXpRank'
@@ -36,6 +35,8 @@ export default async function Dashboard() {
   if (!user) {
     redirect('/auth/signin')
   }
+
+  await prisma.$connect()
 
   const profile = await prisma.userProfile.findFirst({
     where: {
@@ -201,12 +202,7 @@ export default async function Dashboard() {
           </div>
         </Container>
       </div>
-      <div className="p-4 dark:bg-slate-800 md:p-6">
-        <div className="mb-6 w-fit flex items-center gap-1 rounded-full border border-gray-300 px-2 text-black dark:border-slate-600 dark:text-white">
-          <p>Light</p>
-          <ThemeSwitch />
-          <p>Dark</p>
-        </div>
+      <div className="p-4  md:p-6">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
           {tools
             .sort((a, b) => {

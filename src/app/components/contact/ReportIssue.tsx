@@ -169,7 +169,7 @@ export default function ReportIssueForm() {
               <div>
                 <label>Issue Type</label>
                 <select
-                  className="w-full border border-gray-300 px-4 py-2 dark:bg-gray-100"
+                  className="w-full border border-gray-300 px-4 py-2 "
                   value={issue}
                   onChange={(e) => setIssue(e.target.value)}
                 >
@@ -187,7 +187,7 @@ export default function ReportIssueForm() {
                 <label>Message</label>
                 <textarea
                   rows={6}
-                  className="w-full border border-gray-300 px-4 py-2 dark:bg-gray-100"
+                  className="w-full border border-gray-300 px-4 py-2 "
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                 />

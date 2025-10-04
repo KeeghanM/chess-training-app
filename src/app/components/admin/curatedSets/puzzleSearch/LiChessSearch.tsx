@@ -1,10 +1,14 @@
 import { useContext, useState } from 'react'
 
 import * as Sentry from '@sentry/react'
-import Tippy from '@tippyjs/react'
 import type { ResponseJson } from '~/app/api/responses'
 
 import Button from '~/app/components/_elements/button'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '~/app/components/_elements/tooltip'
 import Spinner from '~/app/components/general/Spinner'
 
 import {
@@ -128,24 +132,27 @@ export default function LiChessSearch() {
               theme.id.includes(filter) || selectedThemes.includes(theme.id),
           )
           .map((theme, index) => (
-            <Tippy content={theme.description} key={theme.id}>
-              <p
-                onClick={() => toggleTheme(theme.id)}
-                className={
-                  'cursor-pointer p-1 hover:font-bold text-black ' +
-                  (index % 2 == 0 ? ' bg-gray-200' : ' bg-gray-50') +
-                  (selectedThemes.includes(theme.id) ? ' bg-green-200' : '')
-                }
-              >
-                {theme.name}
-              </p>
-            </Tippy>
+            <Tooltip key={theme.id}>
+              <TooltipTrigger>
+                <p
+                  onClick={() => toggleTheme(theme.id)}
+                  className={
+                    'cursor-pointer p-1 hover:font-bold text-black ' +
+                    (index % 2 == 0 ? ' bg-gray-200' : ' bg-gray-50') +
+                    (selectedThemes.includes(theme.id) ? ' bg-green-200' : '')
+                  }
+                >
+                  {theme.name}
+                </p>
+              </TooltipTrigger>
+              <TooltipContent>{theme.description}</TooltipContent>
+            </Tooltip>
           ))}
       </div>
       <div className="flex flex-row items-center gap-1">
         <label htmlFor="puzzleId">PuzzleId</label>
         <input
-          className="w-full border border-gray-300 px-2 py-1 dark:bg-gray-100"
+          className="w-full border border-gray-300 px-2 py-1 "
           type="text"
           id="puzzleId"
           name="puzzleId"

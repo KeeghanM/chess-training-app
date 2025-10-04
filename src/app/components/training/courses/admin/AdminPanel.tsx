@@ -7,10 +7,13 @@ import { useEffect, useMemo, useState } from 'react'
 import { useCourseQueries } from '@hooks/use-course-queries'
 import type { Course, Group } from '@prisma/client'
 import * as Sentry from '@sentry/nextjs'
-import Tippy from '@tippyjs/react'
-import 'tippy.js/dist/tippy.css'
 
 import Button from '~/app/components/_elements/button'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '~/app/components/_elements/tooltip'
 import Spinner from '~/app/components/general/Spinner'
 import TextEditor from '~/app/components/general/TextEditor'
 
@@ -101,7 +104,7 @@ export default function CourseAdminPanel(props: CourseAdminPanelProps) {
   }, [courseName, courseDescription, lines, groups, shortDescription])
 
   return (
-    <div className="flex flex-col gap-2 border border-gray-300 dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)] p-2">
+    <div className="flex flex-col gap-2 border border-gray-300   shadow-md  bg-[rgba(0,0,0,0.03)]  p-2">
       <div>
         <label className="font-bold">Course Name:</label>
         <input
@@ -146,11 +149,14 @@ export default function CourseAdminPanel(props: CourseAdminPanelProps) {
         <Button variant="secondary" onClick={exit}>
           Exit
         </Button>
-        <Tippy content="Coming Soon!">
-          <Button disabled variant="warning">
-            Publish Course
-          </Button>
-        </Tippy>
+        <Tooltip>
+          <TooltipTrigger>
+            <Button disabled variant="warning">
+              Publish Course
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Coming Soon!</TooltipContent>
+        </Tooltip>
       </div>
       <GroupsListEditor
         groups={groups}

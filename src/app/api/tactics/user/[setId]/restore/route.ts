@@ -6,8 +6,9 @@ import { errorResponse, successResponse } from '~/app/api/responses'
 
 export async function POST(
   request: Request,
-  { params }: { params: { setId: string } },
+  props: { params: Promise<{ setId: string }> },
 ) {
+  const params = await props.params
   const session = getKindeServerSession()
   if (!session) return errorResponse('Unauthorized', 401)
 
@@ -50,7 +51,5 @@ export async function POST(
   } catch (e) {
     Sentry.captureException(e)
     return errorResponse('Internal server error', 500)
-  } finally {
-    await prisma.$disconnect()
   }
 }

@@ -39,13 +39,13 @@ export default function SetListItem({ set }: { set: PrismaTacticsSet }) {
 
   return (
     <div
-      className="flex flex-col gap-0 border border-gray-300 dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)] hover:shadow-lg transition-shadow duration-300"
+      className="flex flex-col gap-0 border border-gray-300   shadow-md  bg-[rgba(0,0,0,0.03)]  hover:shadow-lg transition-shadow duration-300"
       key={set.id}
     >
-      <div className="px-2 py-1 border-b border-gray-300 dark:border-slate-600 font-bold text-orange-500">
+      <div className="px-2 py-1 border-b border-gray-300  font-bold text-orange-500">
         <p onClick={trainSet} className="cursor-pointer">
           <span className="text-lg">{set.name}</span>
-          <span className="px-2 text-xs italic text-gray-600 dark:text-gray-400">
+          <span className="px-2 text-xs italic text-gray-600 ">
             Last trained{' '}
             {set.lastTrained ? (
               <TimeSince text="ago" date={new Date(set.lastTrained)} />
@@ -58,22 +58,22 @@ export default function SetListItem({ set }: { set: PrismaTacticsSet }) {
 
       <div className="flex w-full flex-col gap-2 p-2">
         <div className="flex flex-wrap gap-2 justify-center">
-          <div className="flex flex-col items-center border border-gray-300 dark:border-slate-600">
-            <p className="font-bold py-1 px-2 border-b border-gray-300 dark:border-slate-600">
+          <div className="flex flex-col items-center border border-gray-300 ">
+            <p className="font-bold py-1 px-2 border-b border-gray-300 ">
               Round
             </p>
             <p>{set.rounds ? set.rounds.length : 1}/8</p>
           </div>
-          <div className="flex flex-col items-center border border-gray-300 dark:border-slate-600">
-            <p className="font-bold py-1 px-2 border-b border-gray-300 dark:border-slate-600">
+          <div className="flex flex-col items-center border border-gray-300 ">
+            <p className="font-bold py-1 px-2 border-b border-gray-300 ">
               Completed
             </p>
             <p>
               {completedCount}/{set.size}
             </p>
           </div>
-          <div className="flex flex-col items-center border border-gray-300 dark:border-slate-600">
-            <p className="font-bold py-1 px-2 border-b border-gray-300 dark:border-slate-600">
+          <div className="flex flex-col items-center border border-gray-300 ">
+            <p className="font-bold py-1 px-2 border-b border-gray-300 ">
               Accuracy
             </p>
             <p>
@@ -89,15 +89,15 @@ export default function SetListItem({ set }: { set: PrismaTacticsSet }) {
               %
             </p>
           </div>
-          <div className="flex flex-col items-center border border-gray-300 dark:border-slate-600">
-            <p className="font-bold py-1 px-2 border-b border-gray-300 dark:border-slate-600">
+          <div className="flex flex-col items-center border border-gray-300 ">
+            <p className="font-bold py-1 px-2 border-b border-gray-300 ">
               Time Spent
             </p>
             <p>{toHHMMSS(currentRound?.timeSpent ?? 0)}</p>
           </div>
           {set.rating && (
-            <div className="flex flex-col items-center border border-gray-300 dark:border-slate-600">
-              <p className="font-bold py-1 px-2 border-b border-gray-300 dark:border-slate-600">
+            <div className="flex flex-col items-center border border-gray-300 ">
+              <p className="font-bold py-1 px-2 border-b border-gray-300 ">
                 Rating
               </p>
               <p>{set.rating}</p>

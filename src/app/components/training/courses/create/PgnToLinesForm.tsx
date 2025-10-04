@@ -9,8 +9,8 @@ import Button from '~/app/components/_elements/button'
 
 import trackEventOnClient from '~/app/_util/trackEventOnClient'
 
-import { ParsePGNtoLineData } from './parse/ParsePGNtoLineData'
 import type { Line } from './parse/ParsePGNtoLineData'
+import { ParsePGNtoLineData } from './parse/ParsePGNtoLineData'
 
 export default function PgnToLinesForm(props: {
   finished: (lines: Line[]) => void
@@ -64,13 +64,13 @@ export default function PgnToLinesForm(props: {
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="dark:text-white">
+      <p className="">
         Copy and paste your PGN into the box below. You will have a choice later
         about how to group the lines, so feel free to paste either multiple
         PGNs, or a single one with all the lines and variations contained.
       </p>
       <textarea
-        className="w-full border border-gray-300 px-4 py-2 dark:bg-gray-100"
+        className="w-full border border-gray-300 px-4 py-2 "
         rows={10}
         onChange={(e) => {
           setString(e.target.value)

@@ -76,8 +76,8 @@ export default function SubscriptionManager() {
 
   if (loading) {
     return (
-      <div className="flex flex-col gap-0 border border-gray-300 dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)]">
-        <div className="flex flex-col md:flex-row px-2 py-1 border-b border-gray-300 dark:border-slate-600 items-center justify-between">
+      <div className="flex flex-col gap-0 border border-gray-300   shadow-md  bg-[rgba(0,0,0,0.03)] ">
+        <div className="flex flex-col md:flex-row px-2 py-1 border-b border-gray-300  items-center justify-between">
           <Heading color="text-orange-500 !m-0 !p-0" as={'h2'}>
             Subscription Management
           </Heading>
@@ -92,7 +92,7 @@ export default function SubscriptionManager() {
 
   if (error) {
     return (
-      <div className="flex flex-col gap-0 border border-gray-300 dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)] space-y-4">
+      <div className="flex flex-col gap-0 border border-gray-300   shadow-md  bg-[rgba(0,0,0,0.03)]  space-y-4">
         <Heading as="h2">Subscription Management</Heading>
         <p className="text-red-600">{error}</p>
         <Button
@@ -112,8 +112,8 @@ export default function SubscriptionManager() {
   }
 
   return (
-    <div className="flex flex-col gap-0 border border-gray-300 dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)]">
-      <div className="flex flex-col md:flex-row px-2 py-1 border-b border-gray-300 dark:border-slate-600 items-center justify-between">
+    <div className="flex flex-col gap-0 border border-gray-300   shadow-md  bg-[rgba(0,0,0,0.03)] ">
+      <div className="flex flex-col md:flex-row px-2 py-1 border-b border-gray-300  items-center justify-between">
         <Heading color="text-orange-500 !m-0 !p-0" as={'h2'}>
           Subscription Management
         </Heading>
@@ -122,7 +122,7 @@ export default function SubscriptionManager() {
       <div className="space-y-4 p-2">
         <div>
           <h3 className="font-semibold text-lg">Current Plan</h3>
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-gray-600 ">
             {subscriptionStatus.baseTier === 'premium'
               ? 'Premium Plan'
               : 'Free Plan'}
@@ -131,7 +131,7 @@ export default function SubscriptionManager() {
 
         {subscriptionStatus.baseTier === 'free' && (
           <div className="space-y-2">
-            <p className="text-sm text-gray-600 dark:text-gray-300">
+            <p className="text-sm text-gray-600 ">
               Upgrade to Premium for unlimited access to all features
             </p>
             <GetPremiumButton />
@@ -144,7 +144,7 @@ export default function SubscriptionManager() {
               <h4 className="font-medium text-green-600">
                 ✓ Premium Features Active
               </h4>
-              <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+              <ul className="text-sm text-gray-600  space-y-1">
                 <li>• Unlimited Tactics Sets</li>
                 <li>• Unlimited Openings Courses</li>
                 <li>• 5% Discount on all paid content</li>

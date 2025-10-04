@@ -69,7 +69,5 @@ export async function AddCourseToUser(courseId: string, userId: string) {
   } catch (e) {
     Sentry.captureException(e)
     return false
-  } finally {
-    await prisma.$disconnect()
   }
 }

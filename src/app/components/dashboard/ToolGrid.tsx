@@ -10,11 +10,11 @@ export default function ToolGrid(props: { tool: Tool }) {
   const { tool } = props
 
   return (
-    <div className="flex flex-col gap-0 border border-gray-300 dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)] hover:shadow-lg transition-shadow duration-300">
+    <div className="flex flex-col gap-0 border border-gray-300   shadow-md  bg-[rgba(0,0,0,0.03)]  hover:shadow-lg transition-shadow duration-300">
       <div
         id={tool.id}
         className={
-          'px-2 py-1 border-b border-gray-300 dark:border-slate-600 font-bold' +
+          'px-2 py-1 border-b border-gray-300  font-bold' +
           (tool.active ? ' text-orange-500' : '')
         }
       >

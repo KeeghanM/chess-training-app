@@ -9,11 +9,10 @@ import Container from '~/app/components/_elements/container'
 import PageHeader from '~/app/components/_layouts/pageHeader'
 import AddLines from '~/app/components/training/courses/admin/AddLines'
 
-export default async function AddLinesPage({
-  params,
-}: {
-  params: { courseId: string }
+export default async function AddLinesPage(props: {
+  params: Promise<{ courseId: string }>
 }) {
+  const params = await props.params
   const { getUser } = getKindeServerSession()
   const user = await getUser()
   if (!user) redirect('/auth/signin')
@@ -61,7 +60,7 @@ export default async function AddLinesPage({
           alt: 'Wooden chess pieces on a chess board',
         }}
       />
-      <div className="dark:bg-slate-800">
+      <div className="">
         <Container>
           <AddLines courseId={courseId} />
         </Container>

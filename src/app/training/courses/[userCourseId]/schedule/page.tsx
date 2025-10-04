@@ -14,11 +14,10 @@ import ResetButtons from '~/app/components/training/courses/schedule/ResetButton
 
 import { getUserServer } from '~/app/_util/getUserServer'
 
-export default async function CourseSchedulePage({
-  params,
-}: {
-  params: { userCourseId: string }
+export default async function CourseSchedulePage(props: {
+  params: Promise<{ userCourseId: string }>
 }) {
+  const params = await props.params
   const { user, isPremium } = await getUserServer()
   if (!user) redirect('/auth/signin')
   if (!isPremium) redirect('/premium')
@@ -100,7 +99,7 @@ export default async function CourseSchedulePage({
           alt: 'Wooden Chess pieces on a chess board',
         }}
       />
-      <div className="dark:bg-slate-800">
+      <div className="">
         <Container>
           <Info />
           <div className="flex flex-col lg:flex-row gap-2 mb-4">
@@ -111,7 +110,7 @@ export default async function CourseSchedulePage({
               </Button>
             </Link>
           </div>
-          <div className="flex flex-col text-black dark:text-white md:flex-row gap-2 md:gap-4 mb-2">
+          <div className="flex flex-col text-black  md:flex-row gap-2 md:gap-4 mb-2">
             <div className="flex gap-1 items-center">
               <div className="w-4 h-4 bg-gray-300"></div>
               <p>Unseen</p>

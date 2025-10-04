@@ -87,7 +87,7 @@ export default function CourseList(props: { hasUnlimitedCourses: boolean }) {
           <Button variant="secondary">Browse Courses</Button>
         </Link>
         <Link
-          className="text-sm text-purple-700 hover:text-purple-600 dark:text-purple-400 underline md:ml-auto"
+          className="text-sm text-purple-700 hover:text-purple-600  underline md:ml-auto"
           href="/training/courses/archived"
         >
           View archived courses
@@ -97,12 +97,12 @@ export default function CourseList(props: { hasUnlimitedCourses: boolean }) {
       <div className="flex flex-col gap-4">
         {loading ? (
           <>
-            <div className="flex flex-col h-24 gap-0 border border-gray-300 dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)] hover:shadow-lg transition-shadow duration-300 opacity-50">
+            <div className="flex flex-col h-24 gap-0 border border-gray-300   shadow-md  bg-[rgba(0,0,0,0.03)]  hover:shadow-lg transition-shadow duration-300 opacity-50">
               <p className="w-fit m-auto flex gap-1">
                 Loading... <Spinner />
               </p>
             </div>
-            <div className="flex flex-col h-24 gap-0 border border-gray-300 dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)] hover:shadow-lg transition-shadow duration-300  opacity-50">
+            <div className="flex flex-col h-24 gap-0 border border-gray-300   shadow-md  bg-[rgba(0,0,0,0.03)]  hover:shadow-lg transition-shadow duration-300  opacity-50">
               <p className="w-fit m-auto flex gap-1">
                 Loading... <Spinner />
               </p>
@@ -128,9 +128,9 @@ export default function CourseList(props: { hasUnlimitedCourses: boolean }) {
               />
             ))
         ) : (
-          <div className="p-2 bg-gray-100 dark:bg-slate-900">
+          <div className="p-2 bg-gray-100 ">
             <Heading as="h3">You haven't got any courses yet</Heading>
-            <p className="text-gray-500  dark:text-white">
+            <p className="text-gray-500  ">
               You can browse any of our{' '}
               <StyledLink href="/courses">amazing courses</StyledLink> or try{' '}
               <StyledLink href="/courses/create">creating your own</StyledLink>.

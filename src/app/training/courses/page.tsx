@@ -25,7 +25,7 @@ export default async function Courses() {
           alt: 'Wooden chess pieces on a chess board',
         }}
       />
-      <div className="dark:bg-slate-800">
+      <div className="">
         <Container>
           <CourseList hasUnlimitedCourses={isPremium} />
         </Container>

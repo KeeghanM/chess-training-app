@@ -4,7 +4,7 @@ export default function Steps(props: { currentStep: string }) {
   const { currentStep } = props
 
   return (
-    <div className="mx-auto my-4 w-max dark:text-white">
+    <div className="mx-auto my-4 w-max ">
       <div className="mx-auto flex items-center gap-4">
         <div className="flex flex-col items-center gap-1 md:flex-row">
           <NumberIcon number={1} active={currentStep == 'name'} />

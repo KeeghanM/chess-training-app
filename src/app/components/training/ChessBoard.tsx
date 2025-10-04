@@ -2,15 +2,10 @@
 
 import { useEffect, useState } from 'react'
 
-import { useWindowSize } from '@uidotdev/usehooks'
-import type { Chess } from 'chess.js'
-import type { Move, Piece, Square } from 'chess.js'
-import useSound from 'node_modules/use-sound/dist'
-import { Chessboard } from 'react-chessboard'
-import type {
-  Arrow,
-  PromotionPieceOption,
-} from 'react-chessboard/dist/chessboard/types'
+import type { Chess, Move, Piece, Square } from 'chess.js'
+import type { Arrow } from 'react-chessboard'
+import { Chessboard, defaultPieces } from 'react-chessboard'
+import useSound from 'use-sound'
 
 interface ChessBoardProps {
   game: Chess
@@ -24,6 +19,7 @@ interface ChessBoardProps {
   enableHighlights: boolean
   moveMade: null | ((move: Move) => void)
 }
+
 export default function ChessBoard(props: ChessBoardProps) {
   // Chess Game
   const game = props.game
@@ -88,10 +84,20 @@ export default function ChessBoard(props: ChessBoardProps) {
 
   const handlePieceDrop = (
     sourceSquare: Square,
-    targetSquare: Square,
+    targetSquare: Square | null,
     piece: string,
     promotion?: boolean,
   ) => {
+    // Handle drop off board
+    if (!targetSquare) {
+      setStartSquare(undefined)
+      setClickedPiece(undefined)
+      setMoveTo(undefined)
+      setShowPromotionDialog(false)
+      setOptionSquares({})
+      return false
+    }
+
     // Make the move to see if it's legal
     const playerMove = (() => {
       try {
@@ -176,13 +182,11 @@ export default function ChessBoard(props: ChessBoardProps) {
     }
   }
 
-  const handlePromotionSelection = (
-    selectedPiece: PromotionPieceOption | undefined,
-  ) => {
-    if (!selectedPiece || !moveTo) return false
+  const handlePromotionSelection = (piece: string) => {
+    if (!piece || !moveTo) return false
 
     setShowPromotionDialog(false)
-    handlePieceDrop(startSquare!, moveTo, selectedPiece, true)
+    handlePieceDrop(startSquare!, moveTo, piece, true)
     return true
   }
 
@@ -225,45 +229,122 @@ export default function ChessBoard(props: ChessBoardProps) {
     playMoveSound(lastMove.san)
   }, [props.position])
 
-  const windowSize = useWindowSize()
+  // Calculate promotion square position for custom dialog
+  const squareWidth =
+    typeof document !== 'undefined'
+      ? (document.querySelector(`[data-square]`)?.getBoundingClientRect()
+          ?.width ?? 0)
+      : 0
+
+  const getPromotionLeft = (targetSquare: string) => {
+    const col = targetSquare.charCodeAt(0) - 'a'.charCodeAt(0)
+    return props.orientation === 'white'
+      ? col * squareWidth
+      : (7 - col) * squareWidth
+  }
 
   return (
     <div className="m-2">
-      <Chessboard
-        onPieceDrop={handlePieceDrop}
-        onSquareClick={handleSquareClick}
-        onSquareRightClick={() => {
-          setStartSquare(undefined)
-          setClickedPiece(undefined)
-        }}
-        promotionToSquare={moveTo}
-        onDragOverSquare={(square) => {
-          if (!startSquare) {
-            setStartSquare(square)
-          }
-          setMoveTo(square)
-        }}
-        showPromotionDialog={showPromotionDialog}
-        onPromotionPieceSelect={handlePromotionSelection}
-        arePiecesDraggable={props.readyForInput}
-        position={props.position}
-        boardOrientation={props.orientation}
-        boardWidth={Math.min(
-          (windowSize.height ?? 800) * 0.7,
-          (windowSize.width ?? 300) * 0.9,
+      <div style={{ position: 'relative' }}>
+        {/* Promotion Dialog Overlay */}
+        {showPromotionDialog && moveTo && (
+          <>
+            <div
+              onClick={() => setShowPromotionDialog(false)}
+              onContextMenu={(e) => {
+                e.preventDefault()
+                setShowPromotionDialog(false)
+              }}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                zIndex: 1000,
+              }}
+            />
+            <div
+              style={{
+                position: 'absolute',
+                top: clickedPiece?.color === 'w' ? 0 : undefined,
+                bottom: clickedPiece?.color === 'b' ? 0 : undefined,
+                left: getPromotionLeft(moveTo),
+                backgroundColor: 'white',
+                width: squareWidth,
+                zIndex: 1001,
+                display: 'flex',
+                flexDirection: 'column',
+                boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.5)',
+              }}
+            >
+              {(['q', 'r', 'n', 'b'] as const).map((piece) => (
+                <button
+                  key={piece}
+                  onClick={() => {
+                    handlePromotionSelection(
+                      piece + (clickedPiece?.color ?? 'w'),
+                    )
+                  }}
+                  onContextMenu={(e) => {
+                    e.preventDefault()
+                  }}
+                  style={{
+                    width: '100%',
+                    aspectRatio: '1',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: 0,
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '3rem',
+                  }}
+                >
+                  {defaultPieces[`w${piece.toUpperCase()}`]!()}
+                </button>
+              ))}
+            </div>
+          </>
         )}
-        customBoardStyle={{
-          marginInline: 'auto',
-        }}
-        customSquareStyles={
-          props.enableHighlights
-            ? { ...optionSquares, ...props.additionalSquares }
-            : {}
-        }
-        customArrows={
-          props.enableArrows ? [...props.additionalArrows, ...arrows] : []
-        }
-      />
+
+        <Chessboard
+          options={{
+            position: props.position,
+            boardOrientation: props.orientation,
+            allowDragging: props.readyForInput,
+            onPieceDrop: ({ sourceSquare, targetSquare }) =>
+              handlePieceDrop(
+                sourceSquare as Square,
+                targetSquare as Square,
+                '',
+                false,
+              ),
+            onSquareClick: ({ square }) => handleSquareClick(square as Square),
+            onSquareRightClick: () => {
+              setStartSquare(undefined)
+              setClickedPiece(undefined)
+            },
+            onPieceDrag: ({ square }) => {
+              if (!startSquare) {
+                setStartSquare(square as Square)
+                const piece = game.get(square as Square)
+                if (piece) setClickedPiece(piece)
+              }
+            },
+            boardStyle: {
+              marginInline: 'auto',
+            },
+            squareStyles: props.enableHighlights
+              ? { ...optionSquares, ...props.additionalSquares }
+              : {},
+            arrows: props.enableArrows
+              ? [...props.additionalArrows, ...arrows]
+              : [],
+          }}
+        />
+      </div>
     </div>
   )
 }

@@ -25,7 +25,7 @@ export default function Button(props: ButtonProps) {
     accent:
       'bg-orange-500 hover:bg-orange-400 text-white font-bold py-2 px-6 shadow',
     tertiary:
-      'bg-none underline text-gray-700 hover:text-purple-700 font-bold py-2 px-6 dark:text-white',
+      'bg-none underline text-gray-700 hover:text-purple-700 font-bold py-2 px-6 ',
     danger: 'bg-red-700 hover:bg-red-600 text-white font-bold py-2 px-6 shadow',
     warning:
       'bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-2 px-6 shadow',

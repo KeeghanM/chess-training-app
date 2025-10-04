@@ -19,7 +19,7 @@ export default async function EndgameTrainPage() {
           alt: 'Strategic chess endgame setup on a chess board',
         }}
       />
-      <div className="bg-gray-100 dark:bg-slate-800">
+      <div className="bg-gray-100 ">
         <Container>
           <EndgameTrainer />
         </Container>

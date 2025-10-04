@@ -5,11 +5,11 @@ import Link from 'next/link'
 import { useState } from 'react'
 
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
-import Tippy from '@tippyjs/react'
 import type { ResponseJson } from '~/app/api/responses'
 import { env } from '~/env'
 
 import Button from '../_elements/button'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../_elements/tooltip'
 import Spinner from '../general/Spinner'
 
 export default function GetCourse(props: {
@@ -53,11 +53,14 @@ export default function GetCourse(props: {
   }
 
   return userCourseId ? (
-    <Tippy content="You already own this course!">
-      <Link href={`/training/courses/${userCourseId}`}>
-        <Button variant="accent">Train Now</Button>
-      </Link>
-    </Tippy>
+    <Tooltip>
+      <TooltipTrigger>
+        <Link href={`/training/courses/${userCourseId}`}>
+          <Button variant="accent">Train Now</Button>
+        </Link>
+      </TooltipTrigger>
+      <TooltipContent>You already own this course!</TooltipContent>
+    </Tooltip>
   ) : (
     <>
       <Button disabled={loading} variant="accent" onClick={handleBuy}>

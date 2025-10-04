@@ -16,7 +16,7 @@ export async function POST(request: Request) {
   try {
     const payload = await request.text()
     const webHookSecret = process.env.STRIPE_WEBHOOK_SECRET!
-    const signature = headers().get('stripe-signature')
+    const signature = (await headers()).get('stripe-signature')
 
     if (!signature) {
       Sentry.captureMessage('No signature')

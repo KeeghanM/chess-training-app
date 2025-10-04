@@ -4,10 +4,8 @@ import { errorResponse, successResponse } from '~/app/api/responses'
 
 import getPuzzleById from '~/app/_util/GetPuzzleById'
 
-export async function GET(
-  request: Request,
-  { params }: { params: { puzzleid: string } },
-) {
+export async function GET(request: Request, props: { params: Promise<{ puzzleid: string }> }) {
+  const params = await props.params;
   const puzzleid = params.puzzleid
   if (!puzzleid) return errorResponse('Missing required fields', 400)
 

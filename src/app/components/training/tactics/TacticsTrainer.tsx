@@ -11,7 +11,6 @@ import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import type { Puzzle } from '@prisma/client'
 import * as Sentry from '@sentry/nextjs'
 import { useAppStore } from '@stores/app-store'
-import Tippy from '@tippyjs/react'
 import trackEventOnClient from '@utils/trackEventOnClient'
 import type { Move } from 'chess.js'
 import { Chess } from 'chess.js'
@@ -24,8 +23,12 @@ import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
 import TimeSince from '@components/general/TimeSince'
 import XpTracker from '@components/general/XpTracker'
-import ThemeSwitch from '@components/template/header/ThemeSwitch'
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '../../_elements/tooltip'
 import ChessBoard from '../ChessBoard'
 import type { PrismaTacticsSet } from './create/TacticsSetCreator'
 
@@ -300,7 +303,7 @@ export default function TacticsTrainer(props: {
       return (
         <div
           key={moveNumber.toString() + move + moveColour}
-          className="px-1 py-1 text-black dark:text-white"
+          className="px-1 py-1 text-black "
         >
           <FlexText />
         </div>
@@ -381,7 +384,7 @@ export default function TacticsTrainer(props: {
   if (!user) return null
 
   return (
-    <div className="relative border border-gray-300 dark:text-white dark:border-slate-600 shadow-md dark:shadow-slate-900 bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)]">
+    <div className="relative border border-gray-300   shadow-md  bg-[rgba(0,0,0,0.03)] ">
       {
         // While we are loading a new puzzle or creating a new round, we don't want the user to interact so we show a full overlay spinner
         (puzzleQuery.isFetching || createRound.isPending) && (
@@ -390,71 +393,73 @@ export default function TacticsTrainer(props: {
           </div>
         )
       }
-      <div className="flex flex-wrap items-center justify-between px-2 py-1 border-b border-gray-300 dark:border-slate-600 font-bold text-orange-500">
+      <div className="flex flex-wrap items-center justify-between px-2 py-1 border-b border-gray-300  font-bold text-orange-500">
         <p className="text-lg font-bold">{props.set.name}</p>
-        <div className="flex items-center gap-2 text-black dark:text-white">
-          <ThemeSwitch />
+        <div className="flex items-center gap-2 text-black ">
           <div
             className="flex cursor-pointer flex-row items-center gap-1 hover:text-orange-500"
             onClick={() => setSoundEnabled(!soundEnabled)}
           >
-            <Tippy content={`Sound ${soundEnabled ? 'On' : 'Off'}`}>
-              {soundEnabled ? (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 16 16"
-                >
-                  <path
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="1.5"
-                    d="M1.75 5.75v4.5h2.5l4 3V2.75l-4 3zm9 .5s1 .5 1 1.75s-1 1.75-1 1.75"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 16 16"
-                >
-                  <path
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="1.5"
-                    d="M1.75 5.75v4.5h2.5l4 3V2.75l-4 3zm12.5 0l-3.5 4.5m0-4.5l3.5 4.5"
-                  />
-                </svg>
-              )}
-            </Tippy>
+            <Tooltip>
+              <TooltipTrigger>
+                {soundEnabled ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fill="none"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="1.5"
+                      d="M1.75 5.75v4.5h2.5l4 3V2.75l-4 3zm9 .5s1 .5 1 1.75s-1 1.75-1 1.75"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fill="none"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="1.5"
+                      d="M1.75 5.75v4.5h2.5l4 3V2.75l-4 3zm12.5 0l-3.5 4.5m0-4.5l3.5 4.5"
+                    />
+                  </svg>
+                )}
+              </TooltipTrigger>
+              <TooltipContent>{`Sound ${soundEnabled ? 'On' : 'Off'}`}</TooltipContent>
+            </Tooltip>
           </div>
         </div>
       </div>
       <div className="flex flex-col lg:flex-row">
         <div className="flex flex-col">
           <div className="flex gap-1 mt-1 justify-center text-xs md:text-sm lg:text-base">
-            <div className="flex flex-col items-center border border-gray-300 dark:border-slate-600">
-              <p className="font-bold py-1 px-1 border-b border-gray-300 dark:border-slate-600">
+            <div className="flex flex-col items-center border border-gray-300 ">
+              <p className="font-bold py-1 px-1 border-b border-gray-300 ">
                 Round:
               </p>
               <p>{props.set.rounds.length}/8</p>
             </div>
-            <div className="flex flex-col items-center border border-gray-300 dark:border-slate-600">
-              <p className="font-bold py-1 px-1 border-b border-gray-300 dark:border-slate-600">
+            <div className="flex flex-col items-center border border-gray-300 ">
+              <p className="font-bold py-1 px-1 border-b border-gray-300 ">
                 Completed:
               </p>
               <p>
                 {CompletedPuzzles}/{props.set.size}
               </p>
             </div>
-            <div className="flex flex-col items-center border border-gray-300 dark:border-slate-600">
-              <p className="font-bold py-1 px-1 border-b border-gray-300 dark:border-slate-600">
+            <div className="flex flex-col items-center border border-gray-300 ">
+              <p className="font-bold py-1 px-1 border-b border-gray-300 ">
                 Accuracy:
               </p>
               <p>
@@ -468,8 +473,8 @@ export default function TacticsTrainer(props: {
                 %
               </p>
             </div>
-            <div className="flex flex-col items-center border border-gray-300 dark:border-slate-600">
-              <p className="font-bold py-1 px-1 border-b border-gray-300 dark:border-slate-600">
+            <div className="flex flex-col items-center border border-gray-300 ">
+              <p className="font-bold py-1 px-1 border-b border-gray-300 ">
                 Session:
               </p>
               <p>
@@ -495,7 +500,7 @@ export default function TacticsTrainer(props: {
         </div>
         <div className="flex w-full flex-col gap-2 p-1">
           {!puzzleFinished && (
-            <p className="flex items-center gap-2 text-black dark:text-white">
+            <p className="flex items-center gap-2 text-black ">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"
@@ -513,7 +518,7 @@ export default function TacticsTrainer(props: {
             </p>
           )}
           {puzzleStatus === 'correct' && (
-            <div className="z-50 flex flex-wrap  items-center gap-2 text-black dark:text-white">
+            <div className="z-50 flex flex-wrap  items-center gap-2 text-black ">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -531,7 +536,7 @@ export default function TacticsTrainer(props: {
                 href={`https://lichess.org/training/${currentPuzzle?.puzzleid}`}
                 target="_blank"
               >
-                <span className="flex flex-row items-center gap-1 text-sm text-black dark:text-white underline">
+                <span className="flex flex-row items-center gap-1 text-sm text-black  underline">
                   Lichess
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -554,7 +559,7 @@ export default function TacticsTrainer(props: {
           )}
           {puzzleStatus === 'incorrect' && (
             <>
-              <div className="z-50 flex flex-wrap items-center gap-2 text-black dark:text-white">
+              <div className="z-50 flex flex-wrap items-center gap-2 text-black ">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -572,7 +577,7 @@ export default function TacticsTrainer(props: {
                   href={`https://lichess.org/training/${currentPuzzle?.puzzleid}`}
                   target="_blank"
                 >
-                  <span className="flex flex-row items-center gap-1 text-sm text-black dark:text-white underline">
+                  <span className="flex flex-row items-center gap-1 text-sm text-black  underline">
                     Lichess
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -593,18 +598,17 @@ export default function TacticsTrainer(props: {
                 </Link>
               </div>
               {currentPuzzle?.comment && (
-                <p className="p-2 border lg:border-4 border-orange-500 bg-orange-500 bg-opacity-20 text-black dark:text-white text-sm overflow-y-auto">
+                <p className="p-2 border lg:border-4 border-orange-500 bg-orange-500 bg-opacity-20 text-black  text-sm overflow-y-auto">
                   {currentPuzzle?.comment}
                 </p>
               )}
             </>
           )}
           <div className="flex flex-1 flex-col-reverse gap-2 lg:flex-col">
-            <div className="flex h-full flex-wrap content-start gap-1 border lg:border-4 border-purple-700 p-2 bg-purple-700 bg-opacity-20 text-black dark:text-white">
+            <div className="flex h-full flex-wrap content-start gap-1 border lg:border-4 border-purple-700 p-2 bg-purple-700 bg-opacity-20 text-black ">
               {PgnDisplay.map((item) => item)}
             </div>
-            <label className="ml-auto flex items-center gap-2 text-sm text-black dark:text-white">
-              {/* @ts-expect-error - react-toggle type compatibility issue */}
+            <label className="ml-auto flex items-center gap-2 text-sm text-black ">
               <Toggle
                 defaultChecked={autoNext}
                 onChange={async () => {

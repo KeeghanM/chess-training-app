@@ -79,9 +79,7 @@ export default function DetailsForm(props: {
       <div>
         <Heading as={'h3'}>
           and a helpful description{' '}
-          <span className="text-xs text-black dark:text-gray-300">
-            (if you want)
-          </span>
+          <span className="text-xs text-black ">(if you want)</span>
         </Heading>
         <TextEditor value={description} onChange={setDescription} />
       </div>

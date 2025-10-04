@@ -23,7 +23,7 @@ export default async function ArchivedSetsPage() {
           alt: 'Wooden chess pieces on a chess board',
         }}
       />
-      <div className="dark:bg-slate-800">
+      <div className="">
         <Container>
           <ArchivedSetList hasUnlimitedSets={isPremium} />
         </Container>

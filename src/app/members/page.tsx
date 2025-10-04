@@ -7,11 +7,12 @@ import TrophyTile from '../components/members/TrophyTile'
 
 import CalculateXpRank from '../_util/CalculateXpRank'
 
-export default async function MembersPage({
-  searchParams,
-}: {
-  searchParams?: Record<string, string | string[]>
-}) {
+export default async function MembersPage(
+  props: {
+    searchParams?: Promise<Record<string, string | string[]>>
+  }
+) {
+  const searchParams = await props.searchParams;
   const pageNumber = searchParams?.page
     ? parseInt(searchParams.page as string)
     : 1

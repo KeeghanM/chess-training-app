@@ -12,7 +12,8 @@ import { PrismicRichToHtml } from '~/app/_util/PrismicRichToHtml'
 import type { RichTextContent } from '~/app/_util/PrismicRichToHtml'
 
 type Params = { uid: string }
-export default async function AuthorPage({ params }: { params: Params }) {
+export default async function AuthorPage(props: { params: Promise<Params> }) {
+  const params = await props.params;
   const author = await Prismic.getByUID('author', params.uid).catch(() =>
     notFound(),
   )

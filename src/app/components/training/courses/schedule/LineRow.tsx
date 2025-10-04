@@ -74,7 +74,7 @@ export default function LineRow({
   return (
     <div
       className={
-        'border-4 bg-purple-700 bg-opacity-20 text-black dark:text-white py-2 flex flex-col md:flex-row gap-2 justify-between ' +
+        'border-4 bg-purple-700 bg-opacity-20 text-black  py-2 flex flex-col md:flex-row gap-2 justify-between ' +
         (status === 'unseen' ? 'border-gray-300' : '') +
         (status === 'learning' ? 'border-blue-600' : '') +
         (status === 'learned' ? 'border-green-500' : '') +

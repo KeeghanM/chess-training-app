@@ -6,11 +6,11 @@ import { useState } from 'react'
 
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import * as Sentry from '@sentry/nextjs'
-import Tippy from '@tippyjs/react'
 import type { ResponseJson } from '~/app/api/responses'
 import { env } from '~/env'
 
 import Button from '../_elements/button'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../_elements/tooltip'
 import Spinner from '../general/Spinner'
 
 export default function GetCuratedSet(props: {
@@ -57,11 +57,14 @@ export default function GetCuratedSet(props: {
   ) : (
     <div>
       {userSetId ? (
-        <Tippy content="You already own this Tactics Set!">
-          <Link href={`/training/tactics/list/${userSetId}`}>
-            <Button variant="accent">Train Now</Button>
-          </Link>
-        </Tippy>
+        <Tooltip>
+          <TooltipTrigger>
+            <Link href={`/training/tactics/list/${userSetId}`}>
+              <Button variant="accent">Train Now</Button>
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent>You already own this Tactics Set!</TooltipContent>
+        </Tooltip>
       ) : (
         <Button disabled={loading} variant="accent" onClick={handleBuy}>
           {loading ? (

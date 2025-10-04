@@ -3,7 +3,6 @@
 import Link from 'next/link'
 
 import { useTacticsQueries } from '@hooks/use-tactics-queries'
-import 'tippy.js/dist/tippy.css'
 import { env } from '~/env'
 
 import Button from '~/app/components/_elements/button'
@@ -29,7 +28,7 @@ export default function ArchivedSetList({
         </Link>
       </div>
       {archivedTacticsQuery.isPending && (
-        <div className="relative dark:text-white w-full h-16 flex items-center justify-center">
+        <div className="relative  w-full h-16 flex items-center justify-center">
           <div className="absolute inset-0 bg-gray-500 opacity-30"></div>
           <p className="flex items-center gap-4">
             Loading... <Spinner />
@@ -40,16 +39,14 @@ export default function ArchivedSetList({
         <div
           className={
             'flex flex-col gap-4 ' +
-            (archivedTacticsQuery.data.sets.length == 0
-              ? ' bg-gray-100 dark:bg-slate-900'
-              : '')
+            (archivedTacticsQuery.data.sets.length == 0 ? ' bg-gray-100 ' : '')
           }
         >
           {archivedTacticsQuery.data.sets.length > 0 ? (
             archivedTacticsQuery.data.sets.map((set, index) => (
               <div
                 key={index}
-                className="flex relative flex-col items-center gap-4 bg-gray-100 p-2 md:px-6  dark:bg-slate-900 dark:text-white md:flex-row md:justify-between"
+                className="flex relative flex-col items-center gap-4 bg-gray-100 p-2 md:px-6    md:flex-row md:justify-between"
               >
                 <p>{set.name}</p>
 
@@ -76,7 +73,7 @@ export default function ArchivedSetList({
             ))
           ) : (
             <div className="p-2">
-              <p className="text-gray-500  dark:text-white">
+              <p className="text-gray-500  ">
                 You don't have any archived Sets.
               </p>
             </div>

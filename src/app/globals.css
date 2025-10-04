@@ -1,7 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@100;400;700&display=swap');
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
 /* @link https://utopia.fyi/type/calculator?c=320,18,1.2,1240,20,1.25,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l&g=s,l,xl,12 */
 :root {
@@ -73,4 +71,15 @@ article h3 {
   font-weight: 700;
   line-height: 1.2;
   color: rgb(249 115 22);
+}
+
+.Tooltip {
+  background-color: #444;
+  color: white;
+  font-size: 90%;
+  padding: 4px 8px;
+  border-radius: 4px;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: calc(100vw - 10px);
 }
