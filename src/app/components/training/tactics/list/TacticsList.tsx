@@ -6,7 +6,6 @@ import { useTacticsQueries } from '@hooks/use-tactics-queries'
 import { env } from '~/env'
 
 import Button from '~/app/components/_elements/button'
-import Container from '~/app/components/_elements/container'
 import Spinner from '~/app/components/general/Spinner'
 import TacticsSetCreator from '~/app/components/training/tactics//create/TacticsSetCreator'
 

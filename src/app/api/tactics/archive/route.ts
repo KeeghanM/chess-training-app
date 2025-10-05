@@ -39,6 +39,12 @@ export async function POST(request: Request) {
       },
     })
 
+    await prisma.tacticsSetRound.deleteMany({
+      where: {
+        setId,
+      },
+    })
+
     return successResponse('Set Archived', { setId }, 200)
   } catch (e) {
     Sentry.captureException(e)

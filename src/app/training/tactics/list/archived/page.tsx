@@ -7,7 +7,7 @@ import Backdrop from '~/app/components/_elements/backdrop'
 import Button from '~/app/components/_elements/button'
 import Container from '~/app/components/_elements/container'
 import Heading from '~/app/components/_elements/heading'
-import ArchivedSetList from '~/app/components/training/tactics/list/ArhivedList'
+import ArchivedSetList from '~/app/components/training/tactics/list/ArchivedList'
 
 import { getUserServer } from '~/app/_util/getUserServer'
 

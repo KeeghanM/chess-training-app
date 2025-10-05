@@ -5,7 +5,6 @@ import { Puzzle } from 'lucide-react'
 import { env } from '~/env'
 
 import Button from '~/app/components/_elements/button'
-import Container from '~/app/components/_elements/container'
 import Spinner from '~/app/components/general/Spinner'
 import TimeSince from '~/app/components/general/TimeSince'
 
