@@ -151,7 +151,7 @@ export default function PuzzleDisplay() {
                 </div>
                 <div>
                   <Tooltip>
-                    <TooltipTrigger>
+                    <TooltipTrigger asChild={true}>
                       <label htmlFor="rating">Puzzle Comment</label>
                     </TooltipTrigger>
                     <TooltipContent>

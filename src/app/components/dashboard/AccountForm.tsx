@@ -244,7 +244,7 @@ export default function AccountForm(props: { profile: UserProfile }) {
         </div>
         <div className="flex flex-row items-center gap-2">
           <Tooltip>
-            <TooltipTrigger>
+            <TooltipTrigger asChild={true}>
               <label className="text-black  flex gap-1 flex-row items-center">
                 <p className="">Public Profile</p>
                 <svg

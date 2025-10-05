@@ -150,7 +150,7 @@ export default function CourseAdminPanel(props: CourseAdminPanelProps) {
           Exit
         </Button>
         <Tooltip>
-          <TooltipTrigger>
+          <TooltipTrigger asChild={true}>
             <Button disabled variant="warning">
               Publish Course
             </Button>

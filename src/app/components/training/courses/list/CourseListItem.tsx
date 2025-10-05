@@ -108,7 +108,7 @@ export default function CourseListItem(props: {
           <div className="px-2 py-1 border-b border-gray-300  font-bold flex flex-col md:flex-row gap-1 justify-between items-start">
             <p className="flex flex-col gap-1">
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild={true}>
                   <Link
                     className="text-lg cursor-pointer text-orange-500"
                     href={`/training/courses/${userCourse?.id}/lines`}
@@ -135,7 +135,7 @@ export default function CourseListItem(props: {
           <div className="flex flex-col md:flex-row p-2 items-center gap-2">
             <div className="flex flex-col md:flex-row gap-2 items-center">
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild={true}>
                   <div
                     className="grid h-16 w-16 place-items-center rounded-full"
                     style={{
@@ -163,7 +163,7 @@ export default function CourseListItem(props: {
                 </TooltipContent>
               </Tooltip>
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild={true}>
                   <div className="flex flex-col gap-1">
                     <p className="text-sm italic">
                       {

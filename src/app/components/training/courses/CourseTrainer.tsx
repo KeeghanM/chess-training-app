@@ -779,7 +779,7 @@ export default function CourseTrainer(props: {
             onClick={() => setSoundEnabled(!soundEnabled)}
           >
             <Tooltip>
-              <TooltipTrigger>
+              <TooltipTrigger asChild={true}>
                 {soundEnabled ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

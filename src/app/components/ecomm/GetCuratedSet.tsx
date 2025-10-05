@@ -58,7 +58,7 @@ export default function GetCuratedSet(props: {
     <div>
       {userSetId ? (
         <Tooltip>
-          <TooltipTrigger>
+          <TooltipTrigger asChild={true}>
             <Link href={`/training/tactics/list/${userSetId}`}>
               <Button variant="accent">Train Now</Button>
             </Link>

@@ -347,7 +347,7 @@ export default function RecallTrainer() {
                 <label className="font-bold flex items-center gap-1 w-fit">
                   <span id="tooltip-1">Difficulty</span>
                   <Tooltip>
-                    <TooltipTrigger>
+                    <TooltipTrigger asChild={true}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
@@ -390,7 +390,7 @@ export default function RecallTrainer() {
                 <label className=" w-fit font-bold flex items-center h-fit gap-1">
                   <span id="tooltip-2">Number to recall</span>
                   <Tooltip>
-                    <TooltipTrigger>
+                    <TooltipTrigger asChild={true}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
@@ -433,7 +433,7 @@ export default function RecallTrainer() {
                   >
                     <span>Timed Mode</span>
                     <Tooltip>
-                      <TooltipTrigger>
+                      <TooltipTrigger asChild={true}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="24"
@@ -524,7 +524,7 @@ export default function RecallTrainer() {
                   onClick={() => setSoundEnabled(!soundEnabled)}
                 >
                   <Tooltip>
-                    <TooltipTrigger>
+                    <TooltipTrigger asChild={true}>
                       {soundEnabled ? (
                         <svg
                           xmlns="http://www.w3.org/2000/svg"

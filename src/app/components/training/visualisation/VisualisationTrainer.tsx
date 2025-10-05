@@ -429,7 +429,7 @@ export default function VisualisationTrainer() {
               </div>
               <div>
                 <Tooltip>
-                  <TooltipTrigger>
+                  <TooltipTrigger asChild={true}>
                     <label className="font-bold">Moves to visualise</label>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -497,7 +497,7 @@ export default function VisualisationTrainer() {
                   onClick={() => setSoundEnabled(!soundEnabled)}
                 >
                   <Tooltip>
-                    <TooltipTrigger>
+                    <TooltipTrigger asChild={true}>
                       {soundEnabled ? (
                         <svg
                           xmlns="http://www.w3.org/2000/svg"

@@ -7,7 +7,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../_elements/tooltip'
 export default function PremiumDisplay(props: { isPremium: boolean }) {
   return (
     <Tooltip>
-      <TooltipTrigger>
+      <TooltipTrigger asChild={true}>
         <Link
           className={
             'p-2 text-xs mx-2 w-fit text-white shadow ' +

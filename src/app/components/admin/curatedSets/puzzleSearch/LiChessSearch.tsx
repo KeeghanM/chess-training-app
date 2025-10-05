@@ -133,7 +133,7 @@ export default function LiChessSearch() {
           )
           .map((theme, index) => (
             <Tooltip key={theme.id}>
-              <TooltipTrigger>
+              <TooltipTrigger asChild={true}>
                 <p
                   onClick={() => toggleTheme(theme.id)}
                   className={

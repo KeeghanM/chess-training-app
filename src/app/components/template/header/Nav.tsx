@@ -100,7 +100,7 @@ export default function Nav(props: {
           {user && (
             <>
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild={true}>
                   <button
                     type="button"
                     className="flex overflow-hidden rounded-full text-sm focus:ring-4 focus:ring-gray-600 lg:me-0"

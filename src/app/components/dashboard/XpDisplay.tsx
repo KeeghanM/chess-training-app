@@ -29,7 +29,7 @@ export default function XpDisplay(props: XpDisplayProps) {
     <div className="flex flex-col items-center gap-1">
       <div className="flex h-fit w-fit  flex-row items-center border-2 border-orange-500 bg-white">
         <Tooltip>
-          <TooltipTrigger>
+          <TooltipTrigger asChild={true}>
             <div className="px-2">
               <p className="px-4 text-sm">
                 {currentXp.toLocaleString('en-GB')}
@@ -52,7 +52,7 @@ export default function XpDisplay(props: XpDisplayProps) {
           </TooltipContent>
         </Tooltip>
         <Tooltip>
-          <TooltipTrigger>
+          <TooltipTrigger asChild={true}>
             <p className="bg-orange-500 p-2 text-white">
               <strong>{rank?.rank}:</strong> {rank?.name}
             </p>

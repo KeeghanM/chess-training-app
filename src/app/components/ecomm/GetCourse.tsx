@@ -54,7 +54,7 @@ export default function GetCourse(props: {
 
   return userCourseId ? (
     <Tooltip>
-      <TooltipTrigger>
+      <TooltipTrigger asChild={true}>
         <Link href={`/training/courses/${userCourseId}`}>
           <Button variant="accent">Train Now</Button>
         </Link>

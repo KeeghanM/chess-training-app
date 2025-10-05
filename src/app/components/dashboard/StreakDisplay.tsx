@@ -26,7 +26,7 @@ export default function StreakDisplay(props: StreakDisplayProps) {
       <div className="flex h-fit w-fit  flex-row items-center border-2 border-orange-500 bg-white">
         <div className="flex flex-row items-center gap-1 p-2">
           <Tooltip>
-            <TooltipTrigger>
+            <TooltipTrigger asChild={true}>
               {' '}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -48,7 +48,7 @@ export default function StreakDisplay(props: StreakDisplayProps) {
             </TooltipContent>
           </Tooltip>
           <Tooltip>
-            <TooltipTrigger>
+            <TooltipTrigger asChild={true}>
               <p>
                 {currentStreak} day{currentStreak > 1 && 's'}
               </p>
@@ -57,7 +57,7 @@ export default function StreakDisplay(props: StreakDisplayProps) {
           </Tooltip>
         </div>
         <Tooltip>
-          <TooltipTrigger>
+          <TooltipTrigger asChild={true}>
             <p className="min-w-[50px] bg-orange-500 p-2 text-white">
               {streakBadge ? `${streakBadge.name} Badge` : 'No Badge..'}
             </p>
