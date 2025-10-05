@@ -9,12 +9,10 @@ import XpDisplay from '~/app/components/dashboard/XpDisplay'
 
 import CalculateXpRank from '~/app/_util/CalculateXpRank'
 
-export default async function MemberPage(
-  props: {
-    params: Promise<{ username: string }>
-  }
-) {
-  const params = await props.params;
+export default async function MemberPage(props: {
+  params: Promise<{ username: string }>
+}) {
+  const params = await props.params
   const { username } = params
 
   const account = await prisma.userProfile.findUnique({
@@ -22,7 +20,6 @@ export default async function MemberPage(
       username,
     },
   })
-  await prisma.$disconnect()
 
   if (!account) {
     redirect('/404')

@@ -18,12 +18,10 @@ import Heading from '~/app/components/_elements/heading'
 import StyledLink from '~/app/components/_elements/styledLink'
 import GetCourse from '~/app/components/ecomm/GetCourse'
 
-export default async function CoursePage(
-  props: {
-    params: Promise<{ slug: string }>
-  }
-) {
-  const params = await props.params;
+export default async function CoursePage(props: {
+  params: Promise<{ slug: string }>
+}) {
+  const params = await props.params
   const { slug } = params
   const session = getKindeServerSession()
   const user = await session.getUser()
@@ -106,8 +104,6 @@ export default async function CoursePage(
     name,
     count: groupLineCounts[name],
   }))
-
-  await prisma.$disconnect()
 
   return (
     <>

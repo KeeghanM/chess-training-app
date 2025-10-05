@@ -48,7 +48,6 @@ export default async function Dashboard() {
       userId: user.id,
     },
   })
-  await prisma.$disconnect()
 
   const override = process.env.NODE_ENV === 'development'
 

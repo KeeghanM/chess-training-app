@@ -40,8 +40,6 @@ export default async function AddLinesPage(props: {
     }
   })()
 
-  await prisma.$disconnect()
-
   if (!course) {
     redirect('/404')
   }

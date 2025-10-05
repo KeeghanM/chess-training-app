@@ -93,8 +93,6 @@ export default async function CourseTrainPage(props: {
     }
   })()
 
-  await prisma.$disconnect()
-
   if (!userCourse || !userLines || !userFens) {
     redirect('/404')
   }
