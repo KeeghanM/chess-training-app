@@ -5,15 +5,14 @@
   "type": "module",
   "scripts": {
     "build": "next build",
+    "dev": "next dev --turbopack",
+    "start": "next start",
+    "postinstall": "prisma generate",
+    "qa:lint": "next lint",
+    "qa:types": "tsc --noEmit",
+    "qa:format": "prettier --log-level warn --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
-    "dev": "next dev --turbopack",
-    "postinstall": "prisma generate",
-    "qa:eslint": "next lint",
-    "qa:types": "tsc --noEmit",
-    "start": "next start",
-    "format": "prettier --log-level warn --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
-    "slicemachine": "start-slicemachine",
     "docs": "git log origin/main..HEAD --pretty=format:'%ad:: %s' > git-diff.txt && echo '\n----------\n' >> git-diff.txt && git diff origin/main...HEAD --color ':!*.lock' >> git-diff.txt"
   },
   "dependencies": {

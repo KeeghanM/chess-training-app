@@ -8,7 +8,7 @@ import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import { Puzzle } from 'lucide-react'
 
 import Button from '~/app/components/_elements/button'
-import { ProgressBar, RoundProgress } from '~/app/components/_elements/progress'
+import { ProgressBar } from '~/app/components/_elements/progress'
 import Spinner from '~/app/components/general/Spinner'
 import TimeSince from '~/app/components/general/TimeSince'
 import type { PrismaTacticsSet } from '~/app/components/training/tactics/create/TacticsSetCreator'
