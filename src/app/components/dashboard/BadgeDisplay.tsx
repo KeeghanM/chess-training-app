@@ -19,7 +19,7 @@ export default function BadgeDisplay({ userBadgeCount }: BadgeDisplayProps) {
           {/* Background circle */}
           <circle
             className="text-gray-200/5 stroke-current"
-            stroke-width="10"
+            strokeWidth="10"
             cx="50"
             cy="50"
             r="40"
@@ -28,21 +28,21 @@ export default function BadgeDisplay({ userBadgeCount }: BadgeDisplayProps) {
           {/* Progress circle */}
           <circle
             className="text-green-500 progress-ring__circle stroke-current"
-            stroke-width="10"
-            stroke-linecap="round"
+            strokeWidth="10"
+            strokeLinecap="round"
             cx="50"
             cy="50"
             r="40"
             fill="transparent"
-            stroke-dasharray="251.2"
-            stroke-dashoffset={`calc(251.2px - (251.2px * ${percentage}) / 100)`}
+            strokeDasharray="251.2"
+            strokeDashoffset={`calc(251.2px - (251.2px * ${percentage}) / 100)`}
           ></circle>
           {/* Center text */}
           <text
             x="50"
             y="47"
-            text-anchor="middle"
-            alignment-baseline="middle"
+            textAnchor="middle"
+            alignmentBaseline="middle"
             fill="white"
           >
             {percentage}%
@@ -50,8 +50,8 @@ export default function BadgeDisplay({ userBadgeCount }: BadgeDisplayProps) {
           <text
             x="50"
             y="62"
-            text-anchor="middle"
-            alignment-baseline="middle"
+            textAnchor="middle"
+            alignmentBaseline="middle"
             fill="white"
             fontSize={'0.5rem'}
           >

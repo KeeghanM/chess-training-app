@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation'
 
-import PageHeader from '~/app/components/_layouts/pageHeader'
+import Backdrop from '~/app/components/_elements/backdrop'
+import Container from '~/app/components/_elements/container'
+import Heading from '~/app/components/_elements/heading'
 import TacticsList from '~/app/components/training/tactics/list/TacticsList'
 
 import { getUserServer } from '~/app/_util/getUserServer'
@@ -10,18 +12,17 @@ export default async function TacticsListPage() {
   if (!user) redirect('/auth/signin')
 
   return (
-    <>
-      <PageHeader
-        title="Tactics Trainer"
-        subTitle="Your puzzle sets"
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Wooden chess pieces on a chess board',
-        }}
-      />
-      <div className="">
+    <div className="relative">
+      <Backdrop />
+      <Container size="extra-wide">
+        <Heading as="h1" className="text-white">
+          Tactics Trainer
+        </Heading>
+        <Heading as="h2" className="text-card-dark">
+          Your puzzle sets
+        </Heading>
         <TacticsList hasUnlimitedSets={isPremium} />
-      </div>
-    </>
+      </Container>
+    </div>
   )
 }

@@ -17,26 +17,29 @@ export default function TacticsList(props: { hasUnlimitedSets: boolean }) {
   const { tacticsSetsQuery } = useTacticsQueries()
 
   return (
-    <Container>
-      <div className="flex items-center gap-2">
+    <div className="space-y-6">
+      <div className="flex items-center gap-6">
         <TacticsSetCreator
           setCount={tacticsSetsQuery.data?.length ?? 0}
           maxSets={env.NEXT_PUBLIC_MAX_SETS}
           hasUnlimitedSets={hasUnlimitedSets}
         />
-        <>
-          <Link href="/training/tactics/curated-sets">
-            <Button variant="secondary">Browse Curated Sets</Button>
-          </Link>
-          <Link
-            className="text-sm text-purple-700 hover:text-purple-600 underline md:ml-auto"
-            href="/training/tactics/list/archived"
-          >
-            View archived sets
-          </Link>
-        </>
+        <Link href="/training/tactics/curated-sets">
+          <Button>Browse Curated Sets</Button>
+        </Link>
+        <Link
+          className="hover:underline text-white"
+          href="/training/tactics/list/archived"
+        >
+          View archived sets
+        </Link>
       </div>
-      <div className="mt-4 flex flex-col gap-4">
+      {tacticsSetsQuery.data?.length === 0 && (
+        <p className="text-center p-6 bg-card/10 text-white rounded-lg">
+          You don't have any sets yet. Create one above!
+        </p>
+      )}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {tacticsSetsQuery.isLoading ? (
           <>
             <div className="flex flex-col h-24 gap-0 border border-gray-300   shadow-md  bg-[rgba(0,0,0,0.03)]  hover:shadow-lg transition-shadow duration-300 opacity-50">
@@ -51,10 +54,6 @@ export default function TacticsList(props: { hasUnlimitedSets: boolean }) {
               </p>
             </div>
           </>
-        ) : tacticsSetsQuery.data?.length === 0 ? (
-          <p className="text-center ">
-            You don't have any sets yet. Create one above!
-          </p>
         ) : (
           tacticsSetsQuery.data
             ?.sort((a, b) => {
@@ -75,6 +74,6 @@ export default function TacticsList(props: { hasUnlimitedSets: boolean }) {
             .map((set) => <SetListItem key={set.id} set={set} />)
         )}
       </div>
-    </Container>
+    </div>
   )
 }

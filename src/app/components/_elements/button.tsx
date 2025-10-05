@@ -30,21 +30,16 @@ export default function Button({
     primary: 'bg-primary hover:bg-primary-dark text-white ',
     accent: 'bg-accent hover:bg-accent-dark text-white ',
     tertiary: 'bg-none underline text-gray-700 hover:text-purple-700  ',
-    danger: 'bg-red-700 hover:bg-red-600 text-white ',
+    danger: 'bg-red-500 hover:bg-red-600 text-white ',
     warning: 'bg-yellow-500 hover:bg-yellow-400 text-black ',
-    success: 'bg-green-500 hover:bg-green-400 text-white ',
+    success: 'bg-green-500 hover:bg-green-600 text-white ',
     info: 'bg-blue-600 hover:bg-blue-500 text-white ',
   }
 
   return (
     <button
       id={id}
-      className={
-        'cursor-pointer flex-1 w-fit flex items-center justify-center gap-2 text-sm rounded-lg py-2 px-4 ' +
-        styles[variant] +
-        (disabled ? ' cursor-not-allowed opacity-50 pointer-events-none' : '') +
-        (className ? ' ' + className : '')
-      }
+      className={`cursor-pointer flex-1 w-fit flex items-center justify-center gap-2 text-sm rounded-lg py-2 px-4 ${styles[variant]} ${disabled ? ' cursor-not-allowed opacity-50 pointer-events-none' : ''} ${className}`}
       onClick={onClick ? onClick : undefined}
       disabled={disabled}
     >

@@ -110,8 +110,8 @@ export default function SetListEdit({
               className="fixed inset-0 z-20 bg-[rgba(0,0,0,0.5)]"
               onClick={() => setDeleteOpen(false)}
             />
-            <AlertDialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[75vh] w-[90vw] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto bg-white p-4 shadow-md md:p-6">
-              <AlertDialog.Title className="text-lg font-bold text-purple-700">
+            <AlertDialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[75vh] w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 overflow-y-auto bg-card rounded-lg p-4 shadow-md md:p-6 space-y-4">
+              <AlertDialog.Title className="font-bold text-xl">
                 Are you sure you want to delete this?
               </AlertDialog.Title>
               <p>
@@ -129,7 +129,7 @@ export default function SetListEdit({
                   </Button>
                 </AlertDialog.Action>
                 <AlertDialog.Cancel>
-                  <Button variant="primary" disabled={somethingsPending}>
+                  <Button variant="success" disabled={somethingsPending}>
                     Keep The Set
                   </Button>
                 </AlertDialog.Cancel>
@@ -145,7 +145,6 @@ export default function SetListEdit({
     return (
       <>
         <Button
-          variant="secondary"
           onClick={() => setArchiveOpen(true)}
           disabled={somethingsPending}
         >
@@ -163,8 +162,8 @@ export default function SetListEdit({
               className="fixed inset-0 z-20 bg-[rgba(0,0,0,0.5)]"
               onClick={close}
             />
-            <AlertDialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[75vh] w-[90vw] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto bg-white p-4 shadow-md md:p-6">
-              <AlertDialog.Title className="text-lg font-bold text-purple-700">
+            <AlertDialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[75vh] w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 overflow-y-auto bg-card rounded-lg p-4 shadow-md md:p-6 space-y-4">
+              <AlertDialog.Title className="font-bold text-xl">
                 Are you sure you want to archive this?
               </AlertDialog.Title>
               <p>
@@ -182,7 +181,7 @@ export default function SetListEdit({
                   </Button>
                 </AlertDialog.Action>
                 <AlertDialog.Cancel>
-                  <Button variant="primary" disabled={somethingsPending}>
+                  <Button variant="success" disabled={somethingsPending}>
                     Keep The Set
                   </Button>
                 </AlertDialog.Cancel>
@@ -196,11 +195,7 @@ export default function SetListEdit({
 
   return (
     <>
-      <Button
-        variant="secondary"
-        onClick={() => setEditOpen(true)}
-        disabled={somethingsPending}
-      >
+      <Button onClick={() => setEditOpen(true)} disabled={somethingsPending}>
         Edit
       </Button>
       <AlertDialog.Root open={editOpen} onOpenChange={setEditOpen}>
@@ -209,26 +204,27 @@ export default function SetListEdit({
             className="fixed inset-0 z-50 bg-[rgba(0,0,0,0.5)]"
             onClick={close}
           />
-          <AlertDialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[75vh] w-[90vw] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto bg-white p-4 shadow-md md:p-6">
-            <AlertDialog.Title className="text-lg font-bold text-purple-700">
-              {set.curatedSetId ? '' : 'Editing'} "{set.name}"
+          <AlertDialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[75vh] w-[90vw] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto bg-card rounded-lg p-4 shadow-md md:p-6 space-y-4">
+            <AlertDialog.Title className="font-bold text-xl">
+              Editing "{set.name}"
             </AlertDialog.Title>
-            <div className="flex flex-col gap-2 mt-4">
+            <div className="space-y-4">
               {!set.curatedSetId && (
-                <>
-                  <label>Set Name</label>
-                  <input
-                    type="text"
-                    className="w-full border border-gray-300 px-4 py-2 bg-gray-100 text-black"
-                    value={name}
-                    onInput={(e) => {
-                      setName(e.currentTarget.value)
-                    }}
-                  />
+                <input
+                  type="text"
+                  className="w-full border border-gray-300 px-4 py-2 bg-gray-100 text-black rounded-lg"
+                  value={name}
+                  onInput={(e) => {
+                    setName(e.currentTarget.value)
+                  }}
+                />
+              )}
+              <div className="flex gap-4">
+                {!set.curatedSetId && (
                   <Button
-                    variant="primary"
                     disabled={somethingsPending}
                     onClick={updateSet}
+                    variant="success"
                   >
                     {updateTactic.isPending ? (
                       <>
@@ -238,17 +234,10 @@ export default function SetListEdit({
                       'Save'
                     )}
                   </Button>
-                </>
-              )}
-              <ArchiveButton />
-              {!set.curatedSetId && <DeleteButton />}
-              <Button
-                variant="primary"
-                onClick={close}
-                disabled={somethingsPending}
-              >
-                Close
-              </Button>
+                )}
+                <ArchiveButton />
+                {!set.curatedSetId && <DeleteButton />}
+              </div>
               {updateTactic.error && (
                 <p className="text-red-500">
                   Error updating set: {updateTactic.error.message}

@@ -7,6 +7,7 @@ import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import type { TacticsSet, TacticsSetRound } from '@prisma/client'
 import * as AlertDialog from '@radix-ui/react-alert-dialog'
 import * as Sentry from '@sentry/nextjs'
+import { Plus } from 'lucide-react'
 import Select from 'react-select'
 
 import Button from '~/app/components/_elements/button'
@@ -180,20 +181,9 @@ export default function TacticsSetCreator({
             setOpen(true)
             trackEventOnClient('create_tactics_set_opened', {})
           }}
-          className="flex items-center gap-2 bg-purple-700 px-4 py-2 text-white hover:bg-purple-600"
         >
+          <Plus />
           <p>Create New Set</p>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-          >
-            <path
-              fill="currentColor"
-              d="M19 12.998h-6v6h-2v-6H5v-2h6v-6h2v6h6z"
-            />
-          </svg>
         </Button>
         <AlertDialog.Portal>
           <AlertDialog.Overlay
@@ -312,9 +302,7 @@ export default function TacticsSetCreator({
                       'Create'
                     )}
                   </Button>
-                  <Button variant="secondary" onClick={close}>
-                    Cancel
-                  </Button>
+                  <Button onClick={close}>Cancel</Button>
                 </div>
                 {message && <p className="italic text-red-500">{message}</p>}
                 {createTacticsSet.error && (
@@ -342,9 +330,7 @@ export default function TacticsSetCreator({
                   a <strong>5%</strong> discount on all products.
                 </p>
                 <GetPremiumButton />
-                <Button variant="secondary" onClick={close}>
-                  Cancel
-                </Button>
+                <Button onClick={close}>Cancel</Button>
               </div>
             )}
           </AlertDialog.Content>

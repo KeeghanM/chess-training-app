@@ -1,12 +1,13 @@
 'use client'
 
-import Link from 'next/link'
-
 import { useTacticsQueries } from '@hooks/use-tactics-queries'
+import { Puzzle } from 'lucide-react'
 import { env } from '~/env'
 
 import Button from '~/app/components/_elements/button'
+import Container from '~/app/components/_elements/container'
 import Spinner from '~/app/components/general/Spinner'
+import TimeSince from '~/app/components/general/TimeSince'
 
 export default function ArchivedSetList({
   hasUnlimitedSets,
@@ -17,69 +18,67 @@ export default function ArchivedSetList({
 
   const { archivedTacticsQuery, restoreTactic } = useTacticsQueries()
 
-  return (
-    <>
-      <div className="w-full">
-        <Link
-          className="text-sm text-purple-700 hover:text-purple-600 underline md:ml-auto"
-          href="/training/tactics/list"
-        >
-          View active Sets
-        </Link>
+  if (archivedTacticsQuery.isPending)
+    return (
+      <div className="relative w-full h-16 flex items-center justify-center">
+        <div className="absolute inset-0 bg-card/10 text-white"></div>
+        <p className="flex items-center gap-4">
+          Loading... <Spinner />
+        </p>
       </div>
-      {archivedTacticsQuery.isPending && (
-        <div className="relative  w-full h-16 flex items-center justify-center">
-          <div className="absolute inset-0 bg-gray-500 opacity-30"></div>
-          <p className="flex items-center gap-4">
-            Loading... <Spinner />
-          </p>
-        </div>
-      )}{' '}
-      {archivedTacticsQuery.data && (
-        <div
-          className={
-            'flex flex-col gap-4 ' +
-            (archivedTacticsQuery.data.sets.length == 0 ? ' bg-gray-100 ' : '')
-          }
-        >
-          {archivedTacticsQuery.data.sets.length > 0 ? (
-            archivedTacticsQuery.data.sets.map((set, index) => (
-              <div
-                key={index}
-                className="flex relative flex-col items-center gap-4 bg-gray-100 p-2 md:px-6    md:flex-row md:justify-between"
-              >
-                <p>{set.name}</p>
+    )
 
-                <Button
-                  disabled={
-                    (archivedTacticsQuery.data.activeCount >= maxSets &&
-                      !hasUnlimitedSets) ||
-                    restoreTactic.isPending
-                  }
-                  variant="primary"
-                  onClick={async () =>
-                    await restoreTactic.mutate({ setId: set.id })
-                  }
-                >
-                  {restoreTactic.isPending ? (
-                    <>
-                      Restoring... <Spinner />
-                    </>
-                  ) : (
-                    'Restore'
-                  )}
-                </Button>
-              </div>
-            ))
-          ) : (
-            <div className="p-2">
-              <p className="text-gray-500  ">
-                You don't have any archived Sets.
-              </p>
-            </div>
-          )}
+  if (!archivedTacticsQuery.data || archivedTacticsQuery.data.sets.length === 0)
+    return (
+      <p className="text-center p-6 bg-card/10 text-white rounded-lg">
+        You don't have any archived sets.
+      </p>
+    )
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+      {archivedTacticsQuery.data.sets.map((set, index) => (
+        <div
+          key={index}
+          className="bg-card rounded-xl flex justify-between p-4 items-center"
+        >
+          <div className="space-y-2">
+            <h3 className="font-bold text-xl flex items-center gap-2">
+              <Puzzle />
+              {set.name}
+            </h3>
+            <p>
+              Last trained{' '}
+              {set.lastTrained ? (
+                <TimeSince text="ago" date={new Date(set.lastTrained)} />
+              ) : (
+                'never'
+              )}
+            </p>
+          </div>
+          <div className="">
+            <Button
+              disabled={
+                (archivedTacticsQuery.data.activeCount >= maxSets &&
+                  !hasUnlimitedSets) ||
+                restoreTactic.isPending
+              }
+              variant="primary"
+              onClick={async () =>
+                await restoreTactic.mutate({ setId: set.id })
+              }
+            >
+              {restoreTactic.isPending ? (
+                <>
+                  Restoring... <Spinner />
+                </>
+              ) : (
+                'Restore'
+              )}
+            </Button>
+          </div>
         </div>
-      )}
-    </>
+      ))}
+    </div>
   )
 }

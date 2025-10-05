@@ -182,7 +182,7 @@ export default async function Dashboard() {
       <Backdrop />
       <Container size="extra-wide" className="flex flex-col gap-6">
         <StreakDisplay data={CalculateStreakBadge(profile)} />
-        <Heading color="text-white" as={'h1'}>
+        <Heading className="text-white" as={'h1'}>
           Welcome back, {user.given_name ?? profile.username ?? user.email}
           <PremiumDisplay isPremium={isPremium} />
         </Heading>
@@ -205,7 +205,7 @@ export default async function Dashboard() {
         </div>
         {isStaff && (
           <div>
-            <Heading color="text-purple-700" as={'h2'}>
+            <Heading className="text-white" as={'h2'}>
               Staff Tools
             </Heading>
             <div className="mb-2 grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">

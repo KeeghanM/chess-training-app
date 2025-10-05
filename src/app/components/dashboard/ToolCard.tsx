@@ -13,7 +13,7 @@ type ToolCardProps = {
 export default function ToolCard({ tool }: ToolCardProps) {
   return (
     <div
-      className={`flex flex-col gap-4 rounded-lg p-6  ${tool.active ? 'bg-card-light shadow' : 'bg-card-dark'}`}
+      className={`flex flex-col gap-4 rounded-lg p-6 ${tool.active ? 'bg-card-light shadow' : 'bg-card-dark'}`}
     >
       <div id={tool.id} className="font-bold text-xl flex items-center gap-2">
         {tool.icon && <DynamicIcon name={tool.icon} />}

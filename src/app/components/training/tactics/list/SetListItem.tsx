@@ -5,8 +5,10 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
+import { Puzzle } from 'lucide-react'
 
 import Button from '~/app/components/_elements/button'
+import { ProgressBar, RoundProgress } from '~/app/components/_elements/progress'
 import Spinner from '~/app/components/general/Spinner'
 import TimeSince from '~/app/components/general/TimeSince'
 import type { PrismaTacticsSet } from '~/app/components/training/tactics/create/TacticsSetCreator'
@@ -27,6 +29,16 @@ export default function SetListItem({ set }: { set: PrismaTacticsSet }) {
   const router = useRouter()
   const [opening, setOpening] = useState(false)
 
+  const accuracy = currentRound
+    ? currentRound.correct + currentRound.incorrect > 0
+      ? Math.round(
+          (currentRound.correct /
+            (currentRound.correct + currentRound.incorrect)) *
+            100,
+        )
+      : 0
+    : 0
+
   const trainSet = async () => {
     setOpening(true)
     trackEventOnClient('tactics_set_opened', {})
@@ -38,91 +50,74 @@ export default function SetListItem({ set }: { set: PrismaTacticsSet }) {
   }, [])
 
   return (
-    <div
-      className="flex flex-col gap-0 border border-gray-300   shadow-md  bg-[rgba(0,0,0,0.03)]  hover:shadow-lg transition-shadow duration-300"
-      key={set.id}
-    >
-      <div className="px-2 py-1 border-b border-gray-300  font-bold text-orange-500">
-        <p onClick={trainSet} className="cursor-pointer">
-          <span className="text-lg">{set.name}</span>
-          <span className="px-2 text-xs italic text-gray-600 ">
-            Last trained{' '}
-            {set.lastTrained ? (
-              <TimeSince text="ago" date={new Date(set.lastTrained)} />
-            ) : (
-              'never'
-            )}
-          </span>
+    <div className="space-y-6 rounded-lg p-6 bg-card-light shadow" key={set.id}>
+      <div className="space-y-2">
+        <h3 className="font-bold text-xl flex items-center gap-2">
+          <Puzzle />
+          {set.name}
+        </h3>
+        <p>
+          Last trained{' '}
+          {set.lastTrained ? (
+            <TimeSince text="ago" date={new Date(set.lastTrained)} />
+          ) : (
+            'never'
+          )}
         </p>
       </div>
-
-      <div className="flex w-full flex-col gap-2 p-2">
-        <div className="flex flex-wrap gap-2 justify-center">
-          <div className="flex flex-col items-center border border-gray-300 ">
-            <p className="font-bold py-1 px-2 border-b border-gray-300 ">
-              Round
-            </p>
-            <p>{set.rounds ? set.rounds.length : 1}/8</p>
-          </div>
-          <div className="flex flex-col items-center border border-gray-300 ">
-            <p className="font-bold py-1 px-2 border-b border-gray-300 ">
-              Completed
-            </p>
-            <p>
-              {completedCount}/{set.size}
-            </p>
-          </div>
-          <div className="flex flex-col items-center border border-gray-300 ">
-            <p className="font-bold py-1 px-2 border-b border-gray-300 ">
-              Accuracy
-            </p>
-            <p>
-              {currentRound
-                ? currentRound.correct + currentRound.incorrect > 0
-                  ? Math.round(
-                      (currentRound.correct /
-                        (currentRound.correct + currentRound.incorrect)) *
-                        100,
-                    )
-                  : 0
-                : 0}
-              %
-            </p>
-          </div>
-          <div className="flex flex-col items-center border border-gray-300 ">
-            <p className="font-bold py-1 px-2 border-b border-gray-300 ">
-              Time Spent
-            </p>
+      <div className="flex w-full flex-col gap-2">
+        <div>
+          <strong>Current Round:</strong>
+        </div>
+        <ProgressBar
+          percentage={((set.rounds ? set.rounds.length : 1) / 8) * 100}
+        >
+          {set.rounds ? set.rounds.length : 1}/8
+        </ProgressBar>
+        <div>
+          <strong>Puzzles Completed:</strong>{' '}
+          <ProgressBar percentage={(completedCount / set.size) * 100}>
+            <span>
+              {completedCount}/{set.size} -{' '}
+              {Math.round((completedCount / set.size) * 100)}%
+            </span>
+          </ProgressBar>
+        </div>
+        <div>
+          <strong>Round Accuracy:</strong>
+          <ProgressBar percentage={accuracy}>{accuracy}%</ProgressBar>
+        </div>
+        <div className="flex gap-12">
+          <div>
+            <strong>Time Spent:</strong>{' '}
             <p>{toHHMMSS(currentRound?.timeSpent ?? 0)}</p>
           </div>
           {set.rating && (
-            <div className="flex flex-col items-center border border-gray-300 ">
-              <p className="font-bold py-1 px-2 border-b border-gray-300 ">
-                Rating
-              </p>
+            <div>
+              <strong>Rating:</strong>
               <p>{set.rating}</p>
             </div>
           )}
         </div>
-        <div className="flex flex-col gap-2 md:flex-row md:justify-center">
-          <Button
-            disabled={
-              (set.rounds?.length >= 8 && completedCount >= set.size) || opening
-            }
-            onClick={trainSet}
-            variant="primary"
-          >
-            {opening ? (
-              <>
-                Opening... <Spinner />
-              </>
-            ) : (
-              'Train'
-            )}
-          </Button>
-          <SetListEdit set={set} user={user} />
-          <SetListStats set={set} />
-        </div>
+      </div>
+      <div className="flex flex-col gap-2 md:flex-row md:justify-center">
+        <Button
+          disabled={
+            (set.rounds?.length >= 8 && completedCount >= set.size) || opening
+          }
+          onClick={trainSet}
+          variant="primary"
+        >
+          {opening ? (
+            <>
+              Opening... <Spinner />
+            </>
+          ) : (
+            'Train'
+          )}
+        </Button>
+        <SetListEdit set={set} user={user} />
+        <SetListStats set={set} />
       </div>
     </div>
   )
