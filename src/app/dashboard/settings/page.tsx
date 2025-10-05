@@ -1,10 +1,8 @@
 import { redirect } from 'next/navigation'
-
-import Container from '~/app/components/_elements/container'
-import AccountForm from '~/app/components/dashboard/AccountForm'
-import SubscriptionManager from '~/app/components/dashboard/SubscriptionManager'
-
-import { getUserServer } from '~/app/_util/getUserServer'
+import Container from '@components/_elements/container'
+import AccountForm from '@components/dashboard/AccountForm'
+import SubscriptionManager from '@components/dashboard/SubscriptionManager'
+import { getUserServer } from '@utils/getUserServer'
 
 export default async function AccountSettingsPage() {
   const { user, profile } = await getUserServer()

@@ -1,10 +1,8 @@
 import { redirect } from 'next/navigation'
-
-import Container from '~/app/components/_elements/container'
-import PageHeader from '~/app/components/_layouts/pageHeader'
-import ArchivedList from '~/app/components/training/courses/list/ArhivedList'
-
-import { getUserServer } from '~/app/_util/getUserServer'
+import Container from '@components/_elements/container'
+import PageHeader from '@components/_layouts/pageHeader'
+import ArchivedList from '@components/training/courses/list/ArhivedList'
+import { getUserServer } from '@utils/getUserServer'
 
 export const metadata = {
   title: 'Your Archived Courses - ChessTraining.app',

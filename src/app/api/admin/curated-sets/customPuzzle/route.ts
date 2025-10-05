@@ -1,5 +1,4 @@
 import { prisma } from '~/server/db'
-
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import type { CustomPuzzle } from '@prisma/client'
 import * as Sentry from '@sentry/nextjs'

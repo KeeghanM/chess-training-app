@@ -1,8 +1,8 @@
-import { MultiCol, MultiColItem } from '../components/_layouts/multiCol'
-import { TextWall } from '../components/_layouts/textWall'
-import GetPremiumButton from '../components/ecomm/GetPremiumButton'
-import Heading from '~/app/components/_elements/heading'
-import Hero from '~/app/components/_layouts/hero'
+import Heading from '@components/_elements/heading'
+import Hero from '@components/_layouts/hero'
+import { MultiCol, MultiColItem } from '@components/_layouts/multiCol'
+import { TextWall } from '@components/_layouts/textWall'
+import GetPremiumButton from '@components/ecomm/GetPremiumButton'
 
 export const metadata = {
   title: 'Go Premium and Unlock Unlimited Chess Training at ChessTraining.app',

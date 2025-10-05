@@ -1,14 +1,11 @@
 import { redirect } from 'next/navigation'
-
 import { prisma } from '~/server/db'
-
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import type { Comment, Group, Line, Move, UserLine } from '@prisma/client'
 import * as Sentry from '@sentry/nextjs'
-
-import Container from '~/app/components/_elements/container'
-import PageHeader from '~/app/components/_layouts/pageHeader'
-import CourseTrainer from '~/app/components/training/courses/CourseTrainer'
+import Container from '@components/_elements/container'
+import PageHeader from '@components/_layouts/pageHeader'
+import CourseTrainer from '@components/training/courses/CourseTrainer'
 
 export type PrismaUserLine = UserLine & {
   line: Line & {

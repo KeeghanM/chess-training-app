@@ -1,6 +1,6 @@
-import Container from '~/app/components/_elements/container'
-import Heading from '~/app/components/_elements/heading'
-import ContactForm from '~/app/components/contact/ContactForm'
+import Container from '@components/_elements/container'
+import Heading from '@components/_elements/heading'
+import ContactForm from '@components/contact/ContactForm'
 
 export const metadata = {
   title: 'Get in touch with the team at ChessTraining.app',

@@ -8,9 +8,9 @@
     "dev": "next dev --turbopack",
     "start": "next start",
     "postinstall": "prisma generate",
-    "qa:lint": "next lint",
+    "qa:lint": "npx eslint ./src/**/*",
     "qa:types": "tsc --noEmit",
-    "qa:format": "prettier --log-level warn --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "qa:format": "prettier --write .",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "docs": "git log origin/main..HEAD --pretty=format:'%ad:: %s' > git-diff.txt && echo '\n----------\n' >> git-diff.txt && git diff origin/main...HEAD --color ':!*.lock' >> git-diff.txt"
@@ -58,6 +58,8 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.37.0",
     "@next/eslint-plugin-next": "15.5.4",
     "@slicemachine/adapter-next": "^0.3.84",
     "@tanstack/eslint-plugin-query": "^5.91.0",

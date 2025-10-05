@@ -1,7 +1,7 @@
-import StyledLink from '~/app/components/_elements/styledLink'
-import Hero from '~/app/components/_layouts/hero'
-import { MultiCol, MultiColItem } from '~/app/components/_layouts/multiCol'
-import { TextWall } from '~/app/components/_layouts/textWall'
+import StyledLink from '@components/_elements/styledLink'
+import Hero from '@components/_layouts/hero'
+import { MultiCol, MultiColItem } from '@components/_layouts/multiCol'
+import { TextWall } from '@components/_layouts/textWall'
 
 export const metadata = {
   title: 'About ChessTraining.app: Our Mission, Vision, and Story',

@@ -1,18 +1,14 @@
 import { prisma } from '~/server/db'
+import Container from '@components/_elements/container'
+import StyledLink from '@components/_elements/styledLink'
+import PageHeader from '@components/_layouts/pageHeader'
+import TrophyTile from '@components/members/TrophyTile'
+import CalculateXpRank from '@utils/CalculateXpRank'
 
-import Container from '../components/_elements/container'
-import StyledLink from '../components/_elements/styledLink'
-import PageHeader from '../components/_layouts/pageHeader'
-import TrophyTile from '../components/members/TrophyTile'
-
-import CalculateXpRank from '../_util/CalculateXpRank'
-
-export default async function MembersPage(
-  props: {
-    searchParams?: Promise<Record<string, string | string[]>>
-  }
-) {
-  const searchParams = await props.searchParams;
+export default async function MembersPage(props: {
+  searchParams?: Promise<Record<string, string | string[]>>
+}) {
+  const searchParams = await props.searchParams
   const pageNumber = searchParams?.page
     ? parseInt(searchParams.page as string)
     : 1

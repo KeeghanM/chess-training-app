@@ -1,18 +1,14 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-
 import { prisma } from '~/server/db'
-
 import * as Sentry from '@sentry/nextjs'
-
-import Button from '~/app/components/_elements/button'
-import Container from '~/app/components/_elements/container'
-import PageHeader from '~/app/components/_layouts/pageHeader'
-import Info from '~/app/components/training/courses/schedule/Info'
-import LineList from '~/app/components/training/courses/schedule/LineList'
-import ResetButtons from '~/app/components/training/courses/schedule/ResetButtons'
-
-import { getUserServer } from '~/app/_util/getUserServer'
+import Button from '@components/_elements/button'
+import Container from '@components/_elements/container'
+import PageHeader from '@components/_layouts/pageHeader'
+import Info from '@components/training/courses/schedule/Info'
+import LineList from '@components/training/courses/schedule/LineList'
+import ResetButtons from '@components/training/courses/schedule/ResetButtons'
+import { getUserServer } from '@utils/getUserServer'
 
 export default async function CourseSchedulePage(props: {
   params: Promise<{ userCourseId: string }>

@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ResponseJson } from '~/app/api/responses'
-
 import type { TrainingPuzzle } from './use-puzzle-queries'
 
 // Types based on the TacticsTrainer component
@@ -265,13 +264,7 @@ export function useTacticsQueries() {
   })
 
   const updateTactic = useMutation({
-    mutationFn: async ({
-      setId,
-      name,
-    }: {
-      setId: string
-      name: string
-    }) => {
+    mutationFn: async ({ setId, name }: { setId: string; name: string }) => {
       await fetch('/api/tactics/update', {
         method: 'POST',
         headers: {

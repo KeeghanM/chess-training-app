@@ -1,8 +1,6 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-
 import { prisma } from '~/server/db'
-
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import type {
   Course,
@@ -12,11 +10,10 @@ import type {
   UserProfile,
 } from '@prisma/client'
 import * as Sentry from '@sentry/nextjs'
-
-import Container from '~/app/components/_elements/container'
-import Heading from '~/app/components/_elements/heading'
-import StyledLink from '~/app/components/_elements/styledLink'
-import GetCourse from '~/app/components/ecomm/GetCourse'
+import Container from '@components/_elements/container'
+import Heading from '@components/_elements/heading'
+import StyledLink from '@components/_elements/styledLink'
+import GetCourse from '@components/ecomm/GetCourse'
 
 export default async function CoursePage(props: {
   params: Promise<{ slug: string }>

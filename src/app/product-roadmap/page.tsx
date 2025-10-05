@@ -1,6 +1,6 @@
-import StyledLink from '~/app/components/_elements/styledLink'
-import BigText from '~/app/components/_layouts/bigText'
-import { TextWall } from '~/app/components/_layouts/textWall'
+import StyledLink from '@components/_elements/styledLink'
+import BigText from '@components/_layouts/bigText'
+import { TextWall } from '@components/_layouts/textWall'
 
 export const metadata = {
   title: 'Explore Our Open Product Roadmap at ChessTraining.app',

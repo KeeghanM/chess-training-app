@@ -1,10 +1,8 @@
 import { prisma } from '~/server/db'
-
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import * as Sentry from '@sentry/nextjs'
 import { errorResponse, successResponse } from '~/app/api/responses'
-
-import getPuzzleById from '~/app/_util/GetPuzzleById'
+import getPuzzleById from '@utils/GetPuzzleById'
 
 export async function POST(request: Request) {
   const session = getKindeServerSession()

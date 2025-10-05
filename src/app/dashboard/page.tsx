@@ -1,22 +1,18 @@
 import { redirect } from 'next/navigation'
-
 import { prisma } from '~/server/db'
-
 import { IconName } from 'lucide-react/dynamic'
-
-import Backdrop from '../components/_elements/backdrop'
-import BadgeDisplay from '../components/dashboard/BadgeDisplay'
-import PremiumDisplay from '../components/dashboard/PremiumDisplay'
-import Container from '~/app/components/_elements/container'
-import Heading from '~/app/components/_elements/heading'
-import StreakDisplay from '~/app/components/dashboard/StreakDisplay'
-import ToolCard from '~/app/components/dashboard/ToolCard'
-import XpDisplay from '~/app/components/dashboard/XpDisplay'
-
-import CalculateStreakBadge from '../_util/CalculateStreakBadge'
-import CalculateXpRank from '../_util/CalculateXpRank'
-import { getUserServer } from '../_util/getUserServer'
-import { PostHogClient } from '~/app/_util/trackEventOnServer'
+import Backdrop from '@components/_elements/backdrop'
+import Container from '@components/_elements/container'
+import Heading from '@components/_elements/heading'
+import BadgeDisplay from '@components/dashboard/BadgeDisplay'
+import PremiumDisplay from '@components/dashboard/PremiumDisplay'
+import StreakDisplay from '@components/dashboard/StreakDisplay'
+import ToolCard from '@components/dashboard/ToolCard'
+import XpDisplay from '@components/dashboard/XpDisplay'
+import CalculateStreakBadge from '@utils/CalculateStreakBadge'
+import CalculateXpRank from '@utils/CalculateXpRank'
+import { getUserServer } from '@utils/getUserServer'
+import { PostHogClient } from '@utils/trackEventOnServer'
 
 export type Tool = {
   name: string

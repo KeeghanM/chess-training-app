@@ -28,21 +28,18 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"],
-      "@components/*": ["./src/app/components/*"],
+      "@components/*": ["./src/components/*"],
       "@db/*": ["./src/server/*"],
       "@auth/*": ["./src/app/auth/*"],
       "@hooks/*": ["./src/hooks/*"],
       "@stores/*": ["./src/stores/*"],
-      "@utils/*": ["./src/app/_util/*"]
+      "@utils/*": ["./src/utils/*"]
     }
   },
   "include": [
-    ".eslintrc.cjs",
+    "eslint.config.mjs",
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.cjs",
-    "**/*.js",
+    "./src/**/*",
     ".next/types/**/*.ts"
   ],
   "exclude": ["node_modules"]

@@ -1,12 +1,10 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-
 import { Suspense, useEffect, useState } from 'react'
-
-import Container from '~/app/components/_elements/container'
-import Heading from '~/app/components/_elements/heading'
-import StyledLink from '~/app/components/_elements/styledLink'
+import Container from '@components/_elements/container'
+import Heading from '@components/_elements/heading'
+import StyledLink from '@components/_elements/styledLink'
 
 type StatusType = 'loading' | 'success' | 'error'
 

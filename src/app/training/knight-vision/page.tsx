@@ -1,5 +1,5 @@
-import CtaRow from '~/app/components/_layouts/ctaRow'
-import PageHeader from '~/app/components/_layouts/pageHeader'
+import CtaRow from '@components/_layouts/ctaRow'
+import PageHeader from '@components/_layouts/pageHeader'
 
 export const metadata = {
   title: 'Knight Vision: Enhance Your Chess Board Vision - ChessTraining.app',

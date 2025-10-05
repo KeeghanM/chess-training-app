@@ -1,11 +1,10 @@
 import Link from 'next/link'
-
-import Heading from '~/app/components/_elements/heading'
-import BigText from '~/app/components/_layouts/bigText'
-import CtaRow from '~/app/components/_layouts/ctaRow'
-import Hero from '~/app/components/_layouts/hero'
-import ImageRowFull from '~/app/components/_layouts/imageRowFull'
-import { TextWall } from '~/app/components/_layouts/textWall'
+import Heading from '@components/_elements/heading'
+import BigText from '@components/_layouts/bigText'
+import CtaRow from '@components/_layouts/ctaRow'
+import Hero from '@components/_layouts/hero'
+import ImageRowFull from '@components/_layouts/imageRowFull'
+import { TextWall } from '@components/_layouts/textWall'
 
 export const metadata = {
   title:

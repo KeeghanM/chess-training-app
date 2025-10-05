@@ -1,11 +1,9 @@
 import { prisma } from '~/server/db'
-
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import type { Course, Group as PrismaGroup } from '@prisma/client'
 import * as Sentry from '@sentry/nextjs'
 import { errorResponse, successResponse } from '~/app/api/responses'
-
-import type { CleanMove } from '~/app/components/training/courses/create/parse/ParsePGNtoLineData'
+import type { CleanMove } from '@components/training/courses/create/parse/ParsePGNtoLineData'
 
 export async function POST(request: Request) {
   const session = getKindeServerSession()

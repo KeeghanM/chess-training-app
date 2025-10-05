@@ -1,15 +1,11 @@
 import Script from 'next/script'
-
 import type { ReactNode } from 'react'
 import { Suspense } from 'react'
-
-import CookieBanner from './components/template/CookieBanner'
-import Footer from './components/template/footer/Footer'
-import Header from './components/template/header/Header'
-
-import { PostHogPageview } from './_util/PostHog'
-import Providers from './_util/Providers'
-
+import CookieBanner from '@components/template/CookieBanner'
+import Footer from '@components/template/footer/Footer'
+import Header from '@components/template/header/Header'
+import { PostHogPageview } from '@utils/PostHog'
+import Providers from '@utils/Providers'
 import './globals.css'
 
 export const metadata = {

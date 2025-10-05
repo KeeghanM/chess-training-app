@@ -1,5 +1,4 @@
 import { prisma } from '~/server/db'
-
 import * as Sentry from '@sentry/nextjs'
 
 export default async function SubscribeUser(

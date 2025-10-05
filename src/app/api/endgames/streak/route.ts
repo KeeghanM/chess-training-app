@@ -1,9 +1,8 @@
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import * as Sentry from '@sentry/nextjs'
 import { errorResponse, successResponse } from '~/app/api/responses'
-
-import { AddBadgeToUser } from '~/app/_util/AddBadge'
-import { TacticStreakBadges } from '~/app/_util/RanksAndBadges'
+import { AddBadgeToUser } from '@utils/AddBadge'
+import { TacticStreakBadges } from '@utils/RanksAndBadges'
 
 export async function POST(request: Request) {
   const session = getKindeServerSession()

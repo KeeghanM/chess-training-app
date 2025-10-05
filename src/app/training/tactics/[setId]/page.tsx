@@ -1,14 +1,10 @@
 import { redirect } from 'next/navigation'
-
 import { prisma } from '~/server/db'
-
 import * as Sentry from '@sentry/nextjs'
-
-import Container from '~/app/components/_elements/container'
-import type { PrismaTacticsSetWithPuzzles } from '~/app/components/training/tactics/TacticsTrainer'
-import TacticsTrainer from '~/app/components/training/tactics/TacticsTrainer'
-
-import { getUserServer } from '~/app/_util/getUserServer'
+import Container from '@components/_elements/container'
+import type { PrismaTacticsSetWithPuzzles } from '@components/training/tactics/TacticsTrainer'
+import TacticsTrainer from '@components/training/tactics/TacticsTrainer'
+import { getUserServer } from '@utils/getUserServer'
 
 export default async function TacticsTrainPage(props: {
   params: Promise<{ setId: string }>

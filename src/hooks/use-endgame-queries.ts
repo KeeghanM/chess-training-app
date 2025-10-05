@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-
 import { usePuzzleQueries } from './use-puzzle-queries'
 
 // Types for endgames

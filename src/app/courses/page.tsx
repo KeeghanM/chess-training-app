@@ -1,16 +1,13 @@
 import Link from 'next/link'
-
 import { prisma } from '~/server/db'
-
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-
-import Button from '../components/_elements/button'
-import Container from '../components/_elements/container'
-import StyledLink from '../components/_elements/styledLink'
-import BigText from '../components/_layouts/bigText'
-import PageHeader from '../components/_layouts/pageHeader'
-import GetCourse from '../components/ecomm/GetCourse'
-import Heading from '~/app/components/_elements/heading'
+import Button from '@components/_elements/button'
+import Container from '@components/_elements/container'
+import Heading from '@components/_elements/heading'
+import StyledLink from '@components/_elements/styledLink'
+import BigText from '@components/_layouts/bigText'
+import PageHeader from '@components/_layouts/pageHeader'
+import GetCourse from '@components/ecomm/GetCourse'
 
 export const metadata = {
   title:

@@ -1,19 +1,16 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-
 import * as prismic from '@prismicio/client'
 import Prismic from '~/prismicio'
-
-import Container from '~/app/components/_elements/container'
-import Heading from '~/app/components/_elements/heading'
-import StyledLink from '~/app/components/_elements/styledLink'
-
-import { PrismicRichToHtml } from '~/app/_util/PrismicRichToHtml'
-import type { RichTextContent } from '~/app/_util/PrismicRichToHtml'
+import Container from '@components/_elements/container'
+import Heading from '@components/_elements/heading'
+import StyledLink from '@components/_elements/styledLink'
+import type { RichTextContent } from '@utils/PrismicRichToHtml'
+import { PrismicRichToHtml } from '@utils/PrismicRichToHtml'
 
 type Params = { uid: string }
 export default async function AuthorPage(props: { params: Promise<Params> }) {
-  const params = await props.params;
+  const params = await props.params
   const author = await Prismic.getByUID('author', params.uid).catch(() =>
     notFound(),
   )

@@ -1,15 +1,12 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-
 import { ArrowLeft } from 'lucide-react'
-
-import Backdrop from '~/app/components/_elements/backdrop'
-import Button from '~/app/components/_elements/button'
-import Container from '~/app/components/_elements/container'
-import Heading from '~/app/components/_elements/heading'
-import ArchivedSetList from '~/app/components/training/tactics/list/ArchivedList'
-
-import { getUserServer } from '~/app/_util/getUserServer'
+import Backdrop from '@components/_elements/backdrop'
+import Button from '@components/_elements/button'
+import Container from '@components/_elements/container'
+import Heading from '@components/_elements/heading'
+import ArchivedSetList from '@components/training/tactics/list/ArchivedList'
+import { getUserServer } from '@utils/getUserServer'
 
 export const metadata = {
   title: 'Your Archived Sets - ChessTraining.app',

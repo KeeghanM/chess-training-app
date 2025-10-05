@@ -1,6 +1,6 @@
-import Heading from '~/app/components/_elements/heading'
-import { MultiCol, MultiColItem } from '~/app/components/_layouts/multiCol'
-import PageHeader from '~/app/components/_layouts/pageHeader'
+import Heading from '@components/_elements/heading'
+import { MultiCol, MultiColItem } from '@components/_layouts/multiCol'
+import PageHeader from '@components/_layouts/pageHeader'
 
 export const metadata = {
   title: 'Meet Our Team - The Minds Behind ChessTraining.app',
