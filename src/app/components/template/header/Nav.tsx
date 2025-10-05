@@ -10,6 +10,7 @@ import { LogoutLink } from '@kinde-oss/kinde-auth-nextjs'
 import CalculateXpRank from '~/app/_util/CalculateXpRank'
 import type { KindeUser } from '~/app/_util/getUserServer'
 
+import Button from '../../_elements/button'
 import {
   Tooltip,
   TooltipContent,
@@ -76,7 +77,7 @@ export default function Nav(props: {
   ]
 
   return (
-    <header className="bg-slate-800 border-b-4 border-purple-700  text-white shadow-lg">
+    <header className="bg-bg border-b-1 border-purple-700  text-white shadow-lg">
       <div className="mx-auto flex max-w-screen-xl items-center justify-between gap-1 px-1 py-2 lg:gap-4 lg:p-4">
         <Link href={user ? '/dashboard' : '/'}>
           <div className="flex items-center">
@@ -103,7 +104,7 @@ export default function Nav(props: {
                 <TooltipTrigger asChild={true}>
                   <button
                     type="button"
-                    className="flex overflow-hidden rounded-full text-sm focus:ring-4 focus:ring-gray-600 lg:me-0"
+                    className="flex overflow-hidden rounded-full text-sm focus:ring-4 focus:ring-gray-600 lg:me-0 cursor-pointer"
                     onClick={() => setUserOpen(!userOpen)}
                   >
                     <span className="sr-only">Open user menu</span>
@@ -134,7 +135,7 @@ export default function Nav(props: {
                     className="fixed inset-0 z-10"
                     onClick={() => setUserOpen(false)}
                   ></div>
-                  <div className="absolute right-0 top-8 z-50 my-4 list-none divide-y divide-gray-600 bg-slate-700 text-base shadow-lg border-b-4 border-purple-700">
+                  <div className="absolute right-0 top-8 z-50 my-4 list-none divide-y divide-gray-600 bg-bg-light shadow-lg border-b-2 border-purple-700">
                     <div className="px-4 py-3">
                       <span className="block text-sm  text-white">
                         {user.given_name} {user.family_name ?? 'Welcome'}
@@ -232,7 +233,7 @@ export default function Nav(props: {
                     onClick={() =>
                       setOpenSub(openSub === link.name ? '' : link.name)
                     }
-                    className="flex w-full items-center justify-between px-4 py-2 text-gray-900 hover:bg-orange-100 lg:w-auto lg:border-0 lg:text-white lg:hover:bg-slate-600"
+                    className="flex w-full items-center justify-between px-4 py-2 text-gray-900 hover:bg-orange-100 lg:w-auto lg:border-0 lg:text-white lg:hover:bg-slate-600 cursor-pointer"
                   >
                     {link.name}{' '}
                     <svg
@@ -296,10 +297,11 @@ export default function Nav(props: {
                   setMenuOpen(false)
                   setOpenSub('')
                 }}
-                className="block cursor-pointer bg-orange-500 px-4 py-2 text-white hover:bg-orange-400 lg:ml-2"
                 href="/auth/signin"
               >
-                Login/Register
+                <Button className="lg:ml-2" variant="primary">
+                  Login/Register
+                </Button>
               </Link>
             ) : (
               <Link
@@ -307,10 +309,11 @@ export default function Nav(props: {
                   setMenuOpen(false)
                   setOpenSub('')
                 }}
-                className="block cursor-pointer bg-orange-500 px-4 py-2 text-white hover:bg-orange-400 lg:ml-2"
                 href="/dashboard"
               >
-                Dashboard
+                <Button className="lg:ml-2" variant="primary">
+                  Dashboard
+                </Button>
               </Link>
             )}
           </ul>

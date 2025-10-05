@@ -40,6 +40,7 @@
     "install": "^0.13.0",
     "javascript-time-ago": "^2.5.12",
     "killbill": "^0.24.0",
+    "lucide-react": "^0.544.0",
     "next": "15.5.4",
     "nodemailer": "^7.0.6",
     "posthog-js": "^1.270.1",

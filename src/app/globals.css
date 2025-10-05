@@ -1,85 +1,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@100;400;700&display=swap');
 @import 'tailwindcss';
 
-/* @link https://utopia.fyi/type/calculator?c=320,18,1.2,1240,20,1.25,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l&g=s,l,xl,12 */
-:root {
-  --step--2: clamp(0.7813rem, 0.7747rem + 0.0326vw, 0.8rem);
-  --step--1: clamp(0.9375rem, 0.9158rem + 0.1087vw, 1rem);
-  --step-0: clamp(1.125rem, 1.0815rem + 0.2174vw, 1.25rem);
-  --step-1: clamp(1.35rem, 1.2761rem + 0.3696vw, 1.5625rem);
-  --step-2: clamp(1.62rem, 1.5041rem + 0.5793vw, 1.9531rem);
-  --step-3: clamp(1.9438rem, 1.7707rem + 0.8652vw, 2.4413rem);
-  --step-4: clamp(2.3325rem, 2.0823rem + 1.2511vw, 3.0519rem);
-  --step-5: clamp(2.7994rem, 2.4461rem + 1.7663vw, 3.815rem);
+@theme {
+  --color-primary: hsl(25, 95%, 53%);
+  --color-primary-dark: hsl(25, 100%, 45%);
+  --color-primary-light: hsl(25, 95%, 66%);
+
+  --color-accent: hsl(276, 100%, 42%);
+  --color-accent-dark: hsl(275, 72%, 32%);
+  --color-accent-light: hsl(272, 100%, 65%);
+
+  --color-bg: hsl(216, 6%, 14%);
+  --color-bg-dark: hsl(216, 6%, 5%);
+  --color-bg-light: hsl(209, 4%, 23%);
+
+  --color-card: hsl(200, 7%, 91%);
+  --color-card-dark: hsl(200, 7%, 85%);
+  --color-card-light: hsl(200, 7%, 99%);
 }
 
-html {
-  font-size: var(--step-0);
-  font-family: 'Lato', sans-serif;
-  line-height: 1.5;
-
-  color: #000;
-  background-color: #fff;
-}
-.anchor {
-  display: block;
-  position: relative;
-  top: -100px;
-  visibility: hidden;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: 'Lato', sans-serif;
-}
-
-.text-lg {
-  font-size: var(--step-1);
-  line-height: 1.4;
-}
-.text-xl {
-  font-size: var(--step-2);
-  line-height: 1.4;
-}
-.text-2xl {
-  font-size: var(--step-3);
-  line-height: 1.2;
-}
-.text-3xl {
-  font-size: var(--step-4);
-  line-height: 1.2;
-}
-.text-4xl {
-  font-size: var(--step-5);
-  line-height: 1.1;
-}
-
-/* We use dangerouslySetInnerHTML to render the content of course & set descriptions */
-article h2 {
-  font-size: var(--step-2);
-  font-weight: 700;
-  line-height: 1.2;
-  color: rgb(55 65 81);
-}
-
-article h3 {
-  font-size: var(--step-1);
-  font-weight: 700;
-  line-height: 1.2;
-  color: rgb(249 115 22);
-}
-
-.Tooltip {
-  background-color: #444;
-  color: white;
-  font-size: 90%;
-  padding: 4px 8px;
-  border-radius: 4px;
-  box-sizing: border-box;
-  width: max-content;
-  max-width: calc(100vw - 10px);
+.progress-ring__circle {
+  transition: stroke-dashoffset 0.35s;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
 }

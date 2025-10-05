@@ -2,34 +2,18 @@
 
 import Link from 'next/link'
 
-interface XpDisplayProps {
-  data: {
-    currentXp: number
-    rank: {
-      rank: string
-      name: string
-      xp: number
-    }
-    nextRank: {
-      rank: string
-      name: string
-      xp: number
-    }
-    percentage: number
-  }
-  displayLink?: boolean
+import CalculateBadgePercentage from '~/app/_util/CalculateBadgePercentage'
+
+interface BadgeDisplayProps {
+  userBadgeCount: number
 }
-export default function XpDisplay({
-  data,
-  displayLink = true,
-}: XpDisplayProps) {
-  const { currentXp, rank, nextRank, percentage } = data
+export default function BadgeDisplay({ userBadgeCount }: BadgeDisplayProps) {
+  const { percentage, totalBadgeCount } =
+    CalculateBadgePercentage(userBadgeCount)
 
   return (
     <div className="text-white text-center flex flex-col items-center bg-card/10 p-4 gap-2 rounded-lg">
-      <p className="text-xl">
-        <strong>{rank?.rank}:</strong> {rank?.name}
-      </p>
+      <p className="text-xl">Badges Earned</p>
       <div className="relative w-30">
         <svg className="w-full h-full" viewBox="0 0 100 100">
           {/* Background circle */}
@@ -71,21 +55,15 @@ export default function XpDisplay({
             fill="white"
             fontSize={'0.5rem'}
           >
-            {currentXp.toLocaleString('en-GB')}
-            {nextRank && `/${nextRank.xp.toLocaleString('en-GB')}xp`}
+            {userBadgeCount}/{totalBadgeCount}
           </text>
         </svg>
       </div>
-      {displayLink && (
-        <div className="flex gap-1 flex-col text-xs w-full bg-card-light/10 p-2 rounded shadow">
-          <Link className="hover:underline" href="/members">
-            View Leaderboard
-          </Link>
-          <Link href="/about/ranks-and-badges" className="hover:underline">
-            View All Ranks
-          </Link>
-        </div>
-      )}
+      <div className="flex gap-1 flex-col text-xs w-full bg-card-light/10 p-2 rounded shadow">
+        <Link className="hover:underline" href="/dashboard/badges">
+          View Badges
+        </Link>
+      </div>
     </div>
   )
 }

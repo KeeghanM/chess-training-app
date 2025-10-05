@@ -128,7 +128,7 @@ export default function Footer() {
         ))}
       </div>
       <div className="flex justify-center text-xs italic">
-        <p>&copy; 2020-2023 ChessTraining.app</p>
+        <p>&copy; 2020-{new Date().getFullYear()} ChessTraining.app</p>
       </div>
     </footer>
   )

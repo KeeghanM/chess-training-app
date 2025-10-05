@@ -2,9 +2,9 @@
 
 interface ButtonProps {
   onClick?: () => void
-  variant:
+  variant?:
+    | 'default'
     | 'primary'
-    | 'secondary'
     | 'accent'
     | 'tertiary'
     | 'danger'
@@ -15,40 +15,40 @@ interface ButtonProps {
   children: React.ReactNode
   id?: string
   className?: string
+  shadow?: 'sm' | 'lg' | 'xl' | 'inset-sm' | 'inset-lg' | 'inset-xl'
 }
-export default function Button(props: ButtonProps) {
+export default function Button({
+  id,
+  variant = 'default',
+  disabled,
+  className,
+  onClick,
+  children,
+}: ButtonProps) {
   const styles = {
-    primary:
-      'bg-purple-700 hover:bg-purple-600 text-white font-bold py-2 px-6 shadow',
-    secondary:
-      'bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-6 shadow',
-    accent:
-      'bg-orange-500 hover:bg-orange-400 text-white font-bold py-2 px-6 shadow',
-    tertiary:
-      'bg-none underline text-gray-700 hover:text-purple-700 font-bold py-2 px-6 ',
-    danger: 'bg-red-700 hover:bg-red-600 text-white font-bold py-2 px-6 shadow',
-    warning:
-      'bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-2 px-6 shadow',
-    success:
-      'bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-6 shadow',
-    info: 'bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 shadow',
+    default: 'bg-card-light border-card border-1 hover:bg-card-dark',
+    primary: 'bg-primary hover:bg-primary-dark text-white ',
+    accent: 'bg-accent hover:bg-accent-dark text-white ',
+    tertiary: 'bg-none underline text-gray-700 hover:text-purple-700  ',
+    danger: 'bg-red-700 hover:bg-red-600 text-white ',
+    warning: 'bg-yellow-500 hover:bg-yellow-400 text-black ',
+    success: 'bg-green-500 hover:bg-green-400 text-white ',
+    info: 'bg-blue-600 hover:bg-blue-500 text-white ',
   }
 
   return (
     <button
-      id={props.id}
+      id={id}
       className={
-        'flex min-w-[145px] items-center justify-center gap-2 text-sm ' +
-        styles[props.variant] +
-        (props.disabled
-          ? ' cursor-not-allowed opacity-50 pointer-events-none'
-          : '') +
-        (props.className ? ' ' + props.className : '')
+        'cursor-pointer flex-1 w-fit flex items-center justify-center gap-2 text-sm rounded-lg py-2 px-4 ' +
+        styles[variant] +
+        (disabled ? ' cursor-not-allowed opacity-50 pointer-events-none' : '') +
+        (className ? ' ' + className : '')
       }
-      onClick={props.onClick ? props.onClick : undefined}
-      disabled={props.disabled}
+      onClick={onClick ? onClick : undefined}
+      disabled={disabled}
     >
-      {props.children}
+      {children}
     </button>
   )
 }

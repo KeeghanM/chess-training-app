@@ -150,7 +150,7 @@ export const TooltipContent = React.forwardRef<
   return (
     <FloatingPortal>
       <div
-        className="Tooltip"
+        className="bg-card text-bg text-sm px-2 py-1 w-max max-w-[calc(100vw-10px)]"
         ref={ref}
         style={{
           ...context.floatingStyles,

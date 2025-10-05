@@ -4,21 +4,25 @@ import Link from 'next/link'
 
 import { Tooltip, TooltipContent, TooltipTrigger } from '../_elements/tooltip'
 
-export default function PremiumDisplay(props: { isPremium: boolean }) {
+export default function PremiumDisplay({ isPremium }: { isPremium: boolean }) {
   return (
     <Tooltip>
       <TooltipTrigger asChild={true}>
         <Link
           className={
-            'p-2 text-xs mx-2 w-fit text-white shadow ' +
-            (props.isPremium ? ' bg-orange-500' : ' bg-gray-500')
+            'p-2 text-xs mx-2 w-fit text-white shadow rounded-lg ' +
+            (isPremium ? ' bg-primary' : ' bg-bg')
           }
-          href="/premium"
+          href={isPremium ? '/dashboard/settings' : '/premium'}
         >
-          {props.isPremium ? 'Premium' : 'Free'}
+          {isPremium ? 'Premium' : 'Free'}
         </Link>
       </TooltipTrigger>
-      <TooltipContent>Learn More about Premium Membership</TooltipContent>
+      <TooltipContent>
+        {isPremium
+          ? 'Manage your Premium'
+          : 'Learn More about Premium Membership'}
+      </TooltipContent>
     </Tooltip>
   )
 }
