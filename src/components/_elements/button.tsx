@@ -6,6 +6,7 @@ interface ButtonProps {
     | 'default'
     | 'primary'
     | 'accent'
+    | 'dark'
     | 'tertiary'
     | 'danger'
     | 'warning'
@@ -26,20 +27,21 @@ export default function Button({
   children,
 }: ButtonProps) {
   const styles = {
-    default: 'bg-card-light border-card border-1 hover:bg-card-dark',
+    default: 'bg-card-light border-card border-1 hover:bg-card-dark text-black',
     primary: 'bg-primary hover:bg-primary-dark text-white ',
-    accent: 'bg-accent hover:bg-accent-dark text-white ',
-    tertiary: 'bg-none underline text-gray-700 hover:text-purple-700  ',
-    danger: 'bg-red-500 hover:bg-red-600 text-white ',
-    warning: 'bg-yellow-500 hover:bg-yellow-400 text-black ',
-    success: 'bg-green-500 hover:bg-green-600 text-white ',
-    info: 'bg-blue-600 hover:bg-blue-500 text-white ',
+    accent: 'bg-accent hover:bg-accent-dark text-white',
+    dark: 'bg-card-dark hover:bg-card-dark/50 text-black',
+    tertiary: 'bg-none underline text-gray-700 hover:text-purple-700',
+    danger: 'bg-red-500 hover:bg-red-600 text-white',
+    warning: 'bg-yellow-500 hover:bg-yellow-400 text-black',
+    success: 'bg-green-500 hover:bg-green-600 text-white',
+    info: 'bg-blue-600 hover:bg-blue-500 text-white',
   }
 
   return (
     <button
       id={id}
-      className={`cursor-pointer flex-1 w-fit flex items-center justify-center gap-2 text-sm rounded-lg py-2 px-4 ${styles[variant]} ${disabled ? ' cursor-not-allowed opacity-50 pointer-events-none' : ''} ${className}`}
+      className={`cursor-pointer flex-1 w-fit flex items-center justify-center gap-2 text-sm rounded-lg py-2 px-4 shadow ${styles[variant]} ${disabled ? ' cursor-not-allowed opacity-50 pointer-events-none' : ''} ${className}`}
       onClick={onClick ? onClick : undefined}
       disabled={disabled}
     >

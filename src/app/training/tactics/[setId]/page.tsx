@@ -4,6 +4,8 @@ import * as Sentry from '@sentry/nextjs'
 import Container from '@components/_elements/container'
 import type { PrismaTacticsSetWithPuzzles } from '@components/training/tactics/TacticsTrainer'
 import TacticsTrainer from '@components/training/tactics/TacticsTrainer'
+import Backdrop from '~/components/_elements/backdrop'
+import Heading from '~/components/_elements/heading'
 import { getUserServer } from '@utils/getUserServer'
 
 export default async function TacticsTrainPage(props: {
@@ -48,8 +50,15 @@ export default async function TacticsTrainPage(props: {
   }
 
   return (
-    <div className="">
-      <Container>
+    <div className="relative">
+      <Backdrop />
+      <Container size="wide">
+        <Heading as="h1" className="text-white">
+          Tactics Trainer
+        </Heading>
+        <Heading as="h2" className="text-card-dark">
+          {set.name}
+        </Heading>
         <TacticsTrainer set={set} />
       </Container>
     </div>

@@ -12,6 +12,7 @@ import * as Sentry from '@sentry/nextjs'
 import { useAppStore } from '@stores/app-store'
 import type { Move } from 'chess.js'
 import { Chess } from 'chess.js'
+import { ExternalLink, ThumbsDown, ThumbsUp } from 'lucide-react'
 import TimeAgo from 'react-timeago'
 import Toggle from 'react-toggle'
 import 'react-toggle/style.css'
@@ -380,242 +381,109 @@ export default function TacticsTrainer(props: {
   if (!user) return null
 
   return (
-    <div className="relative border border-gray-300   shadow-md  bg-[rgba(0,0,0,0.03)] ">
-      {
-        // While we are loading a new puzzle or creating a new round, we don't want the user to interact so we show a full overlay spinner
-        (puzzleQuery.isFetching || createRound.isPending) && (
-          <div className="absolute inset-0 z-50 grid place-items-center bg-[rgba(0,0,0,0.3)]">
-            <Spinner />
-          </div>
-        )
-      }
-      <div className="flex flex-wrap items-center justify-between px-2 py-1 border-b border-gray-300  font-bold text-orange-500">
-        <p className="text-lg font-bold">{props.set.name}</p>
-        <div className="flex items-center gap-2 text-black ">
-          <div
-            className="flex cursor-pointer flex-row items-center gap-1 hover:text-orange-500"
-            onClick={() => setSoundEnabled(!soundEnabled)}
-          >
-            <Tooltip>
-              <TooltipTrigger asChild={true}>
-                {soundEnabled ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      fill="none"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="1.5"
-                      d="M1.75 5.75v4.5h2.5l4 3V2.75l-4 3zm9 .5s1 .5 1 1.75s-1 1.75-1 1.75"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      fill="none"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="1.5"
-                      d="M1.75 5.75v4.5h2.5l4 3V2.75l-4 3zm12.5 0l-3.5 4.5m0-4.5l3.5 4.5"
-                    />
-                  </svg>
-                )}
-              </TooltipTrigger>
-              <TooltipContent>{`Sound ${soundEnabled ? 'On' : 'Off'}`}</TooltipContent>
-            </Tooltip>
-          </div>
-        </div>
-      </div>
-      <div className="flex flex-col lg:flex-row">
-        <div className="flex flex-col">
-          <div className="flex gap-1 mt-1 justify-center text-xs md:text-sm lg:text-base">
-            <div className="flex flex-col items-center border border-gray-300 ">
-              <p className="font-bold py-1 px-1 border-b border-gray-300 ">
-                Round:
-              </p>
-              <p>{props.set.rounds.length}/8</p>
-            </div>
-            <div className="flex flex-col items-center border border-gray-300 ">
-              <p className="font-bold py-1 px-1 border-b border-gray-300 ">
-                Completed:
-              </p>
-              <p>
-                {CompletedPuzzles}/{props.set.size}
-              </p>
-            </div>
-            <div className="flex flex-col items-center border border-gray-300 ">
-              <p className="font-bold py-1 px-1 border-b border-gray-300 ">
-                Accuracy:
-              </p>
-              <p>
-                {currentRound.correct == 0 && currentRound.incorrect == 0
-                  ? '0'
-                  : Math.round(
-                      (currentRound.correct /
-                        (currentRound.correct + currentRound.incorrect)) *
-                        100,
-                    )}
-                %
-              </p>
-            </div>
-            <div className="flex flex-col items-center border border-gray-300 ">
-              <p className="font-bold py-1 px-1 border-b border-gray-300 ">
-                Session:
-              </p>
-              <p>
-                <TimeAgo date={sessionTimeStarted} />
-              </p>
-            </div>
-          </div>
-          <div>
-            <ChessBoard
-              game={game}
-              position={position}
-              orientation={orientation}
-              readyForInput={readyForInput}
-              soundEnabled={soundEnabled}
-              additionalSquares={{}}
-              moveMade={handleMove}
-              additionalArrows={[]}
-              enableHighlights={true}
-              enableArrows={true}
-            />
-            <XpTracker counter={xpCounter} type={'tactic'} />
-          </div>
-        </div>
-        <div className="flex w-full flex-col gap-2 p-1">
-          {!puzzleFinished && (
-            <p className="flex items-center gap-2 text-black ">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                className={
-                  orientation === 'white'
-                    ? 'text-white'
-                    : 'rotate-180 transform text-black'
-                }
-              >
-                <path fill="currentColor" d="M1 21h22L12 2" />
-              </svg>
-              {orientation === 'white' ? 'White' : 'Black'} to move
-            </p>
-          )}
-          {puzzleStatus === 'correct' && (
-            <div className="z-50 flex flex-wrap  items-center gap-2 text-black ">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 512 512"
-                className="text-lime-500"
-              >
-                <path
-                  fill="currentColor"
-                  d="M313.4 32.9c26 5.2 42.9 30.5 37.7 56.5l-2.3 11.4c-5.3 26.7-15.1 52.1-28.8 75.2h144c26.5 0 48 21.5 48 48c0 18.5-10.5 34.6-25.9 42.6C497 275.4 504 288.9 504 304c0 23.4-16.8 42.9-38.9 47.1c4.4 7.3 6.9 15.8 6.9 24.9c0 21.3-13.9 39.4-33.1 45.6c.7 3.3 1.1 6.8 1.1 10.4c0 26.5-21.5 48-48 48h-97.5c-19 0-37.5-5.6-53.3-16.1l-38.5-25.7C176 420.4 160 390.4 160 358.3V247.1c0-29.2 13.3-56.7 36-75l7.4-5.9c26.5-21.2 44.6-51 51.2-84.2l2.3-11.4c5.2-26 30.5-42.9 56.5-37.7zM32 192h64c17.7 0 32 14.3 32 32v224c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32V224c0-17.7 14.3-32 32-32z"
-                />
-              </svg>
-              <p>Correct!</p>
-              <Link
-                href={`https://lichess.org/training/${currentPuzzle?.puzzleid}`}
-                target="_blank"
-              >
-                <span className="flex flex-row items-center gap-1 text-sm text-black  underline">
-                  Lichess
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      fill="none"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4m-8-2l8-8m0 0v5m0-5h-5"
-                    />
-                  </svg>
-                </span>
-              </Link>
-            </div>
-          )}
-          {puzzleStatus === 'incorrect' && (
-            <>
-              <div className="z-50 flex flex-wrap items-center gap-2 text-black ">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 512 512"
-                  className="text-red-500"
-                >
-                  <path
-                    fill="currentColor"
-                    d="M313.4 479.1c26-5.2 42.9-30.5 37.7-56.5l-2.3-11.4c-5.3-26.7-15.1-52.1-28.8-75.2h144c26.5 0 48-21.5 48-48c0-18.5-10.5-34.6-25.9-42.6C497 236.6 504 223.1 504 208c0-23.4-16.8-42.9-38.9-47.1c4.4-7.3 6.9-15.8 6.9-24.9c0-21.3-13.9-39.4-33.1-45.6c.7-3.3 1.1-6.8 1.1-10.4c0-26.5-21.5-48-48-48h-97.5c-19 0-37.5 5.6-53.3 16.1l-38.5 25.7C176 91.6 160 121.6 160 153.7v111.2c0 29.2 13.3 56.7 36 75l7.4 5.9c26.5 21.2 44.6 51 51.2 84.2l2.3 11.4c5.2 26 30.5 42.9 56.5 37.7zM32 384h64c17.7 0 32-14.3 32-32V128c0-17.7-14.3-32-32-32H32c-17.7 0-32 14.3-32 32v224c0 17.7 14.3 32 32 32z"
-                  />
-                </svg>
-                <p>Incorrect!</p>
-                <Link
-                  href={`https://lichess.org/training/${currentPuzzle?.puzzleid}`}
-                  target="_blank"
-                >
-                  <span className="flex flex-row items-center gap-1 text-sm text-black  underline">
-                    Lichess
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        fill="none"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4m-8-2l8-8m0 0v5m0-5h-5"
-                      />
-                    </svg>
-                  </span>
-                </Link>
-              </div>
-              {currentPuzzle?.comment && (
-                <p className="p-2 border lg:border-4 border-orange-500 bg-orange-500 bg-opacity-20 text-black  text-sm overflow-y-auto">
-                  {currentPuzzle?.comment}
-                </p>
+    <>
+      <div className="flex gap-4 flex-wrap text-white text-lg mb-4">
+        <p>
+          <span className="font-bold">Round: </span>
+          {props.set.rounds.length}/8
+        </p>
+        <p>
+          <span className="font-bold">Completed: </span>
+          {CompletedPuzzles}/{props.set.size}
+        </p>
+        <p>
+          <span className="font-bold">Accuracy: </span>
+          {currentRound.correct == 0 && currentRound.incorrect == 0
+            ? '0'
+            : Math.round(
+                (currentRound.correct /
+                  (currentRound.correct + currentRound.incorrect)) *
+                  100,
               )}
-            </>
-          )}
-          <div className="flex flex-1 flex-col-reverse gap-2 lg:flex-col">
-            <div className="flex h-full flex-wrap content-start gap-1 border lg:border-4 border-purple-700 p-2 bg-purple-700 bg-opacity-20 text-black ">
+          %
+        </p>
+        <p className="flex gap-2">
+          <span className="font-bold">Started:</span>
+          <TimeAgo date={sessionTimeStarted} />
+        </p>
+      </div>
+      <div className="flex flex-col lg:flex-row gap-4">
+        <div className="relative">
+          {
+            // While we are loading a new puzzle or creating a new round, we don't want the user to interact so we show a full overlay spinner
+            (puzzleQuery.isFetching || createRound.isPending) && (
+              <div className="absolute inset-0 z-50 grid place-items-center bg-[rgba(0,0,0,0.3)]">
+                <Spinner />
+              </div>
+            )
+          }
+          <ChessBoard
+            game={game}
+            position={position}
+            orientation={orientation}
+            readyForInput={readyForInput}
+            soundEnabled={soundEnabled}
+            additionalSquares={{}}
+            moveMade={handleMove}
+            additionalArrows={[]}
+            enableHighlights={true}
+            enableArrows={true}
+          />
+          <XpTracker counter={xpCounter} type={'tactic'} />
+        </div>
+        <div className="w-1/3 min-w-1/3 p-4 bg-card-light/20 rounded-lg h-fit my-auto">
+          <div className="flex flex-col gap-2 bg-card rounded-lg p-4">
+            <div className="flex items-center gap-2 text-black bg-card-dark rounded-lg w-fit py-1 px-2 shadow">
+              {puzzleStatus === 'none' ? (
+                <>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    className={
+                      orientation === 'white'
+                        ? 'text-white'
+                        : 'rotate-180 transform text-black'
+                    }
+                  >
+                    <path fill="currentColor" d="M1 21h22L12 2" />
+                  </svg>
+                  {orientation === 'white' ? 'White' : 'Black'} to move
+                </>
+              ) : (
+                <>
+                  {puzzleStatus === 'correct' && (
+                    <>
+                      <ThumbsUp className="text-lime-500" />
+                      <p>Correct!</p>
+                    </>
+                  )}
+                  {puzzleStatus === 'incorrect' && (
+                    <>
+                      <ThumbsDown className="text-red-500" />
+                      <p>Incorrect!</p>
+                    </>
+                  )}
+                  <Link
+                    href={`https://lichess.org/training/${currentPuzzle?.puzzleid}`}
+                    target="_blank"
+                  >
+                    <span className="flex flex-row items-center gap-1 text-sm text-black  underline">
+                      Lichess
+                      <ExternalLink />
+                    </span>
+                  </Link>
+                </>
+              )}
+            </div>
+            {puzzleStatus === 'incorrect' && currentPuzzle?.comment && (
+              <p>{currentPuzzle.comment}</p>
+            )}
+            <div className="flex h-full flex-wrap content-start gap-1 min-h-[200px] mt-4 text-lg">
               {PgnDisplay.map((item) => item)}
             </div>
-            <label className="ml-auto flex items-center gap-2 text-sm text-black ">
-              <Toggle
-                defaultChecked={autoNext}
-                onChange={async () => {
-                  setAutoNext(!autoNext)
-                  if (puzzleFinished && puzzleStatus == 'correct')
-                    await goToNextPuzzle()
-                }}
-              />
-              <span>Auto Next on correct</span>
-            </label>
-            <div className="flex flex-col gap-2">
+            <div className="flex justify between gap-2">
               {puzzleFinished ? (
                 (!autoNext || puzzleStatus == 'incorrect') && (
                   <Button variant="primary" onClick={() => goToNextPuzzle()}>
@@ -625,6 +493,7 @@ export default function TacticsTrainer(props: {
               ) : (
                 <>
                   <Button
+                    variant="dark"
                     onClick={async () => {
                       setPuzzleStatus('incorrect')
                       setReadyForInput(false)
@@ -633,18 +502,28 @@ export default function TacticsTrainer(props: {
                       setPuzzleFinished(true)
                     }}
                   >
-                    Skip/Show Solution
+                    Skip
                   </Button>
                 </>
               )}
-
-              <Button variant="danger" onClick={exit}>
-                Exit
-              </Button>
+              <label className="ml-auto flex items-center gap-2 text-xs text-black ">
+                <span>Auto Next on correct</span>
+                <Toggle
+                  defaultChecked={autoNext}
+                  onChange={async () => {
+                    setAutoNext(!autoNext)
+                    if (puzzleFinished && puzzleStatus == 'correct')
+                      await goToNextPuzzle()
+                  }}
+                />
+              </label>
             </div>
+            <Button className="w-full" variant="danger" onClick={exit}>
+              Exit
+            </Button>
           </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }

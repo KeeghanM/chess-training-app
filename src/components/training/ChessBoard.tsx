@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Chess, Move, Piece, Square } from 'chess.js'
 import type { Arrow } from 'react-chessboard'
 import { Chessboard, defaultPieces } from 'react-chessboard'
@@ -20,7 +20,7 @@ interface ChessBoardProps {
 }
 
 export default function ChessBoard(props: ChessBoardProps) {
-  // Chess Game
+  const divRef = useRef(null)
   const game = props.game
 
   // Board State
@@ -228,6 +228,23 @@ export default function ChessBoard(props: ChessBoardProps) {
     playMoveSound(lastMove.san)
   }, [props.position])
 
+  useEffect(() => {
+    if (!divRef.current) return
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const el = entry.target as HTMLDivElement
+        el.style.width = `${el.offsetHeight}px`
+
+        if (el.offsetHeight > el.offsetWidth) {
+          el.style.maxHeight = `${el.offsetWidth}px`
+        }
+      }
+    })
+
+    resizeObserver.observe(divRef.current)
+  }, [divRef])
+
   // Calculate promotion square position for custom dialog
   const squareWidth =
     typeof document !== 'undefined'
@@ -243,107 +260,105 @@ export default function ChessBoard(props: ChessBoardProps) {
   }
 
   return (
-    <div className="m-2">
-      <div style={{ position: 'relative' }}>
-        {/* Promotion Dialog Overlay */}
-        {showPromotionDialog && moveTo && (
-          <>
-            <div
-              onClick={() => setShowPromotionDialog(false)}
-              onContextMenu={(e) => {
-                e.preventDefault()
-                setShowPromotionDialog(false)
-              }}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(0, 0, 0, 0.1)',
-                zIndex: 1000,
-              }}
-            />
-            <div
-              style={{
-                position: 'absolute',
-                top: clickedPiece?.color === 'w' ? 0 : undefined,
-                bottom: clickedPiece?.color === 'b' ? 0 : undefined,
-                left: getPromotionLeft(moveTo),
-                backgroundColor: 'white',
-                width: squareWidth,
-                zIndex: 1001,
-                display: 'flex',
-                flexDirection: 'column',
-                boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.5)',
-              }}
-            >
-              {(['q', 'r', 'n', 'b'] as const).map((piece) => (
-                <button
-                  key={piece}
-                  onClick={() => {
-                    handlePromotionSelection(
-                      piece + (clickedPiece?.color ?? 'w'),
-                    )
-                  }}
-                  onContextMenu={(e) => {
-                    e.preventDefault()
-                  }}
-                  style={{
-                    width: '100%',
-                    aspectRatio: '1',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: 0,
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '3rem',
-                  }}
-                >
-                  {defaultPieces[`w${piece.toUpperCase()}`]!()}
-                </button>
-              ))}
-            </div>
-          </>
-        )}
-
-        <Chessboard
-          options={{
-            position: props.position,
-            boardOrientation: props.orientation,
-            allowDragging: props.readyForInput,
-            onPieceDrop: ({ sourceSquare, targetSquare }) =>
-              handlePieceDrop(
-                sourceSquare as Square,
-                targetSquare as Square,
-                '',
-                false,
-              ),
-            onSquareClick: ({ square }) => handleSquareClick(square as Square),
-            onSquareRightClick: () => {
-              setStartSquare(undefined)
-              setClickedPiece(undefined)
-            },
-            onPieceDrag: ({ square }) => {
-              if (!startSquare) {
-                setStartSquare(square as Square)
-                const piece = game.get(square as Square)
-                if (piece) setClickedPiece(piece)
-              }
-            },
-            boardStyle: {
-              marginInline: 'auto',
-            },
-            squareStyles: props.enableHighlights
-              ? { ...optionSquares, ...props.additionalSquares }
-              : {},
-            arrows: props.enableArrows
-              ? [...props.additionalArrows, ...arrows]
-              : [],
-          }}
-        />
-      </div>
+    <div
+      ref={divRef}
+      className="relative resize-y overflow-auto p-4 bg-card-light/20 rounded-lg min-h-[300px]"
+    >
+      {/* Promotion Dialog Overlay */}
+      {showPromotionDialog && moveTo && (
+        <>
+          <div
+            onClick={() => setShowPromotionDialog(false)}
+            onContextMenu={(e) => {
+              e.preventDefault()
+              setShowPromotionDialog(false)
+            }}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.1)',
+              zIndex: 1000,
+            }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              top: clickedPiece?.color === 'w' ? 0 : undefined,
+              bottom: clickedPiece?.color === 'b' ? 0 : undefined,
+              left: getPromotionLeft(moveTo),
+              backgroundColor: 'white',
+              width: squareWidth,
+              zIndex: 1001,
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.5)',
+            }}
+          >
+            {(['q', 'r', 'n', 'b'] as const).map((piece) => (
+              <button
+                key={piece}
+                onClick={() => {
+                  handlePromotionSelection(piece + (clickedPiece?.color ?? 'w'))
+                }}
+                onContextMenu={(e) => {
+                  e.preventDefault()
+                }}
+                style={{
+                  width: '100%',
+                  aspectRatio: '1',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: 0,
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '3rem',
+                }}
+              >
+                {defaultPieces[`w${piece.toUpperCase()}`]!()}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+      <Chessboard
+        options={{
+          position: props.position,
+          boardOrientation: props.orientation,
+          allowDragging: props.readyForInput,
+          onPieceDrop: ({ sourceSquare, targetSquare }) =>
+            handlePieceDrop(
+              sourceSquare as Square,
+              targetSquare as Square,
+              '',
+              false,
+            ),
+          onSquareClick: ({ square }) => handleSquareClick(square as Square),
+          onSquareRightClick: () => {
+            setStartSquare(undefined)
+            setClickedPiece(undefined)
+          },
+          onPieceDrag: ({ square }) => {
+            if (!startSquare) {
+              setStartSquare(square as Square)
+              const piece = game.get(square as Square)
+              if (piece) setClickedPiece(piece)
+            }
+          },
+          boardStyle: {
+            marginInline: 'auto',
+          },
+          squareStyles: props.enableHighlights
+            ? { ...optionSquares, ...props.additionalSquares }
+            : {},
+          arrows: props.enableArrows
+            ? [...props.additionalArrows, ...arrows]
+            : [],
+        }}
+      />
     </div>
   )
 }
