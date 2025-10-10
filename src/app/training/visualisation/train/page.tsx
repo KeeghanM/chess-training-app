@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation'
 import Container from '@components/_elements/container'
-import PageHeader from '@components/_layouts/pageHeader'
 import VisualisationTrainer from '@components/training/visualisation/VisualisationTrainer'
+import Backdrop from '~/components/_elements/backdrop'
+import Heading from '~/components/_elements/heading'
 import { getUserServer } from '@utils/getUserServer'
 
 export default async function VisualisationTrainPage() {
@@ -9,19 +10,14 @@ export default async function VisualisationTrainPage() {
   if (!user) redirect('/auth/signin')
 
   return (
-    <>
-      <PageHeader
-        title="Visualisation Training"
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Strategic chess endgame setup on a chess board',
-        }}
-      />
-      <div className="bg-gray-100 ">
-        <Container>
-          <VisualisationTrainer />
-        </Container>
-      </div>
-    </>
+    <div className="relative">
+      <Backdrop />
+      <Container size="wide">
+        <Heading as="h1" className="text-white">
+          Visualisation Trainer
+        </Heading>
+        <VisualisationTrainer />
+      </Container>
+    </div>
   )
 }

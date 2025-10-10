@@ -1,32 +1,28 @@
 'use client'
 
-import Link from 'next/link'
-
 import { useEffect, useState } from 'react'
-
 import { useProfileQueries } from '@hooks/use-profile-queries'
 import { type TrainingPuzzle } from '@hooks/use-puzzle-queries'
+import { useSounds } from '@hooks/use-sound'
 import { useVisualisationQueries } from '@hooks/use-visualisation-queries'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import * as Sentry from '@sentry/nextjs'
-import { useWindowSize } from '@uidotdev/usehooks'
-import trackEventOnClient from '@utils/trackEventOnClient'
 import type { Square } from 'chess.js'
 import { Chess } from 'chess.js'
 import { Chessboard, SquareHandlerArgs } from 'react-chessboard'
 import Toggle from 'react-toggle'
 import 'react-toggle/style.css'
-import useSound from 'use-sound'
-
 import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
 import XpTracker from '@components/general/XpTracker'
-
+import trackEventOnClient from '@utils/trackEventOnClient'
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '../../_elements/tooltip'
+import PgnNavigator from '../shared/PgnNavigator'
+import StatusIndicator from '../shared/StatusIndicator'
 
 /**
  * Renders the chess training visualization interface.
@@ -63,8 +59,7 @@ export default function VisualisationTrainer() {
 
   // Setup SFX
   const [soundEnabled, setSoundEnabled] = useState(true)
-  const [correctSound] = useSound('/sfx/correct.mp3')
-  const [incorrectSound] = useSound('/sfx/incorrect.mp3')
+  const { correctSound, incorrectSound } = useSounds()
 
   // React Query for puzzle fetching
   const puzzleQuery = useRandomVisualisationQuery({
@@ -240,51 +235,15 @@ export default function VisualisationTrainer() {
     }
   }
 
-  const PgnDisplay = game.history().map((move, index) => {
-    if (index == game.history().length - 1 && !puzzleFinished) return null // Don't show the last move until the puzzle is finished
-
-    const moveNumber = Math.floor(index / 2) + 1 + displayGame.moveNumber()
-    const moveColour = game.history({ verbose: true })[index]!.color
-    const FlexText = () => (
-      <p>
-        {(moveColour == 'w' || (moveColour == 'b' && index == 0)) && (
-          <span className="font-bold">
-            {/* This weird calc is to fix the first black number being too high */}
-            {moveNumber - (moveColour == 'b' && index == 0 ? 1 : 0)}.
-            {moveColour == 'b' && index == 0 && '..'}
-          </span>
-        )}{' '}
-        <span>{move}</span>
-      </p>
-    )
-    if (puzzleFinished) {
-      return (
-        <button
-          key={'btn' + moveNumber.toString() + move + moveColour}
-          className="h-max max-h-fit bg-none p-1 hover:bg-purple-800"
-          onClick={async () => {
-            const newGame = new Chess(currentPuzzle!.fen)
-            for (let i = 0; i <= index; i++) {
-              newGame.move(game.history()[i]!)
-            }
-            setDisplayPosition(newGame.fen())
-            trackEventOnClient('calculation_set_jump_to_move', {})
-          }}
-        >
-          <FlexText />
-        </button>
-      )
-    } else {
-      return (
-        <div
-          key={moveNumber.toString() + move + moveColour}
-          className="px-1 py-1"
-        >
-          <FlexText />
-        </div>
-      )
+  const handleMoveClick = (moveIndex: number) => {
+    if (!currentPuzzle) return
+    const newGame = new Chess(currentPuzzle.fen)
+    for (let i = 0; i <= moveIndex; i++) {
+      newGame.move(game.history()[i]!)
     }
-  })
+    setDisplayPosition(newGame.fen())
+    trackEventOnClient('calculation_set_jump_to_move', {})
+  }
 
   const exit = async () => {
     setPuzzleStatus('none')
@@ -347,12 +306,10 @@ export default function VisualisationTrainer() {
     <>
       {mode == 'settings' ? (
         <>
-          <div className="border border-gray-300 text-black   shadow-md  bg-[rgba(0,0,0,0.03)] ">
-            <div className="flex flex-wrap items-center justify-between px-2 py-1 border-b border-gray-300  font-bold text-orange-500">
-              <p id="tooltip-0">How to Use</p>
-            </div>
-            <div className="flex flex-col p-2 gap-4">
-              <div className="flex flex-col gap-2">
+          <div className="p-4 bg-card-light/20 rounded-lg">
+            <h2 className="text-white text-xl font-bold mb-4">How to Use</h2>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2 text-white">
                 <p>
                   Welcome to the Visualisation Trainer! This tool is designed to
                   help you improve your ability to visualize chess moves without
@@ -382,13 +339,11 @@ export default function VisualisationTrainer() {
                 </ul>
               </div>
             </div>
-            <div className="flex flex-wrap items-center justify-between px-2 py-1 border-b border-gray-300  font-bold text-orange-500">
-              <p id="tooltip-0">Adjust your settings</p>
-            </div>
-            <div className="flex flex-col p-2 gap-4">
+            <h2 className="text-white text-xl font-bold mt-6 mb-4">Adjust your settings</h2>
+            <div className="flex flex-col gap-4">
               <div className="flex gap-2 flex-col md:flex-row items-center">
                 <div>
-                  <label className="font-bold">Your Rating</label>
+                  <label className="font-bold text-white">Your Rating</label>
                   <input
                     type="number"
                     className="w-full border border-gray-300 bg-gray-100 px-4 py-1 text-black"
@@ -402,22 +357,22 @@ export default function VisualisationTrainer() {
                   />
                 </div>
                 <div>
-                  <label className="font-bold">Difficulty</label>
+                  <label className="font-bold text-white">Difficulty</label>
                   <div className="flex flex-col gap-1 md:flex-row ">
                     <Button
-                      variant={difficulty == 0 ? 'accent' : 'secondary'}
+                      variant={difficulty == 0 ? 'accent' : undefined}
                       onClick={() => setDifficulty(0)}
                     >
                       Easy
                     </Button>
                     <Button
-                      variant={difficulty == 1 ? 'accent' : 'secondary'}
+                      variant={difficulty == 1 ? 'accent' : undefined}
                       onClick={() => setDifficulty(1)}
                     >
                       Medium
                     </Button>
                     <Button
-                      variant={difficulty == 2 ? 'accent' : 'secondary'}
+                      variant={difficulty == 2 ? 'accent' : undefined}
                       onClick={() => setDifficulty(2)}
                     >
                       Hard
@@ -428,7 +383,7 @@ export default function VisualisationTrainer() {
               <div>
                 <Tooltip>
                   <TooltipTrigger asChild={true}>
-                    <label className="font-bold">Moves to visualise</label>
+                    <label className="font-bold text-white">Moves to visualise</label>
                   </TooltipTrigger>
                   <TooltipContent>
                     This is the total moves to see, including yours and your
@@ -467,75 +422,27 @@ export default function VisualisationTrainer() {
         </>
       ) : (
         <>
-          <div className="relative border border-gray-300 text-black   shadow-md  bg-[rgba(0,0,0,0.03)] ">
-            {loading && (
-              <div className="absolute inset-0 z-50 grid place-items-center bg-[rgba(0,0,0,0.3)]">
-                <Spinner />
-              </div>
-            )}
-            <div className="flex flex-wrap items-center justify-between text-sm">
-              <div className="flex gap-1 p-2 pb-0 justify-center text-xs md:text-sm lg:text-base">
-                <div className="flex flex-col items-center border border-gray-300 ">
-                  <p className="font-bold py-1 px-1 border-b border-gray-300 ">
-                    Rating:
-                  </p>
-                  <p>{rating}</p>
+          <div className="flex gap-4 flex-wrap text-white text-lg mb-4">
+            <p>
+              <span className="font-bold">Rating: </span>
+              {rating}
+            </p>
+            <p>
+              <span className="font-bold">Difficulty: </span>
+              {getDifficulty()}
+            </p>
+            <p>
+              <span className="font-bold">Moves: </span>
+              {length}
+            </p>
+          </div>
+          <div className="flex flex-col lg:flex-row gap-4">
+            <div className="relative">
+              {loading && (
+                <div className="absolute inset-0 z-50 grid place-items-center bg-[rgba(0,0,0,0.3)]">
+                  <Spinner />
                 </div>
-                <div className="flex flex-col items-center border border-gray-300 ">
-                  <p className="font-bold py-1 px-1 border-b border-gray-300 ">
-                    Difficulty:
-                  </p>
-                  <p>{getDifficulty()}</p>
-                </div>
-                <XpTracker counter={xpCounter} type={'tactic'} />
-              </div>
-              <div className="flex items-center gap-2 w-fit mx-auto md:mx-0">
-                <div
-                  className="ml-auto flex cursor-pointer flex-row items-center gap-2 hover:text-orange-500"
-                  onClick={() => setSoundEnabled(!soundEnabled)}
-                >
-                  <Tooltip>
-                    <TooltipTrigger asChild={true}>
-                      {soundEnabled ? (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            fill="none"
-                            stroke="currentColor"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="1.5"
-                            d="M1.75 5.75v4.5h2.5l4 3V2.75l-4 3zm9 .5s1 .5 1 1.75s-1 1.75-1 1.75"
-                          />
-                        </svg>
-                      ) : (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            fill="none"
-                            stroke="currentColor"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="1.5"
-                            d="M1.75 5.75v4.5h2.5l4 3V2.75l-4 3zm12.5 0l-3.5 4.5m0-4.5l3.5 4.5"
-                          />
-                        </svg>
-                      )}
-                    </TooltipTrigger>
-                    <TooltipContent>{`Sound ${soundEnabled ? 'On' : 'Off'}`}</TooltipContent>
-                  </Tooltip>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col gap-4 lg:flex-row p-2">
+              )}
               <div id="tooltip-3" className="relative cursor-pointer">
                 <Chessboard // This is the visible board, set at the start position
                   options={{
@@ -566,113 +473,47 @@ export default function VisualisationTrainer() {
                   />
                 </div>
               </div>
-              <div className="flex w-full flex-col gap-2">
-                <div className="flex flex-row items-center gap-2">
-                  <p className="flex items-center gap-2 ">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      className={
-                        orientation === 'white'
-                          ? 'text-white'
-                          : 'rotate-180 transform text-black'
-                      }
+              <XpTracker counter={xpCounter} type={'tactic'} />
+            </div>
+            <div className="w-1/3 min-w-1/3 p-4 bg-card-light/20 rounded-lg h-fit my-auto">
+              <div className="flex flex-col gap-2 bg-card rounded-lg p-4">
+                <StatusIndicator
+                  status={puzzleStatus}
+                  orientation={orientation}
+                  puzzleId={currentPuzzle?.puzzleid}
+                />
+                <PgnNavigator
+                  game={game}
+                  puzzleFinished={puzzleFinished}
+                  onMoveClick={handleMoveClick}
+                />
+                <div className="flex justify between gap-2">
+                  {puzzleFinished ? (
+                    (!autoNext || puzzleStatus == 'incorrect') && (
+                      <Button
+                        variant="primary"
+                        onClick={() => goToNextPuzzle(puzzleStatus)}
+                      >
+                        Next
+                      </Button>
+                    )
+                  ) : (
+                    <Button
+                      variant="dark"
+                      onClick={async () => {
+                        setPuzzleStatus('incorrect')
+                        setReadyForInput(false)
+                        setReadyForInput(true)
+                        setPuzzleFinished(true)
+                        if (soundEnabled) incorrectSound()
+                        setSelectedSquares(getCorrectMoves())
+                      }}
                     >
-                      <path fill="currentColor" d="M1 21h22L12 2" />
-                    </svg>
-                    {orientation === 'white' ? 'White' : 'Black'} to move
-                  </p>
-                  {puzzleStatus === 'correct' && (
-                    <div className="z-50 flex flex-wrap  items-center gap-2">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 512 512"
-                        className="text-lime-500"
-                      >
-                        <path
-                          fill="currentColor"
-                          d="M313.4 32.9c26 5.2 42.9 30.5 37.7 56.5l-2.3 11.4c-5.3 26.7-15.1 52.1-28.8 75.2h144c26.5 0 48 21.5 48 48c0 18.5-10.5 34.6-25.9 42.6C497 275.4 504 288.9 504 304c0 23.4-16.8 42.9-38.9 47.1c4.4 7.3 6.9 15.8 6.9 24.9c0 21.3-13.9 39.4-33.1 45.6c.7 3.3 1.1 6.8 1.1 10.4c0 26.5-21.5 48-48 48h-97.5c-19 0-37.5-5.6-53.3-16.1l-38.5-25.7C176 420.4 160 390.4 160 358.3V247.1c0-29.2 13.3-56.7 36-75l7.4-5.9c26.5-21.2 44.6-51 51.2-84.2l2.3-11.4c5.2-26 30.5-42.9 56.5-37.7zM32 192h64c17.7 0 32 14.3 32 32v224c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32V224c0-17.7 14.3-32 32-32z"
-                        />
-                      </svg>
-                      <p>Correct!</p>
-                      <Link
-                        href={`https://lichess.org/training/${currentPuzzle?.puzzleid}`}
-                        target="_blank"
-                      >
-                        <span className="flex flex-row items-center gap-1 text-sm underline">
-                          Lichess
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              fill="none"
-                              stroke="currentColor"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4m-8-2l8-8m0 0v5m0-5h-5"
-                            />
-                          </svg>
-                        </span>
-                      </Link>
-                    </div>
+                      Skip/Show Solution
+                    </Button>
                   )}
-                  {puzzleStatus === 'incorrect' && (
-                    <div className="z-50 flex flex-wrap items-center gap-2">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 512 512"
-                        className="text-red-500"
-                      >
-                        <path
-                          fill="currentColor"
-                          d="M313.4 479.1c26-5.2 42.9-30.5 37.7-56.5l-2.3-11.4c-5.3-26.7-15.1-52.1-28.8-75.2h144c26.5 0 48-21.5 48-48c0-18.5-10.5-34.6-25.9-42.6C497 236.6 504 223.1 504 208c0-23.4-16.8-42.9-38.9-47.1c4.4-7.3 6.9-15.8 6.9-24.9c0-21.3-13.9-39.4-33.1-45.6c.7-3.3 1.1-6.8 1.1-10.4c0-26.5-21.5-48-48-48h-97.5c-19 0-37.5 5.6-53.3 16.1l-38.5 25.7C176 91.6 160 121.6 160 153.7v111.2c0 29.2 13.3 56.7 36 75l7.4 5.9c26.5 21.2 44.6 51 51.2 84.2l2.3 11.4c5.2 26 30.5 42.9 56.5 37.7zM32 384h64c17.7 0 32-14.3 32-32V128c0-17.7-14.3-32-32-32H32c-17.7 0-32 14.3-32 32v224c0 17.7 14.3 32 32 32z"
-                        />
-                      </svg>
-                      <p>Incorrect!</p>
-                      <Link
-                        href={`https://lichess.org/training/${currentPuzzle?.puzzleid}`}
-                        target="_blank"
-                      >
-                        <span className="flex flex-row items-center gap-1 text-sm underline">
-                          Lichess
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              fill="none"
-                              stroke="currentColor"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4m-8-2l8-8m0 0v5m0-5h-5"
-                            />
-                          </svg>
-                        </span>
-                      </Link>
-                    </div>
-                  )}
-                </div>
-                <div className="flex flex-1 flex-col-reverse gap-2 lg:flex-col">
-                  <div
-                    id="tooltip-2"
-                    className="flex h-full flex-wrap content-start gap-1 border lg:border-4 border-purple-700 p-2 bg-purple-700 bg-opacity-20 text-black "
-                  >
-                    {PgnDisplay.map((item) => item)}
-                  </div>
-                  <label className="ml-auto flex items-center gap-2 text-sm">
+                  <label className="ml-auto flex items-center gap-2 text-xs text-black">
+                    <span>Auto Next on correct</span>
                     <Toggle
                       defaultChecked={autoNext}
                       onChange={async () => {
@@ -681,39 +522,11 @@ export default function VisualisationTrainer() {
                           await goToNextPuzzle(puzzleStatus)
                       }}
                     />
-                    <span>Auto Next on correct</span>
                   </label>
-                  <div className="flex flex-col gap-2">
-                    {puzzleFinished ? (
-                      (!autoNext || puzzleStatus == 'incorrect') && (
-                        <Button
-                          variant="primary"
-                          onClick={() => goToNextPuzzle(puzzleStatus)}
-                        >
-                          Next
-                        </Button>
-                      )
-                    ) : (
-                      <Button
-                        variant="secondary"
-                        onClick={async () => {
-                          setPuzzleStatus('incorrect')
-                          setReadyForInput(false)
-                          setReadyForInput(true)
-                          setPuzzleFinished(true)
-                          if (soundEnabled) incorrectSound()
-                          setSelectedSquares(getCorrectMoves())
-                        }}
-                      >
-                        Skip/Show Solution
-                      </Button>
-                    )}
-
-                    <Button variant="danger" onClick={exit}>
-                      Exit
-                    </Button>
-                  </div>
                 </div>
+                <Button className="w-full" variant="danger" onClick={exit}>
+                  Exit
+                </Button>
               </div>
             </div>
           </div>

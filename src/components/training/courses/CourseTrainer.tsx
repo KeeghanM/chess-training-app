@@ -688,7 +688,7 @@ export default function CourseTrainer(props: {
 
   return error ? (
     <div className="">
-      <Heading as="h1" color="text-red-500">
+      <Heading as="h1" className="text-red-500">
         {error}
       </Heading>
       <p>

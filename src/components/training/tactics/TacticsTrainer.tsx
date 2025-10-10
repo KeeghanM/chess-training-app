@@ -16,17 +16,14 @@ import { ExternalLink, ThumbsDown, ThumbsUp } from 'lucide-react'
 import TimeAgo from 'react-timeago'
 import Toggle from 'react-toggle'
 import 'react-toggle/style.css'
-import useSound from 'use-sound'
+import { useSounds } from '~/hooks/use-sound'
 import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
 import XpTracker from '@components/general/XpTracker'
 import trackEventOnClient from '@utils/trackEventOnClient'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '../../_elements/tooltip'
 import ChessBoard from '../ChessBoard'
+import PgnNavigator from '../shared/PgnNavigator'
+import StatusIndicator from '../shared/StatusIndicator'
 import type { PrismaTacticsSet } from './create/TacticsSetCreator'
 
 export type PrismaTacticsSetWithPuzzles = PrismaTacticsSet & {
@@ -50,15 +47,16 @@ export interface TrainingPuzzle {
 export default function TacticsTrainer(props: {
   set: PrismaTacticsSetWithPuzzles
 }) {
+  const { user } = useKindeBrowserClient()
+  const router = useRouter()
+
   const { usePuzzleQuery } = usePuzzleQueries()
   const { increaseCorrect, increaseIncorrect, increaseTimeTaken, createRound } =
     useTacticsQueries()
 
   const { preferences, setSoundEnabled, setAutoNext } = useAppStore()
   const { soundEnabled, autoNext } = preferences
-
-  const { user } = useKindeBrowserClient()
-  const router = useRouter()
+  const { correctSound, incorrectSound } = useSounds()
 
   // Setup main state for the game/puzzles
   const [currentRound, setCurrentRound] = useState(
@@ -71,10 +69,6 @@ export default function TacticsTrainer(props: {
   const [gameReady, setGameReady] = useState(false)
   const [orientation, setOrientation] = useState<'white' | 'black'>('white')
   const [position, setPosition] = useState(game.fen())
-
-  // Setup SFX
-  const [correctSound] = useSound('/sfx/correct.mp3')
-  const [incorrectSound] = useSound('/sfx/incorrect.mp3')
 
   // Setup state for the game and training
   const [readyForInput, setReadyForInput] = useState(false)
@@ -262,51 +256,15 @@ export default function TacticsTrainer(props: {
     return true
   }
 
-  const PgnDisplay = game.history().map((move, index) => {
-    const moveNumber =
-      Math.floor(index / 2) + 1 + (game.moveNumber() - game.history().length)
-    const moveColour = game.history({ verbose: true })[index]!.color
-    const FlexText = () => (
-      <p>
-        {(moveColour == 'w' || (moveColour == 'b' && index == 0)) && (
-          <span className="font-bold">
-            {/* This weird calc is to fix the first black number being too high */}
-            {moveNumber - (moveColour == 'b' && index == 0 ? 1 : 0)}.
-            {moveColour == 'b' && index == 0 && '..'}
-          </span>
-        )}{' '}
-        <span>{move}</span>
-      </p>
-    )
-
-    if (puzzleFinished) {
-      return (
-        <button
-          key={'btn' + moveNumber.toString() + move + moveColour}
-          className="h-max max-h-fit bg-none px-1 py-1 hover:bg-purple-800 hover:text-white"
-          onClick={async () => {
-            const newGame = new Chess(currentPuzzle!.fen)
-            for (let i = 0; i <= index; i++) {
-              newGame.move(game.history()[i]!)
-            }
-            setPosition(newGame.fen())
-            trackEventOnClient('tactics_set_jump_to_move', {})
-          }}
-        >
-          <FlexText />
-        </button>
-      )
-    } else {
-      return (
-        <div
-          key={moveNumber.toString() + move + moveColour}
-          className="px-1 py-1 text-black "
-        >
-          <FlexText />
-        </div>
-      )
+  const handleMoveClick = (moveIndex: number) => {
+    if (!currentPuzzle) return
+    const newGame = new Chess(currentPuzzle.fen)
+    for (let i = 0; i <= moveIndex; i++) {
+      newGame.move(game.history()[i]!)
     }
-  })
+    setPosition(newGame.fen())
+    trackEventOnClient('tactics_set_jump_to_move', {})
+  }
 
   const exit = async () => {
     queryClient.invalidateQueries({ queryKey: ['tactics', 'sets'] })
@@ -433,56 +391,19 @@ export default function TacticsTrainer(props: {
         </div>
         <div className="w-1/3 min-w-1/3 p-4 bg-card-light/20 rounded-lg h-fit my-auto">
           <div className="flex flex-col gap-2 bg-card rounded-lg p-4">
-            <div className="flex items-center gap-2 text-black bg-card-dark rounded-lg w-fit py-1 px-2 shadow">
-              {puzzleStatus === 'none' ? (
-                <>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    className={
-                      orientation === 'white'
-                        ? 'text-white'
-                        : 'rotate-180 transform text-black'
-                    }
-                  >
-                    <path fill="currentColor" d="M1 21h22L12 2" />
-                  </svg>
-                  {orientation === 'white' ? 'White' : 'Black'} to move
-                </>
-              ) : (
-                <>
-                  {puzzleStatus === 'correct' && (
-                    <>
-                      <ThumbsUp className="text-lime-500" />
-                      <p>Correct!</p>
-                    </>
-                  )}
-                  {puzzleStatus === 'incorrect' && (
-                    <>
-                      <ThumbsDown className="text-red-500" />
-                      <p>Incorrect!</p>
-                    </>
-                  )}
-                  <Link
-                    href={`https://lichess.org/training/${currentPuzzle?.puzzleid}`}
-                    target="_blank"
-                  >
-                    <span className="flex flex-row items-center gap-1 text-sm text-black  underline">
-                      Lichess
-                      <ExternalLink />
-                    </span>
-                  </Link>
-                </>
-              )}
-            </div>
+            <StatusIndicator
+              status={puzzleStatus}
+              orientation={orientation}
+              puzzleId={currentPuzzle?.puzzleid}
+            />
             {puzzleStatus === 'incorrect' && currentPuzzle?.comment && (
               <p>{currentPuzzle.comment}</p>
             )}
-            <div className="flex h-full flex-wrap content-start gap-1 min-h-[200px] mt-4 text-lg">
-              {PgnDisplay.map((item) => item)}
-            </div>
+            <PgnNavigator
+              game={game}
+              puzzleFinished={puzzleFinished}
+              onMoveClick={handleMoveClick}
+            />
             <div className="flex justify between gap-2">
               {puzzleFinished ? (
                 (!autoNext || puzzleStatus == 'incorrect') && (
