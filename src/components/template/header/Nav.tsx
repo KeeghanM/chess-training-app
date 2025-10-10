@@ -307,7 +307,10 @@ export default function Nav(props: {
                 }}
                 href="/dashboard"
               >
-                <Button className="lg:ml-2" variant="primary">
+                <Button
+                  className="mt-4 lg:mt-0 w-full lg:w-fit lg:ml-2"
+                  variant="primary"
+                >
                   Dashboard
                 </Button>
               </Link>

@@ -9,7 +9,7 @@ export default function PremiumDisplay({ isPremium }: { isPremium: boolean }) {
       <TooltipTrigger asChild={true}>
         <Link
           className={
-            'p-2 text-xs mx-2 w-fit text-white shadow rounded-lg ' +
+            'p-2 text-xs w-fit text-white shadow rounded-lg ' +
             (isPremium ? ' bg-primary' : ' bg-bg')
           }
           href={isPremium ? '/dashboard/settings' : '/premium'}

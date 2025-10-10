@@ -13,8 +13,8 @@ export default function TacticsList(props: { hasUnlimitedSets: boolean }) {
   const { tacticsSetsQuery } = useTacticsQueries()
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-6">
+    <div className="space-y-2 md:space-y-6">
+      <div className="flex flex-col md:flex-row items-center gap-2 lg:flex-6">
         <TacticsSetCreator
           setCount={tacticsSetsQuery.data?.length ?? 0}
           maxSets={env.NEXT_PUBLIC_MAX_SETS}

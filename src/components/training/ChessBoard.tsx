@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { Chess, Move, Piece, Square } from 'chess.js'
 import type { Arrow } from 'react-chessboard'
 import { Chessboard, defaultPieces } from 'react-chessboard'
@@ -20,7 +20,6 @@ interface ChessBoardProps {
 }
 
 export default function ChessBoard(props: ChessBoardProps) {
-  const divRef = useRef(null)
   const game = props.game
 
   // Board State
@@ -228,23 +227,6 @@ export default function ChessBoard(props: ChessBoardProps) {
     playMoveSound(lastMove.san)
   }, [props.position])
 
-  useEffect(() => {
-    if (!divRef.current) return
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const el = entry.target as HTMLDivElement
-        el.style.width = `${el.offsetHeight}px`
-
-        if (el.offsetHeight > el.offsetWidth) {
-          el.style.maxHeight = `${el.offsetWidth}px`
-        }
-      }
-    })
-
-    resizeObserver.observe(divRef.current)
-  }, [divRef])
-
   // Calculate promotion square position for custom dialog
   const squareWidth =
     typeof document !== 'undefined'
@@ -260,10 +242,7 @@ export default function ChessBoard(props: ChessBoardProps) {
   }
 
   return (
-    <div
-      ref={divRef}
-      className="relative resize-y overflow-auto p-4 bg-card-light/20 rounded-lg min-h-[300px]"
-    >
+    <>
       {/* Promotion Dialog Overlay */}
       {showPromotionDialog && moveTo && (
         <>
@@ -359,6 +338,6 @@ export default function ChessBoard(props: ChessBoardProps) {
             : [],
         }}
       />
-    </div>
+    </>
   )
 }

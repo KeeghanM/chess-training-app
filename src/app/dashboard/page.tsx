@@ -177,12 +177,14 @@ export default async function Dashboard() {
     <div className="relative">
       <Backdrop />
       <Container size="extra-wide" className="flex flex-col gap-6">
-        <StreakDisplay data={CalculateStreakBadge(profile)} />
-        <Heading className="text-white" as={'h1'}>
-          Welcome back, {user.given_name ?? profile.username ?? user.email}
+        <div className="flex gap-4 items-center mx-auto ">
+          <StreakDisplay data={CalculateStreakBadge(profile)} />
           <PremiumDisplay isPremium={isPremium} />
+        </div>
+        <Heading className="text-white" as="h1">
+          Welcome back, {user.given_name ?? profile.username ?? user.email}
         </Heading>
-        <div className="flex flex-col md:flex-row gap-6">
+        <div className="grid grid-cols-2 gap-2  md:gap-6">
           <XpDisplay data={CalculateXpRank(profile.experience)} />
           <BadgeDisplay userBadgeCount={badges.length} />
         </div>

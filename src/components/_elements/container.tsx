@@ -9,9 +9,9 @@ export default function Container({
 }) {
   return (
     <div
-      className={`relative mx-auto py-2 md:py-4 md:px-2 lg:py-6 ${size == 'default' && 'max-w-[min(calc(100vw-0.5rem),90ch)]'} ${
+      className={`relative mx-auto p-2 md:p-4 lg:p-6 ${size == 'default' && 'max-w-[min(calc(100vw-0.5rem),90ch)]'} ${
         size === 'wide' && 'max-w-[min(calc(100vw-0.5rem),120ch)]'
-      } ${size === 'extra-wide' && 'max-w-[min(calc(100vw-0.5rem),70vw)]'} ${className}`}
+      } ${size === 'extra-wide' && 'lg:max-w-[min(calc(100vw-0.5rem),70vw)]'} ${className}`}
     >
       {children}
     </div>

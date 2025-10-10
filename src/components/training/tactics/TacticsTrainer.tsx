@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { queryClient } from '@hooks/query-client'
@@ -12,7 +11,6 @@ import * as Sentry from '@sentry/nextjs'
 import { useAppStore } from '@stores/app-store'
 import type { Move } from 'chess.js'
 import { Chess } from 'chess.js'
-import { ExternalLink, ThumbsDown, ThumbsUp } from 'lucide-react'
 import TimeAgo from 'react-timeago'
 import Toggle from 'react-toggle'
 import 'react-toggle/style.css'
@@ -22,6 +20,7 @@ import Spinner from '@components/general/Spinner'
 import XpTracker from '@components/general/XpTracker'
 import trackEventOnClient from '@utils/trackEventOnClient'
 import ChessBoard from '../ChessBoard'
+import BoardContainer from '../shared/BoardContainer'
 import PgnNavigator from '../shared/PgnNavigator'
 import StatusIndicator from '../shared/StatusIndicator'
 import type { PrismaTacticsSet } from './create/TacticsSetCreator'
@@ -54,7 +53,7 @@ export default function TacticsTrainer(props: {
   const { increaseCorrect, increaseIncorrect, increaseTimeTaken, createRound } =
     useTacticsQueries()
 
-  const { preferences, setSoundEnabled, setAutoNext } = useAppStore()
+  const { preferences, setAutoNext } = useAppStore()
   const { soundEnabled, autoNext } = preferences
   const { correctSound, incorrectSound } = useSounds()
 
@@ -367,29 +366,31 @@ export default function TacticsTrainer(props: {
       </div>
       <div className="flex flex-col lg:flex-row gap-4">
         <div className="relative">
-          {
-            // While we are loading a new puzzle or creating a new round, we don't want the user to interact so we show a full overlay spinner
-            (puzzleQuery.isFetching || createRound.isPending) && (
-              <div className="absolute inset-0 z-50 grid place-items-center bg-[rgba(0,0,0,0.3)]">
-                <Spinner />
-              </div>
-            )
-          }
-          <ChessBoard
-            game={game}
-            position={position}
-            orientation={orientation}
-            readyForInput={readyForInput}
-            soundEnabled={soundEnabled}
-            additionalSquares={{}}
-            moveMade={handleMove}
-            additionalArrows={[]}
-            enableHighlights={true}
-            enableArrows={true}
-          />
+          <BoardContainer>
+            {
+              // While we are loading a new puzzle or creating a new round, we don't want the user to interact so we show a full overlay spinner
+              (puzzleQuery.isFetching || createRound.isPending) && (
+                <div className="absolute inset-0 z-50 grid place-items-center bg-[rgba(0,0,0,0.3)]">
+                  <Spinner />
+                </div>
+              )
+            }
+            <ChessBoard
+              game={game}
+              position={position}
+              orientation={orientation}
+              readyForInput={readyForInput}
+              soundEnabled={soundEnabled}
+              additionalSquares={{}}
+              moveMade={handleMove}
+              additionalArrows={[]}
+              enableHighlights={true}
+              enableArrows={true}
+            />
+          </BoardContainer>
           <XpTracker counter={xpCounter} type={'tactic'} />
         </div>
-        <div className="w-1/3 min-w-1/3 p-4 bg-card-light/20 rounded-lg h-fit my-auto">
+        <div className="lg:w-1/3 lg:min-w-1/3 p-4 bg-card-light/20 rounded-lg h-fit my-auto">
           <div className="flex flex-col gap-2 bg-card rounded-lg p-4">
             <StatusIndicator
               status={puzzleStatus}

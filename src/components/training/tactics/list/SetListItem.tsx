@@ -95,7 +95,7 @@ export default function SetListItem({ set }: { set: PrismaTacticsSet }) {
           )}
         </div>
       </div>
-      <div className="flex flex-col gap-2 md:flex-row md:justify-center">
+      <div className="flex gap-2 flex-row justify-center">
         <Button
           disabled={
             (set.rounds?.length >= 8 && completedCount >= set.size) || opening
