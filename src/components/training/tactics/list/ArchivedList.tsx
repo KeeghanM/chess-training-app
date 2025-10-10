@@ -2,10 +2,10 @@
 
 import { useTacticsQueries } from '@hooks/use-tactics-queries'
 import { Puzzle } from 'lucide-react'
+import TimeAgo from 'react-timeago'
 import { env } from '~/env'
 import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
-import TimeSince from '@components/general/TimeSince'
 
 export default function ArchivedSetList({
   hasUnlimitedSets,
@@ -48,7 +48,7 @@ export default function ArchivedSetList({
             <p>
               Last trained{' '}
               {set.lastTrained ? (
-                <TimeSince text="ago" date={new Date(set.lastTrained)} />
+                <TimeAgo date={new Date(set.lastTrained)} />
               ) : (
                 'never'
               )}

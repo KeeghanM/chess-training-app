@@ -12,12 +12,12 @@ import * as Sentry from '@sentry/nextjs'
 import { useAppStore } from '@stores/app-store'
 import type { Move } from 'chess.js'
 import { Chess } from 'chess.js'
+import TimeAgo from 'react-timeago'
 import Toggle from 'react-toggle'
 import 'react-toggle/style.css'
 import useSound from 'use-sound'
 import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
-import TimeSince from '@components/general/TimeSince'
 import XpTracker from '@components/general/XpTracker'
 import trackEventOnClient from '@utils/trackEventOnClient'
 import {
@@ -474,7 +474,7 @@ export default function TacticsTrainer(props: {
                 Session:
               </p>
               <p>
-                <TimeSince date={sessionTimeStarted} />
+                <TimeAgo date={sessionTimeStarted} />
               </p>
             </div>
           </div>

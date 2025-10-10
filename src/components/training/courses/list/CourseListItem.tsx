@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import type { Course, UserCourse } from '@prisma/client'
 import * as Sentry from '@sentry/nextjs'
+import TimeAgo from 'react-timeago'
 import type { ResponseJson } from '~/app/api/responses'
 import { PrismaUserCourse } from '~/hooks/use-course-queries'
 import Button from '@components/_elements/button'
@@ -16,7 +17,6 @@ import {
 } from '@components/_elements/tooltip'
 import PremiumSubscribe from '@components/ecomm/PremiumSubscribe'
 import Spinner from '@components/general/Spinner'
-import TimeSince from '@components/general/TimeSince'
 import trackEventOnClient from '@utils/trackEventOnClient'
 import CourseSettings from './CourseSettings'
 
@@ -92,7 +92,7 @@ export default function CourseListItem(props: {
               <Button variant="primary" disabled>
                 <Spinner />
               </Button>
-              <Button variant="secondary" disabled>
+              <Button disabled>
                 <Spinner />
               </Button>
             </div>
@@ -116,10 +116,7 @@ export default function CourseListItem(props: {
               <span className="text-xs italic text-gray-600 ">
                 Last trained{' '}
                 {userCourse?.lastTrained ? (
-                  <TimeSince
-                    text="ago"
-                    date={new Date(userCourse?.lastTrained)}
-                  />
+                  <TimeAgo date={new Date(userCourse?.lastTrained)} />
                 ) : (
                   'never'
                 )}
@@ -223,7 +220,7 @@ export default function CourseListItem(props: {
                 <TooltipContent disabled={!!userCourse?.lines?.length}>
                   {nextReview && (
                     <p>
-                      Next review in <TimeSince date={nextReview} />
+                      Next review in <TimeAgo date={nextReview} />
                     </p>
                   )}
                 </TooltipContent>
@@ -244,7 +241,7 @@ export default function CourseListItem(props: {
                 )}
               </Button>
               <Link href={`/training/courses/${userCourse?.id}/lines`}>
-                <Button variant="secondary">View Lines</Button>
+                <Button>View Lines</Button>
               </Link>
             </div>
           </div>

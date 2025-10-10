@@ -4,10 +4,10 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import { Puzzle } from 'lucide-react'
+import TimeAgo from 'react-timeago'
 import Button from '@components/_elements/button'
 import { ProgressBar } from '@components/_elements/progress'
 import Spinner from '@components/general/Spinner'
-import TimeSince from '@components/general/TimeSince'
 import type { PrismaTacticsSet } from '@components/training/tactics/create/TacticsSetCreator'
 import toHHMMSS from '@utils/toHHMMSS'
 import trackEventOnClient from '@utils/trackEventOnClient'
@@ -54,7 +54,7 @@ export default function SetListItem({ set }: { set: PrismaTacticsSet }) {
         <p>
           Last trained{' '}
           {set.lastTrained ? (
-            <TimeSince text="ago" date={new Date(set.lastTrained)} />
+            <TimeAgo date={new Date(set.lastTrained)} />
           ) : (
             'never'
           )}
