@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 import { LogoutLink } from '@kinde-oss/kinde-auth-nextjs'
+import { UserCircle } from 'lucide-react'
 import CalculateXpRank from '@utils/CalculateXpRank'
 import type { KindeUser } from '@utils/getUserServer'
 import Button from '../../_elements/button'
@@ -104,23 +105,7 @@ export default function Nav(props: {
                     onClick={() => setUserOpen(!userOpen)}
                   >
                     <span className="sr-only">Open user menu</span>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="40"
-                      height="40"
-                      viewBox="0 0 24 24"
-                    >
-                      <g
-                        fill="none"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="1.5"
-                      >
-                        <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10s10-4.477 10-10S17.523 2 12 2" />
-                        <path d="M4.271 18.346S6.5 15.5 12 15.5s7.73 2.846 7.73 2.846M12 12a3 3 0 1 0 0-6a3 3 0 0 0 0 6" />
-                      </g>
-                    </svg>
+                    <UserCircle className="w-10 h-10" />
                   </button>
                 </TooltipTrigger>
                 <TooltipContent>Your Profile</TooltipContent>
@@ -221,7 +206,7 @@ export default function Nav(props: {
               onClick={() => setOpenSub('')}
             ></div>
           )}
-          <ul className="relative mt-4 flex flex-col divide-y divide-gray-600 border border-gray-100 bg-gray-50 p-4 font-medium rtl:space-x-reverse lg:mt-0 lg:flex-row lg:items-center lg:divide-none lg:border-0 lg:bg-transparent lg:p-0">
+          <ul className="relative mt-4 flex flex-col divide-y divide-gray-600 border border-gray-100 bg-gray-50 p-4 font-medium rtl:space-x-reverse lg:mt-0 lg:flex-row lg:items-center lg:divide-none lg:border-0 lg:bg-transparent lg:p-0 rounded-xl">
             {links.map((link) =>
               link.subLinks ? (
                 <div key={link.name} className="relative">

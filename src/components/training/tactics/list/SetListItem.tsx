@@ -45,8 +45,8 @@ export default function SetListItem({ set }: { set: PrismaTacticsSet }) {
   }, [])
 
   return (
-    <div className="space-y-6 rounded-lg p-6 bg-card-light shadow" key={set.id}>
-      <div className="space-y-2">
+    <div className="space-y-4 rounded-lg p-4 bg-card shadow" key={set.id}>
+      <div className="space-y-2 p-4 bg-card-light rounded-lg shadow ">
         <h3 className="font-bold text-xl flex items-center gap-2">
           <Puzzle />
           {set.name}
@@ -60,7 +60,7 @@ export default function SetListItem({ set }: { set: PrismaTacticsSet }) {
           )}
         </p>
       </div>
-      <div className="flex w-full flex-col gap-2">
+      <div className="flex w-full flex-col gap-2 bg-card-light rounded-lg shadow p-4">
         <div>
           <strong>Current Round:</strong>
         </div>

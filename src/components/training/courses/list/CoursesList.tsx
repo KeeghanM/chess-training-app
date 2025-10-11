@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useCourseQueries } from '@hooks/use-course-queries'
+import { PlusIcon } from 'lucide-react'
 import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
 import StyledLink from '@components/_elements/styledLink'
@@ -22,23 +23,13 @@ export default function CourseList(props: { hasUnlimitedCourses: boolean }) {
   } = useUserCoursesQuery('active')
 
   return (
-    <>
-      <div className={'flex flex-col md:flex-row items-center gap-2 mb-2'}>
+    <div className="space-y-6">
+      <div className="flex flex-col md:flex-row items-center gap-2">
         {courses.length < maxCourses || hasUnlimitedCourses ? (
           <Link href="/courses/create">
             <Button variant="primary">
+              <PlusIcon />
               Create New Course
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  fill="currentColor"
-                  d="M19 12.998h-6v6h-2v-6H5v-2h6v-6h2v6h6z"
-                />
-              </svg>
             </Button>
           </Link>
         ) : (
@@ -46,18 +37,8 @@ export default function CourseList(props: { hasUnlimitedCourses: boolean }) {
             title="Create a new course"
             trigger={
               <Button variant="primary">
+                <PlusIcon />
                 Create New Course
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    fill="currentColor"
-                    d="M19 12.998h-6v6h-2v-6H5v-2h6v-6h2v6h6z"
-                  />
-                </svg>
               </Button>
             }
           >
@@ -81,25 +62,24 @@ export default function CourseList(props: { hasUnlimitedCourses: boolean }) {
         )}
 
         <Link href="/courses">
-          <Button variant="secondary">Browse Courses</Button>
+          <Button>Browse Courses</Button>
         </Link>
         <Link
-          className="text-sm text-purple-700 hover:text-purple-600  underline md:ml-auto"
+          className="text-white hover:underline"
           href="/training/courses/archived"
         >
           View archived courses
         </Link>
       </div>
-
-      <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {loading ? (
           <>
-            <div className="flex flex-col h-24 gap-0 border border-gray-300   shadow-md  bg-[rgba(0,0,0,0.03)]  hover:shadow-lg transition-shadow duration-300 opacity-50">
+            <div className="space-y-6 rounded-lg p-6 bg-card-light shadow opacity-50">
               <p className="w-fit m-auto flex gap-1">
                 Loading... <Spinner />
               </p>
             </div>
-            <div className="flex flex-col h-24 gap-0 border border-gray-300   shadow-md  bg-[rgba(0,0,0,0.03)]  hover:shadow-lg transition-shadow duration-300  opacity-50">
+            <div className="space-y-6 rounded-lg p-6 bg-card-light shadow opacity-50">
               <p className="w-fit m-auto flex gap-1">
                 Loading... <Spinner />
               </p>
@@ -135,6 +115,6 @@ export default function CourseList(props: { hasUnlimitedCourses: boolean }) {
           </div>
         )}
       </div>
-    </>
+    </div>
   )
 }

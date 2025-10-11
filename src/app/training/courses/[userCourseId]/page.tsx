@@ -4,7 +4,8 @@ import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import type { Comment, Group, Line, Move, UserLine } from '@prisma/client'
 import * as Sentry from '@sentry/nextjs'
 import Container from '@components/_elements/container'
-import PageHeader from '@components/_layouts/pageHeader'
+import Backdrop from '@components/_elements/backdrop'
+import Heading from '@components/_elements/heading'
 import CourseTrainer from '@components/training/courses/CourseTrainer'
 
 export type PrismaUserLine = UserLine & {
@@ -95,25 +96,23 @@ export default async function CourseTrainPage(props: {
   }
 
   return (
-    <>
-      <PageHeader
-        title={userCourse.course.courseName}
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Wooden chess pieces on a chess board',
-        }}
-      />
-      <div className="">
-        <Container>
-          {userCourse && (
-            <CourseTrainer
-              userCourse={userCourse}
-              userLines={userLines}
-              userFens={userFens}
-            />
-          )}
-        </Container>
-      </div>
-    </>
+    <div className="relative">
+      <Backdrop />
+      <Container size="wide">
+        <Heading as="h1" className="text-white">
+          Course Trainer
+        </Heading>
+        <Heading as="h2" className="text-card-dark">
+          {userCourse.course.courseName}
+        </Heading>
+        {userCourse && (
+          <CourseTrainer
+            userCourse={userCourse}
+            userLines={userLines}
+            userFens={userFens}
+          />
+        )}
+      </Container>
+    </div>
   )
 }

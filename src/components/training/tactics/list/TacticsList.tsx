@@ -35,7 +35,7 @@ export default function TacticsList(props: { hasUnlimitedSets: boolean }) {
           You don't have any sets yet. Create one above!
         </p>
       )}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {tacticsSetsQuery.isLoading ? (
           <>
             <div className="flex flex-col h-24 gap-0 border border-gray-300   shadow-md  bg-[rgba(0,0,0,0.03)]  hover:shadow-lg transition-shadow duration-300 opacity-50">

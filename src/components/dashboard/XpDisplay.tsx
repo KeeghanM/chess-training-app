@@ -31,7 +31,9 @@ export default function XpDisplay({
       <p className="text-xl">
         <strong>{rank?.rank}:</strong> {rank?.name}
       </p>
-      <RoundProgress percentage={percentage}>
+      <RoundProgress
+        percentages={[{ percentage: 25, color: 'text-green-500' }]}
+      >
         <text
           x="50"
           y="47"

@@ -1,36 +1,69 @@
 import { ReactNode } from 'react'
 
-export function RoundProgress({
-  percentage,
-  children,
-}: {
+export type ProgressPercentage = {
   percentage: number
-  children: ReactNode
+  color: string
+}
+export function RoundProgress({
+  percentages,
+  children,
+  bgColor,
+  width,
+}: {
+  children?: ReactNode
+  percentages: ProgressPercentage[]
+  bgColor?: string
+  width?: string
 }) {
+  const CICUMFERENCE = 225
+  const STROKE_WIDTH = 10
+  const GAP = 12
+  let accumulator = 0
+
   return (
-    <div className="relative w-30">
+    <div className={`relative ${width ? width : 'w-30'}`}>
       <svg className="w-full h-full" viewBox="0 0 100 100">
         {/* Background circle */}
         <circle
-          className="text-gray-200/5 stroke-current"
-          strokeWidth="10"
+          className={`${bgColor ? bgColor : 'text-gray-200/5'} stroke-current`}
+          strokeWidth={STROKE_WIDTH}
           cx="50"
           cy="50"
           r="40"
           fill="transparent"
         ></circle>
-        {/* Progress circle */}
-        <circle
-          className="text-green-500 progress-ring__circle stroke-current"
-          strokeWidth="10"
-          strokeLinecap="round"
-          cx="50"
-          cy="50"
-          r="40"
-          fill="transparent"
-          strokeDasharray="251.2"
-          strokeDashoffset={`calc(251.2px - (251.2px * ${percentage}) / 100)`}
-        ></circle>
+        {/* Progress arcs */}
+        {percentages.map((p, i) => {
+          const percentageDecimal = p.percentage / 100
+          accumulator += percentageDecimal
+
+          return i === 0 ? (
+            <circle
+              key={`progress-${i}`}
+              className={`${p.color} progress-ring__circle stroke-current`}
+              strokeWidth={STROKE_WIDTH}
+              strokeLinecap="round"
+              cx="50"
+              cy="50"
+              r="40"
+              fill="transparent"
+              strokeDasharray={`${CICUMFERENCE * percentageDecimal}, 1000`}
+            ></circle>
+          ) : (
+            <circle
+              key={`progress-${i}`}
+              className={`${p.color} progress-ring__circle stroke-current`}
+              strokeWidth={STROKE_WIDTH}
+              strokeLinecap="round"
+              cx="50"
+              cy="50"
+              r="40"
+              fill="transparent"
+              strokeDasharray={`0, ${CICUMFERENCE * (accumulator - percentageDecimal) + GAP * i + STROKE_WIDTH}, ${CICUMFERENCE * percentageDecimal}, 1000`}
+              strokeDashoffset={STROKE_WIDTH}
+            ></circle>
+          )
+        })}
         {/* Center text */}
         {children}
       </svg>
