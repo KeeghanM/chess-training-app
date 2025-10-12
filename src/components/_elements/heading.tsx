@@ -11,26 +11,22 @@ export default function Heading({
     case 'h1':
       return (
         <h1
-          className={`mb-2 text-4xl font-bold md:text-6xl flex items-center gap-1 flex-wrap ${className}`}
+          className={`text-4xl font-bold md:text-6xl flex items-center gap-1 flex-wrap ${className}`}
         >
           {children}
         </h1>
       )
     case 'h2':
-      return (
-        <h2 className={`mb-2 mt-4 text-2xl md:text-3xl ${className}`}>
-          {children}
-        </h2>
-      )
+      return <h2 className={`text-2xl md:text-3xl ${className}`}>{children}</h2>
     case 'h3':
       return (
-        <h3 className={`mb-2 mt-4 text-xl font-bold md:text-2xl ${className}`}>
+        <h3 className={`text-xl font-bold md:text-2xl ${className}`}>
           {children}
         </h3>
       )
     case 'h4':
       return (
-        <h4 className={`mb-2 text-xl font-bold  md:text-lg ${className}`}>
+        <h4 className={`text-xl font-bold  md:text-lg ${className}`}>
           {children}
         </h4>
       )

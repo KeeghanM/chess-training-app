@@ -18,53 +18,52 @@ interface XpDisplayProps {
     }
     percentage: number
   }
-  displayLink?: boolean
+  width?: string
 }
-export default function XpDisplay({
-  data,
-  displayLink = true,
-}: XpDisplayProps) {
+export default function XpDisplay({ data, width = 'w-30' }: XpDisplayProps) {
   const { currentXp, rank, nextRank, percentage } = data
 
   return (
-    <div className="text-white text-center flex flex-col items-center bg-card/10 p-4 gap-2 rounded-lg">
-      <p className="text-xl">
-        <strong>{rank?.rank}:</strong> {rank?.name}
-      </p>
+    <div className="bg-card/10 text-white rounded-lg p-4 flex flex-col gap-2 items-center">
       <RoundProgress
-        percentages={[{ percentage: 25, color: 'text-green-500' }]}
+        width={width}
+        percentages={[{ percentage, color: 'text-green-500' }]}
       >
         <text
+          fill="white"
           x="50"
           y="47"
           textAnchor="middle"
           alignmentBaseline="middle"
-          fill="white"
         >
-          {percentage}%
+          {percentage > 99
+            ? Math.round(percentage * 10) / 10
+            : Math.round(percentage)}
+          %
         </text>
         <text
+          fill="white"
           x="50"
           y="62"
           textAnchor="middle"
           alignmentBaseline="middle"
-          fill="white"
-          fontSize={'0.5rem'}
+          fontSize="0.5rem"
         >
           {currentXp.toLocaleString('en-GB')}
           {nextRank && `/${nextRank.xp.toLocaleString('en-GB')}xp`}
         </text>
       </RoundProgress>
-      {displayLink && (
-        <div className="flex gap-1 flex-col text-xs w-full bg-card-light/10 p-2 rounded shadow">
-          <Link className="hover:underline" href="/members">
-            View Leaderboard
-          </Link>
-          <Link href="/about/ranks-and-badges" className="hover:underline">
-            View All Ranks
-          </Link>
-        </div>
-      )}
+      <p className="text-xl">
+        <strong>{rank?.rank}:</strong> {rank?.name}
+      </p>
+      <div className="flex gap-1 flex-col text-xs w-full bg-card-light/10 p-2 rounded shadow">
+        <Link className="hover:underline" href="/members/page/1">
+          View Leaderboard
+        </Link>
+        <Link href="/about/ranks-and-badges" className="hover:underline">
+          View All Ranks
+        </Link>
+      </div>
     </div>
   )
 }

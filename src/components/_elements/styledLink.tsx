@@ -8,9 +8,7 @@ export default function StyledLink(props: LinkProps) {
   return (
     <Link
       href={props.href}
-      className={
-        'font-bold text-purple-700 underline hover:text-purple-600  hover:no-underline'
-      }
+      className="font-bold text-primary underline hover:no-underline"
     >
       {props.children}
     </Link>

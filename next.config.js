@@ -29,6 +29,15 @@ const nextConfig = {
       ],
     },
   ],
+  async redirects() {
+    return [
+      {
+        source: '/members',
+        destination: '/members/page/1',
+        permanent: true,
+      },
+    ]
+  },
 }
 
 const config = withSentryConfig(nextConfig, {

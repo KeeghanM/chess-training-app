@@ -29,7 +29,10 @@ export default async function MemberPage(props: {
           <Link className="text-purple-700 hover:underline" href="/">
             Home
           </Link>
-          <Link className="text-purple-700 hover:underline" href="/members">
+          <Link
+            className="text-purple-700 hover:underline"
+            href="/members/page/1"
+          >
             /Members
           </Link>
           /{username}
@@ -45,10 +48,7 @@ export default async function MemberPage(props: {
               )}
             </div>
             <div className="w-fit">
-              <XpDisplay
-                displayLink={false}
-                data={CalculateXpRank(account.experience)}
-              />
+              <XpDisplay data={CalculateXpRank(account.experience)} />
             </div>
             {account.description && (
               <p className="bg-purple-700 text-white p-2">

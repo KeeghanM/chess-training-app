@@ -39,7 +39,7 @@ export async function getUserServer() {
         },
       })
       const isStaff = permissions?.permissions.includes('staff-member') ?? false
-      const isPremium = subscriptionStatus.features.hasPremium
+      const isPremium = true // subscriptionStatus.features.hasPremium // ONLY FOR TESTING // TODO: Uncomment this!!
 
       return { user, hasAuth, profile, isStaff, isPremium, badges }
     } catch (e) {

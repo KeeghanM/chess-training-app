@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import CalculateXpRank from '@utils/CalculateXpRank'
 import Heading from '../_elements/heading'
-import XpDisplay from '../dashboard/XpDisplay'
 
 export default function TrophyTile(props: {
   placement: number
@@ -10,6 +9,7 @@ export default function TrophyTile(props: {
   published: boolean
 }) {
   const { placement, username, xp, published } = props
+  const { currentXp, rank, nextRank, percentage } = CalculateXpRank(xp)
 
   const Trophy = (props: { placement: number }) => {
     switch (props.placement) {
@@ -17,8 +17,8 @@ export default function TrophyTile(props: {
         return (
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="200"
-            height="200"
+            width="100"
+            height="100"
             viewBox="0 0 128 128"
           >
             <path
@@ -63,8 +63,8 @@ export default function TrophyTile(props: {
         return (
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="128"
-            height="128"
+            width="64"
+            height="64"
             viewBox="0 0 128 128"
           >
             <path
@@ -109,8 +109,8 @@ export default function TrophyTile(props: {
         return (
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="128"
-            height="128"
+            width="64"
+            height="64"
             viewBox="0 0 128 128"
           >
             <path
@@ -159,7 +159,7 @@ export default function TrophyTile(props: {
   return (
     <div
       className={
-        'flex flex-col gap-2 mt-auto p-4 bg-slate-800 text-white font-bold items-center' +
+        'mt-auto text-center text-black p-4 bg-card-light/20 rounded-lg' +
         (placement === 1
           ? ' md:order-2 '
           : placement === 2
@@ -167,20 +167,26 @@ export default function TrophyTile(props: {
             : ' md:order-3 ')
       }
     >
-      <div>
-        <Trophy placement={placement} />
-      </div>
-      <div>
+      <div className="bg-card-light shadow rounded-lg p-4 flex flex-col gap-2 items-center">
+        <div>
+          <Trophy placement={placement} />
+        </div>
         {published ? (
           <Link href={`/members/${username}`}>
-            <Heading as="h3">{username}</Heading>
+            <Heading as="h3" className="underline">
+              {username}
+            </Heading>
           </Link>
         ) : (
           <Heading as="h3">{username}</Heading>
         )}
-      </div>
-      <div className="text-black">
-        <XpDisplay data={CalculateXpRank(xp)} displayLink={false} />
+        <p className="text-xl">
+          <strong>{rank?.rank}:</strong> {rank?.name}
+        </p>
+        <p>
+          {currentXp.toLocaleString('en-GB')}
+          {nextRank && `/${nextRank.xp.toLocaleString('en-GB')}xp`}
+        </p>
       </div>
     </div>
   )

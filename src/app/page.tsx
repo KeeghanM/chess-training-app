@@ -54,7 +54,7 @@ export default async function Home() {
           alt: 'Chess board with pieces set up',
         }}
       >
-        <Heading color="text-orange-500" as="h2">
+        <Heading className="text-primary" as="h2">
           Discover the power of science backed chess training - Available for
           free forever!
         </Heading>

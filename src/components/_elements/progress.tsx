@@ -15,7 +15,7 @@ export function RoundProgress({
   bgColor?: string
   width?: string
 }) {
-  const CICUMFERENCE = 225
+  const CICUMFERENCE = 251.33
   const STROKE_WIDTH = 10
   const GAP = 12
   let accumulator = 0
