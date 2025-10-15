@@ -1,6 +1,6 @@
-import type { Arrow } from 'react-chessboard/dist/chessboard/types'
+import type { Arrow } from 'react-chessboard'
 
-export default function getArrows(arrowString: string) {
+export default function getArrows(arrowString: string): Arrow[] {
   const moveArrows = arrowString.split(',')
   const getColour = (code: string) => {
     switch (code) {
@@ -22,7 +22,11 @@ export default function getArrows(arrowString: string) {
     const colour = getColour(arrow.charAt(0))
     const from = arrow.charAt(1) + arrow.charAt(2)
     const to = arrow.charAt(3) + arrow.charAt(4)
-    return [from, to, colour] as Arrow
+    return {
+      startSquare: from,
+      endSquare: to,
+      color: colour,
+    }
   })
 
   return newArrows

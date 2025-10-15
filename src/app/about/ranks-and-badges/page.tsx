@@ -14,9 +14,7 @@ export default async function RankAndBadgesPage() {
   const BadgeElem = (name: string, description: string) => {
     return (
       <div key={name} className="bg-card rounded-lg shadow overflow-hidden">
-        <p className="bg-card-light p-4 font-bold text-lg">
-          {name}
-        </p>
+        <p className="bg-card-light p-4 font-bold text-lg">{name}</p>
         <p className="p-4 text-sm">{description}</p>
       </div>
     )
@@ -51,10 +49,11 @@ export default async function RankAndBadgesPage() {
         </Heading>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 mb-8">
           {ranks.map((rank, index) => (
-            <div key={index} className="bg-card rounded-lg shadow overflow-hidden">
-              <p className="bg-card-light p-4 font-bold text-lg">
-                {rank}
-              </p>
+            <div
+              key={index}
+              className="bg-card rounded-lg shadow overflow-hidden"
+            >
+              <p className="bg-card-light p-4 font-bold text-lg">{rank}</p>
               <div className="p-4 space-y-2">
                 {XpRanks.filter((r) => r.rank === rank).map((r) => (
                   <p key={r.rank + r.name} className="text-sm">

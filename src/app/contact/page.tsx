@@ -1,3 +1,4 @@
+import Backdrop from '@components/_elements/backdrop'
 import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import ContactForm from '@components/contact/ContactForm'
@@ -5,8 +6,6 @@ import ContactForm from '@components/contact/ContactForm'
 export const metadata = {
   title: 'Get in touch with the team at ChessTraining.app',
 }
-
-import Backdrop from '@components/_elements/backdrop'
 
 export default function ContactPage() {
   return (

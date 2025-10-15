@@ -190,7 +190,7 @@ export default async function Dashboard() {
           <BadgeDisplay userBadgeCount={badges.length} />
         </div>
       </Container>
-      <Container size="extra-wide">
+      <Container size="full">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-4">
           {tools
             .sort((a, b) => {

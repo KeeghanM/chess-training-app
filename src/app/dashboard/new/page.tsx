@@ -21,10 +21,6 @@ export default async function NewUserWelcome() {
       <PageHeader
         title={'Welcome to ChessTraining.app!'}
         subTitle="I hope you enjoy your time here."
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Wooden chess pieces on a chess board',
-        }}
       />
       <Container>
         <div className="flex flex-col gap-4">

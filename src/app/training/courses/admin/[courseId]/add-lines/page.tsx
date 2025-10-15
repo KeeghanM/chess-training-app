@@ -47,14 +47,7 @@ export default async function AddLinesPage(props: {
 
   return (
     <>
-      <PageHeader
-        title={course.courseName}
-        subTitle="Add Lines"
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Wooden chess pieces on a chess board',
-        }}
-      />
+      <PageHeader title={course.courseName} subTitle="Add Lines" />
       <div className="">
         <Container>
           <AddLines courseId={courseId} />

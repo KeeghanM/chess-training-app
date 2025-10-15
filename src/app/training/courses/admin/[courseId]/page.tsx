@@ -5,6 +5,8 @@ import * as Sentry from '@sentry/nextjs'
 import Container from '@components/_elements/container'
 import PageHeader from '@components/_layouts/pageHeader'
 import CourseAdminPanel from '@components/training/courses/admin/AdminPanel'
+import Backdrop from '~/components/_elements/backdrop'
+import Heading from '~/components/_elements/heading'
 
 export default async function CourseAdminPage(props: {
   params: Promise<{ courseId: string }>
@@ -54,20 +56,12 @@ export default async function CourseAdminPage(props: {
   }
 
   return (
-    <>
-      <PageHeader
-        title={course.courseName}
-        subTitle="Admin Panel"
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Wooden chess pieces on a chess board',
-        }}
-      />
-      <div className="">
-        <Container>
-          <CourseAdminPanel course={course} />
-        </Container>
-      </div>
-    </>
+    <div className="relative">
+      <Backdrop />
+      <Container>
+        <Heading as="h1">Admin Panel</Heading>
+        <CourseAdminPanel course={course} />
+      </Container>
+    </div>
   )
 }

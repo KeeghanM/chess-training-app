@@ -63,9 +63,7 @@ export default async function BadgesPage() {
                         }`}
                         key={badge.name}
                       >
-                        <p className="text-center font-bold">
-                          {badge.name}
-                        </p>
+                        <p className="text-center font-bold">{badge.name}</p>
                         <p className="text-center text-xs">
                           {badge.description}
                         </p>

@@ -29,7 +29,7 @@ export default function LineDisplay(props: {
   }
 
   return (
-    <div className="p-2 bg-purple-900 grid grid-cols-[auto,1fr,auto] gap-1 cursor-pointer hover:bg-purple-800">
+    <div className="p-2 bg-card-dark grid grid-cols-[auto_1fr] gap-4 cursor-pointer rounded-lg shadow">
       <div>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -44,20 +44,25 @@ export default function LineDisplay(props: {
           />
         </svg>
       </div>
-      {<PrettyPrintLine line={niceLine} />}
-      <div className="flex flex-col gap-1">
-        <select
-          value={line.trainable ? 1 : 0}
-          onChange={(e) =>
-            props.onChange({ ...line, trainable: e.target.value === '1' })
-          }
-        >
-          <option value={1}>Trainable</option>
-          <option value={0}>Not Trainable</option>
-        </select>
-        <Button variant="danger" onClick={handleDelete}>
-          Delete
-        </Button>
+      <div className="space-y-4">
+        {<PrettyPrintLine line={niceLine} />}
+        <div className="flex gap-2 w-fit ml-auto">
+          <select
+            className="border border-bg rounded px-2 py-1 text-sm"
+            value={line.trainable ? 1 : 0}
+            onChange={(e) =>
+              props.onChange({ ...line, trainable: e.target.value === '1' })
+            }
+          >
+            <option value={1}>Trainable</option>
+            <option value={0}>Not Trainable</option>
+          </select>
+          <div>
+            <Button variant="danger" onClick={handleDelete}>
+              Delete
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   )

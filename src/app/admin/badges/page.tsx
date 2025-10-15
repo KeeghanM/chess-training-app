@@ -17,13 +17,7 @@ export default async function AdminBadgePage() {
 
   return (
     <>
-      <PageHeader
-        title="Admin: Badges"
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Wooden chess pieces on a chess board',
-        }}
-      />
+      <PageHeader title="Admin: Badges" />
       <Container>
         <BadgeCreator />
         <ExistingBadges existingBadges={existingBadges} />
