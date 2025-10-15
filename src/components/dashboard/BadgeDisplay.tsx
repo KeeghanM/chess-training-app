@@ -21,7 +21,10 @@ export default function BadgeDisplay({ userBadgeCount }: BadgeDisplayProps) {
           textAnchor="middle"
           alignmentBaseline="middle"
         >
-          {percentage}%
+          {percentage > 99
+            ? Math.round(percentage * 10) / 10
+            : Math.round(percentage)}
+          %
         </text>
         <text
           fill="white"
