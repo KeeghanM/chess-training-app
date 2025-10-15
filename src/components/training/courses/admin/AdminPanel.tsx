@@ -142,9 +142,7 @@ export default function CourseAdminPanel(props: CourseAdminPanelProps) {
         <Link href={`/training/courses/admin/${course.id}/add-lines`}>
           <Button variant="accent">Add New Lines</Button>
         </Link>
-        <Button variant="secondary" onClick={exit}>
-          Exit
-        </Button>
+        <Button onClick={exit}>Exit</Button>
         <Tooltip>
           <TooltipTrigger asChild={true}>
             <Button disabled variant="warning">

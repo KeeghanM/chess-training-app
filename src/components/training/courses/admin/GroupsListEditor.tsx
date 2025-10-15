@@ -61,7 +61,7 @@ export default function GroupsListEditor(props: {
 
   return (
     <>
-      <Heading as="h2" color="text-white">
+      <Heading as="h2">
         <span
           onClick={() => setOpen(!open)}
           className="flex items-center gap-2 cursor-pointer hover:text-orange-500"

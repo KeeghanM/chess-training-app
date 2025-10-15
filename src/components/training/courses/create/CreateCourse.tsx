@@ -6,7 +6,6 @@ import { useCourseQueries } from '@hooks/use-course-queries'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import * as Sentry from '@sentry/nextjs'
 import Button from '@components/_elements/button'
-import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import GenerateSlug from '@utils/GenerateSlug'
 import trackEventOnClient from '@utils/trackEventOnClient'
@@ -62,68 +61,60 @@ export default function CreateCourseForm() {
   }
 
   return (
-    <div className="">
-      <Container>
-        <div className="bg-gray-100  p-2 md:p-4">
-          {courseName && (
-            <Heading as={'h2'} color="text-orange-500">
-              {courseName}
-            </Heading>
-          )}
-          <Steps currentStep={currentStep} />
-          {currentStep == 'name' && (
-            <DetailsForm
-              finished={(name, description) => {
-                setCourseName(name)
-                setDescription(description)
-                setCurrentStep('import')
-              }}
-              courseName={courseName}
-              description={description}
-            />
-          )}
-          {currentStep == 'import' && (
-            <PgnToLinesForm
-              back={() => {
+    <div className="p-4 bg-card-light/20 rounded-lg">
+      <div className="bg-card rounded-lg p-4 shadow">
+        {courseName && <Heading as={'h2'}>{courseName}</Heading>}
+        <Steps currentStep={currentStep} />
+        {currentStep == 'name' && (
+          <DetailsForm
+            finished={(name, description) => {
+              setCourseName(name)
+              setDescription(description)
+              setCurrentStep('import')
+            }}
+            courseName={courseName}
+            description={description}
+          />
+        )}
+        {currentStep == 'import' && (
+          <PgnToLinesForm
+            back={() => {
+              setCurrentStep('name')
+            }}
+            finished={(lines) => {
+              setCurrentStep('group')
+              setLines(lines)
+            }}
+          />
+        )}
+        {currentStep == 'group' && (
+          <GroupSelector
+            lines={lines}
+            back={() => {
+              setCurrentStep('import')
+            }}
+            finished={async (group, sortedLines) => {
+              await upload(courseName, description, group, sortedLines)
+            }}
+          />
+        )}
+        {currentStep == 'error' && (
+          <>
+            <Heading as={'h2'}>Error: Something went wrong</Heading>
+            <Button
+              onClick={() => {
                 setCurrentStep('name')
+                setCourseName('')
+                setDescription('')
+                setLines([])
               }}
-              finished={(lines) => {
-                setCurrentStep('group')
-                setLines(lines)
-              }}
-            />
-          )}
-          {currentStep == 'group' && (
-            <GroupSelector
-              lines={lines}
-              back={() => {
-                setCurrentStep('import')
-              }}
-              finished={async (group, sortedLines) => {
-                await upload(courseName, description, group, sortedLines)
-              }}
-            />
-          )}
-          {currentStep == 'error' && (
-            <>
-              <Heading as={'h2'} color="text-red-500">
-                Error: Something went wrong
-              </Heading>
-              <Button
-                onClick={() => {
-                  setCurrentStep('name')
-                  setCourseName('')
-                  setDescription('')
-                  setLines([])
-                }}
-                variant="danger"
-              >
-                Try again
-              </Button>
-            </>
-          )}
-        </div>
-      </Container>
+              variant="danger"
+            >
+              Try again
+            </Button>
+          </>
+        )}
+      </div>
     </div>
   )
 }

@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useAutoAnimate } from '@formkit/auto-animate/react'
 import * as AlertDialog from '@radix-ui/react-alert-dialog'
 import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
@@ -21,7 +20,6 @@ export function GroupItem(props: {
   const [open, setOpen] = useState<boolean>(false)
   const [setAllOpen, setSetAllOpen] = useState<boolean>(false)
   const [selectedColor, setSelectedColor] = useState<string>('White')
-  const [parent] = useAutoAnimate()
 
   const handleColorChange = (line: Line, newColor: string) => {
     const updatedLines = props.lines.map((l) =>
@@ -36,21 +34,18 @@ export function GroupItem(props: {
   }
 
   return (
-    <div
-      ref={parent}
-      className="flex flex-col justify-center gap-2 bg-white p-2 md:p-4"
-    >
+    <div className="flex flex-col justify-center gap-2 bg-card-light rounded-lg p-2 md:p-4">
       <div className="flex items-center gap-2">
         <p className="font-bold">{count} x</p>
         <p>{groupKey}</p>
         <button
-          className="text-purple-700 hover:text-purple-500"
+          className="text-primary cursor-pointer"
           onClick={() => setOpen(!open)}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="36"
-            height="36"
+            width="24"
+            height="24"
             viewBox="0 0 12 12"
           >
             <path
@@ -60,7 +55,7 @@ export function GroupItem(props: {
           </svg>
         </button>
         <div className="ml-auto min-w-fit">
-          <Button onClick={() => setSetAllOpen(true)} variant="secondary">
+          <Button onClick={() => setSetAllOpen(true)} variant="primary">
             Set all lines...
           </Button>
         </div>
@@ -99,9 +94,7 @@ export function GroupItem(props: {
               >
                 Set All To {selectedColor}
               </Button>
-              <Button variant="secondary" onClick={() => setSetAllOpen(false)}>
-                Cancel
-              </Button>
+              <Button onClick={() => setSetAllOpen(false)}>Cancel</Button>
             </div>
           </div>
         </div>
@@ -114,7 +107,7 @@ export function GroupItem(props: {
             .map((line) => {
               return (
                 <div
-                  className="flex flex-col justify-center gap-2 bg-purple-100  p-2"
+                  className="flex flex-col justify-center gap-2 bg-card-light border border-card-dark shadow rounded-lg  p-2"
                   key={line.moves.join('')}
                 >
                   <div className="flex items-center gap-2 text-sm">

@@ -102,7 +102,7 @@ export default function AccountForm(props: { profile: UserProfile }) {
     return (
       <div className="flex flex-col gap-0 border border-gray-300   shadow-md  bg-[rgba(0,0,0,0.03)]  ">
         <div className="flex flex-col md:flex-row px-2 py-1 border-b border-gray-300  items-center justify-between">
-          <Heading color="text-orange-500 !m-0 !p-0" as={'h2'}>
+          <Heading className="text-orange-500 !m-0 !p-0" as={'h2'}>
             Account Settings
           </Heading>
           <Link href="/dashboard">
@@ -118,7 +118,7 @@ export default function AccountForm(props: { profile: UserProfile }) {
   return (
     <div className="flex flex-col gap-0 border border-gray-300   shadow-md  bg-[rgba(0,0,0,0.03)]  ">
       <div className="flex flex-col md:flex-row px-2 py-1 border-b border-gray-300  items-center justify-between">
-        <Heading color="text-orange-500 !m-0 !p-0" as={'h2'}>
+        <Heading className="text-orange-500 !m-0 !p-0" as={'h2'}>
           Account Settings
         </Heading>
         <Link href="/dashboard">

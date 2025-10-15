@@ -65,9 +65,7 @@ export default function MeetTheTeam() {
       <MultiCol title="Meet the Team">
         {teamMembers.map((member, index) => (
           <MultiColItem key={index} title={member.name}>
-            <Heading as="h4" color="text-[rgba(0,0,0,0.5)]">
-              {member.title}
-            </Heading>
+            <Heading as="h4">{member.title}</Heading>
             <p>{member.bio}</p>
           </MultiColItem>
         ))}

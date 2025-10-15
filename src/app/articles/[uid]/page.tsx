@@ -109,7 +109,6 @@ export default async function Page(props: { params: Promise<Params> }) {
       </Container>
       <CtaRow
         title="Ready to Elevate Your Chess Game?"
-        background="dark"
         cta={{
           text: 'Start Training Now',
           link: '/auth/signin',

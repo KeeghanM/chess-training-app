@@ -82,7 +82,7 @@ export default function DetailsForm(props: {
         <TextEditor value={description} onChange={setDescription} />
       </div>
       <div className="flex flex-col gap-2">
-        <Button variant="primary" onClick={create}>
+        <Button variant="primary" onClick={create} className="ml-auto">
           <span className="flex items-center gap-4">
             <span>{status == 'idle' ? 'Create Course' : 'Checking Name'}</span>
             {status == 'loading' && <Spinner />}
