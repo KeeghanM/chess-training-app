@@ -67,7 +67,7 @@ export default function GroupEditor(props: {
     <div
       key={group.id}
       ref={parent}
-      className="flex flex-col gap-4 text-white p-2 bg-purple-600 "
+      className="flex flex-col gap-4 bg-card-light text-black rounded-lg p-2 "
     >
       <div className="flex items-center gap-1 p-1">
         <svg
@@ -84,7 +84,7 @@ export default function GroupEditor(props: {
         </svg>
         <p className="font-bold w-10">{lines.length}x</p>
         <input
-          className="w-full border-b border-gray-300 px-4 py-2 bg-[rgba(255,255,255,0.2)] text-white font-bold"
+          className="w-full border-b text-bg-light border-bg px-4 py-2 bg-[rgba(255,255,255,0.2)] font-bold"
           value={group.groupName}
           onChange={(e) => setGroup({ ...group, groupName: e.target.value })}
           type="text"

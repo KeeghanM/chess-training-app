@@ -77,7 +77,7 @@ export default function AddLines(props: { courseId: string }) {
     <div className="p-4 bg-slate-900">
       {step === 'error' && (
         <>
-          <Heading color="text-red-500" as={'h2'}>
+          <Heading className="text-red-500" as={'h2'}>
             Oops! Something went wrong
           </Heading>
           <p className="text-white">
@@ -108,7 +108,7 @@ export default function AddLines(props: { courseId: string }) {
       )}
       {step === 'success' && (
         <div className="flex flex-col gap-2">
-          <Heading color="text-green-500" as={'h2'}>
+          <Heading className="text-green-500" as={'h2'}>
             Success!
           </Heading>
           <p className="text-white">

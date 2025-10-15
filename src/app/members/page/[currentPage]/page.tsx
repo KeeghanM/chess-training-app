@@ -1,4 +1,4 @@
-import { cache } from 'react'
+import { Suspense, cache } from 'react'
 import { prisma } from '~/server/db'
 import Container from '@components/_elements/container'
 import TrophyTile from '@components/members/TrophyTile'
@@ -8,10 +8,9 @@ import Heading from '~/components/_elements/heading'
 import MemberSearch from '~/components/members/MembersSearch'
 import MembersTable from '~/components/members/MembersTable'
 
-export const revalidate = 3600 // invalidate every hour
+export const revalidate = 3600
 const resultsPerPage = 25
 
-// Cache this function so it only runs once during the build
 const getTotalPages = cache(async () => {
   const totalMembers = await prisma.userProfile.count()
   const totalPages = Math.ceil(totalMembers / resultsPerPage)
@@ -27,7 +26,6 @@ export async function generateStaticParams() {
     }))
   } catch (error) {
     console.error('Error generating static params:', error)
-    // Return at least page 1 as fallback
     return [{ currentPage: '1' }]
   }
 }
@@ -40,7 +38,6 @@ export default async function MembersPage({
   const resolvedParams = await params
   const currentPage = Number(resolvedParams.currentPage)
 
-  // This will use the cached result from generateStaticParams during build
   const { totalPages, totalMembers } = await getTotalPages()
 
   const topThree =
@@ -84,7 +81,9 @@ export default async function MembersPage({
             />
           ))}
         </div>
-        <MemberSearch />
+        <Suspense fallback={<div>Loading search...</div>}>
+          <MemberSearch />
+        </Suspense>
         <div>
           <Pagination
             startCount={skip + 1}
@@ -95,7 +94,9 @@ export default async function MembersPage({
             label="Members"
             path="/members/page"
           />
-          <MembersTable members={members} />
+          <Suspense fallback={<div>Loading members...</div>}>
+            <MembersTable members={members} />
+          </Suspense>
           <Pagination
             startCount={skip + 1}
             endCount={skip + resultsPerPage}

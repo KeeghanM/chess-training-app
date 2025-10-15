@@ -27,11 +27,6 @@ import Spinner from '@components/general/Spinner'
 import XpTracker from '@components/general/XpTracker'
 import getArrows from '@utils/StringToArrows'
 import trackEventOnClient from '@utils/trackEventOnClient'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '../../_elements/tooltip'
 import ChessBoard from '../ChessBoard'
 import BoardContainer from '../shared/BoardContainer'
 
@@ -52,7 +47,7 @@ export default function CourseTrainer(props: {
 
   // --- Hooks ---
   const { uploadTrainedFens, updateLineStats } = useCourseQueries()
-  const { preferences, setSoundEnabled, setAutoNext } = useAppStore()
+  const { preferences, setAutoNext } = useAppStore()
   const { soundEnabled, autoNext } = preferences
 
   // Line/Course State

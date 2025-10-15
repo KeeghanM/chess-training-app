@@ -5,7 +5,7 @@ import { errorResponse, successResponse } from '~/app/api/responses'
 
 export async function POST(
   request: Request,
-  props: { params: Promise<{ courseId: string; lineId: number }> },
+  props: { params: Promise<{ courseId: string; lineId: string }> },
 ) {
   const params = await props.params
   const session = getKindeServerSession()
@@ -30,7 +30,7 @@ export async function POST(
   try {
     const line = await prisma.userLine.update({
       where: {
-        id: parseInt(lineId.toString()),
+        id: parseInt(lineId),
         userId: user.id,
       },
       data: {

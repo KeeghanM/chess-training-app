@@ -61,7 +61,7 @@ export default function GroupsListEditor(props: {
 
   return (
     <>
-      <Heading as="h2" color="text-white">
+      <Heading as="h2">
         <span
           onClick={() => setOpen(!open)}
           className="flex items-center gap-2 cursor-pointer hover:text-orange-500"
@@ -69,8 +69,8 @@ export default function GroupsListEditor(props: {
           Groups{' '}
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="32"
-            height="32"
+            width="24"
+            height="24"
             viewBox="0 0 32 32"
             className={
               (open ? '-rotate-180' : '-rotate-90') +

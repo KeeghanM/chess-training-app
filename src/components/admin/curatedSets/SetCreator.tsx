@@ -64,9 +64,7 @@ export default function SetCreator(props: {
             </div>
           </div>
           <div className="flex gap-4">
-            <Button variant="secondary" onClick={close}>
-              Cancel
-            </Button>
+            <Button onClick={close}>Cancel</Button>
             <Button
               variant="primary"
               onClick={() => mutation.mutate()}

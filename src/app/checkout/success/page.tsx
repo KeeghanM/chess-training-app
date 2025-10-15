@@ -64,13 +64,7 @@ export default async function CheckoutSuccessPage() {
 
   return (
     <>
-      <PageHeader
-        title="Thank you for your purchase"
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Wooden Chess pieces on a chess board',
-        }}
-      />
+      <PageHeader title="Thank you for your purchase" />
       <Container>
         <Heading as="h2">Your purchase has been successful!</Heading>
         <ul className="mb-4">

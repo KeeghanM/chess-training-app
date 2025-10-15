@@ -99,7 +99,7 @@ export default function GroupSelector(props: {
             onClick={() => setHasPrompted(true)}
           />
           <div className="flex fixed bg-white p-2 z-50 max-w-[95vw] md:max-w-md min-w-md flex-col gap-2 shadow-lg">
-            <Heading color="text-red-500" as={'h4'}>
+            <Heading className="text-red-500" as={'h4'}>
               Grouping by Colour
             </Heading>
             <p>
@@ -130,91 +130,96 @@ export default function GroupSelector(props: {
 
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
-          <div className="flex flex-row flex-wrap items-baseline gap-2 text-sm ">
-            <Heading as={'h4'}>Stats:</Heading>
-            <p>
-              <span>Total Lines:</span>{' '}
-              <span className="font-bold">{lines.length}</span>
-            </p>
-            <p>
-              <span>White Lines:</span>{' '}
-              <span className="font-bold">
-                {lines.reduce(
-                  (prev, curr) => prev + (curr.tags.Colour === 'White' ? 1 : 0),
-                  0,
-                )}
-              </span>
-              ,
-            </p>
-            <p>
-              <span>Black Lines:</span>{' '}
-              <span className="font-bold">
-                {lines.reduce(
-                  (prev, curr) => prev + (curr.tags.Colour === 'Black' ? 1 : 0),
-                  0,
-                )}
-              </span>
-            </p>
-          </div>
-          <Tabs.Root
-            defaultValue={groupOptions[0]}
-            onValueChange={async (x) => {
-              setSelectedGroup(x)
-              trackEventOnClient('create_course_change_grouping', {
-                groupName: x,
-              })
-            }}
-          >
-            <Heading as={'h4'}>Grouping Options:</Heading>
-            <Tabs.List className="flex gap-2 flex-wrap">
-              {groupOptions.map((group) => (
-                <Tabs.Trigger
-                  key={group}
-                  className={
-                    'border-b-2 px-2 py-1 hover:border-purple-700 hover:bg-purple-200 md:px-4 md:py-2 ' +
-                    (selectedGroup === group
-                      ? 'border-purple-700 bg-purple-100'
-                      : 'border-gray-300  ')
-                  }
-                  value={group}
-                >
-                  {group}
-                </Tabs.Trigger>
-              ))}
-            </Tabs.List>
-          </Tabs.Root>
-          <div ref={parent} className="flex flex-col gap-2">
-            {Object.keys(groupedLineCounts).map((key) => (
-              <GroupItem
-                key={key}
-                lines={lines}
-                selectedGroup={selectedGroup}
-                groupKey={key}
-                count={groupedLineCounts[key]!}
-                updateLines={(newLines) => setLines(newLines)}
-              />
-            ))}
-          </div>
-          <div className="flex flex-col gap-2 md:flex-row">
-            <Button
-              disabled={status === 'loading'}
-              variant="primary"
-              onClick={() => {
-                setStatus('loading')
-                props.finished(selectedGroup, lines)
+          <div className="flex flex-col gap-2 bg-card-dark rounded-lg shadow p-4">
+            <div className="flex flex-row flex-wrap items-baseline gap-2 text-sm ">
+              <Heading as={'h4'}>Stats:</Heading>
+              <p>
+                <span>Total Lines:</span>{' '}
+                <span className="font-bold">{lines.length}</span>
+              </p>
+              <p>
+                <span>White Lines:</span>{' '}
+                <span className="font-bold">
+                  {lines.reduce(
+                    (prev, curr) =>
+                      prev + (curr.tags.Colour === 'White' ? 1 : 0),
+                    0,
+                  )}
+                </span>
+                ,
+              </p>
+              <p>
+                <span>Black Lines:</span>{' '}
+                <span className="font-bold">
+                  {lines.reduce(
+                    (prev, curr) =>
+                      prev + (curr.tags.Colour === 'Black' ? 1 : 0),
+                    0,
+                  )}
+                </span>
+              </p>
+            </div>
+            <Tabs.Root
+              defaultValue={groupOptions[0]}
+              onValueChange={async (x) => {
+                setSelectedGroup(x)
+                trackEventOnClient('create_course_change_grouping', {
+                  groupName: x,
+                })
               }}
             >
-              <div className="flex items-center gap-4">
-                <span>
-                  {status === 'loading' ? 'Creating' : 'Confirm and Create'}
-                </span>
-                {status === 'loading' && <Spinner />}
-              </div>
-            </Button>
-
-            <Button variant="secondary" onClick={props.back}>
-              Go Back
-            </Button>
+              <Heading as={'h4'}>Grouping Options:</Heading>
+              <Tabs.List className="flex gap-2 flex-wrap">
+                {groupOptions.map((group) => (
+                  <Tabs.Trigger
+                    key={group}
+                    className={
+                      'border-b-2 text-sm px-2 py-1 cursor-pointer hover:border-purple-700 hover:bg-purple-200  ' +
+                      (selectedGroup === group
+                        ? 'border-purple-700 bg-purple-100'
+                        : 'border-gray-300  ')
+                    }
+                    value={group}
+                  >
+                    {group}
+                  </Tabs.Trigger>
+                ))}
+              </Tabs.List>
+            </Tabs.Root>
+            <div ref={parent} className="flex flex-col gap-2">
+              {Object.keys(groupedLineCounts).map((key) => (
+                <GroupItem
+                  key={key}
+                  lines={lines}
+                  selectedGroup={selectedGroup}
+                  groupKey={key}
+                  count={groupedLineCounts[key]!}
+                  updateLines={(newLines) => setLines(newLines)}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="flex flex-col gap-2 md:flex-row md:justify-end md:items-center">
+            <div>
+              <Button onClick={props.back}>Go Back</Button>
+            </div>
+            <div>
+              <Button
+                disabled={status === 'loading'}
+                variant="primary"
+                onClick={() => {
+                  setStatus('loading')
+                  props.finished(selectedGroup, lines)
+                }}
+              >
+                <div className="flex items-center gap-4">
+                  <span>
+                    {status === 'loading' ? 'Creating' : 'Confirm and Create'}
+                  </span>
+                  {status === 'loading' && <Spinner />}
+                </div>
+              </Button>
+            </div>
           </div>
         </div>
       </div>

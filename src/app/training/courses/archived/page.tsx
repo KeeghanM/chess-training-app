@@ -14,13 +14,7 @@ export default async function ArchivedCoursesPage() {
   if (!user) redirect('/auth/signin')
   return (
     <>
-      <PageHeader
-        title="Your Archived Courses"
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Wooden chess pieces on a chess board',
-        }}
-      />
+      <PageHeader title="Your Archived Courses" />
       <div className="">
         <Container>
           <ArchivedList />

@@ -1,8 +1,8 @@
 import Link from 'next/link'
-import Button from '@components/_elements/button'
-import Heading from '@components/_elements/heading'
 import Backdrop from '@components/_elements/backdrop'
+import Button from '@components/_elements/button'
 import Container from '@components/_elements/container'
+import Heading from '@components/_elements/heading'
 
 interface HeroProps {
   title: string
@@ -26,7 +26,9 @@ export default function Hero(props: HeroProps) {
           <Heading as="h1" className="text-white">
             {props.title}
           </Heading>
-          <div className="text-white space-y-4 md:max-w-[60%]">{props.children}</div>
+          <div className="text-white space-y-4 md:max-w-[60%]">
+            {props.children}
+          </div>
           <div className="flex gap-4">
             {props.cta && (
               <Link href={props.cta.link}>
@@ -35,7 +37,7 @@ export default function Hero(props: HeroProps) {
             )}
             {props.secondary && (
               <Link href={props.secondary.link}>
-                <Button variant="secondary">{props.secondary.text}</Button>
+                <Button>{props.secondary.text}</Button>
               </Link>
             )}
           </div>

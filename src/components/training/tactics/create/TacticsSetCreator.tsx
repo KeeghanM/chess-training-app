@@ -187,8 +187,8 @@ export default function TacticsSetCreator({
             className="fixed inset-0 z-50 bg-[rgba(0,0,0,0.5)]"
             onClick={close}
           />
-          <AlertDialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[75vh] w-[90vw] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto bg-white p-4 shadow-md md:p-6">
-            <AlertDialog.Title className="text-lg font-bold text-purple-700">
+          <AlertDialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[95vh] w-full max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto bg-card rounded-lg p-4 shadow-md md:p-6">
+            <AlertDialog.Title className="text-lg font-bold">
               Create a new Tactics Set
             </AlertDialog.Title>
             {hasUnlimitedSets || setCount < maxSets ? (
@@ -240,19 +240,19 @@ export default function TacticsSetCreator({
                     <label>Difficulty</label>
                     <div className="flex flex-col gap-2 md:flex-row md:gap-4">
                       <Button
-                        variant={difficulty == 0 ? 'success' : 'accent'}
+                        variant={difficulty == 0 ? 'success' : undefined}
                         onClick={() => setDifficulty(0)}
                       >
                         Easy
                       </Button>
                       <Button
-                        variant={difficulty == 1 ? 'success' : 'accent'}
+                        variant={difficulty == 1 ? 'success' : undefined}
                         onClick={() => setDifficulty(1)}
                       >
                         Medium
                       </Button>
                       <Button
-                        variant={difficulty == 2 ? 'success' : 'accent'}
+                        variant={difficulty == 2 ? 'success' : undefined}
                         onClick={() => setDifficulty(2)}
                       >
                         Hard

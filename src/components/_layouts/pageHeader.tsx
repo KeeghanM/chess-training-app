@@ -1,6 +1,6 @@
-import Heading from '@components/_elements/heading'
 import Backdrop from '@components/_elements/backdrop'
 import Container from '@components/_elements/container'
+import Heading from '@components/_elements/heading'
 
 interface PageHeaderProps {
   title: string
@@ -16,7 +16,7 @@ export default function PageHeader(props: PageHeaderProps) {
           {props.title}
         </Heading>
         {props.subTitle && (
-          <Heading as="h2" className="text-primary" bold={false}>
+          <Heading as="h2" className="text-primary font-bold">
             {props.subTitle}
           </Heading>
         )}

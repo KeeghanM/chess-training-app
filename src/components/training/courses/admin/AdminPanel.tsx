@@ -100,67 +100,70 @@ export default function CourseAdminPanel(props: CourseAdminPanelProps) {
   }, [courseName, courseDescription, lines, groups, shortDescription])
 
   return (
-    <div className="flex flex-col gap-2 border border-gray-300   shadow-md  bg-[rgba(0,0,0,0.03)]  p-2">
-      <div>
-        <label className="font-bold">Course Name:</label>
-        <input
-          className="w-full border border-gray-300 px-4 py-2 bg-gray-100 text-black"
-          value={courseName}
-          onChange={(e) => setCourseName(e.target.value)}
-          type="text"
-        />
-      </div>
-      {course.published && (
+    <div className="p-4 bg-card-light/20 rounded-lg">
+      <div className="bg-card rounded-lg p-4 shadow space-y-6">
         <div>
-          <label className="font-bold">Short Description:</label>
-          <textarea
-            rows={3}
+          <label className="font-bold">Course Name:</label>
+          <input
             className="w-full border border-gray-300 px-4 py-2 bg-gray-100 text-black"
-            value={shortDescription}
-            onChange={(e) => setShortDescription(e.target.value)}
+            value={courseName}
+            onChange={(e) => setCourseName(e.target.value)}
+            type="text"
           />
         </div>
-      )}
-      <div>
-        <label className="font-bold">Course Description:</label>
-        <TextEditor value={courseDescription} onChange={setCourseDescription} />
+        {course.published && (
+          <div>
+            <label className="font-bold">Short Description:</label>
+            <textarea
+              rows={3}
+              className="w-full border border-gray-300 px-4 py-2 bg-gray-100 text-black"
+              value={shortDescription}
+              onChange={(e) => setShortDescription(e.target.value)}
+            />
+          </div>
+        )}
+        <div>
+          <label className="font-bold">Course Description:</label>
+          <TextEditor
+            value={courseDescription}
+            onChange={setCourseDescription}
+          />
+        </div>
+        <div className="flex flex-col md:flex-row md:flex-wrap gap-2">
+          <Button
+            disabled={saving || !hasHadChanges}
+            variant="success"
+            onClick={saveCourse}
+          >
+            {saving ? (
+              <>
+                Saving... <Spinner />
+              </>
+            ) : (
+              'Save Changes'
+            )}
+          </Button>
+          <Link href={`/training/courses/admin/${course.id}/add-lines`}>
+            <Button variant="accent">Add New Lines</Button>
+          </Link>
+          <Button onClick={exit}>Exit</Button>
+          <Tooltip>
+            <TooltipTrigger asChild={true}>
+              <Button disabled variant="warning">
+                Publish Course
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Coming Soon!</TooltipContent>
+          </Tooltip>
+        </div>
+        <GroupsListEditor
+          groups={groups}
+          lines={sortedLines}
+          setGroups={setGroups}
+          setLines={setLines}
+          addIdToDelete={(id) => setLinesToDelete([...linesToDelete, id])}
+        />
       </div>
-      <div className="flex flex-col md:flex-row md:flex-wrap gap-2">
-        <Button
-          disabled={saving || !hasHadChanges}
-          variant="success"
-          onClick={saveCourse}
-        >
-          {saving ? (
-            <>
-              Saving... <Spinner />
-            </>
-          ) : (
-            'Save Changes'
-          )}
-        </Button>
-        <Link href={`/training/courses/admin/${course.id}/add-lines`}>
-          <Button variant="accent">Add New Lines</Button>
-        </Link>
-        <Button variant="secondary" onClick={exit}>
-          Exit
-        </Button>
-        <Tooltip>
-          <TooltipTrigger asChild={true}>
-            <Button disabled variant="warning">
-              Publish Course
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Coming Soon!</TooltipContent>
-        </Tooltip>
-      </div>
-      <GroupsListEditor
-        groups={groups}
-        lines={sortedLines}
-        setGroups={setGroups}
-        setLines={setLines}
-        addIdToDelete={(id) => setLinesToDelete([...linesToDelete, id])}
-      />
     </div>
   )
 }

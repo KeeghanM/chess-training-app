@@ -83,19 +83,21 @@ export default function PgnToLinesForm(props: {
 
 1. e4 e5 2. Nf3 Nc6 3. Bb5 {The start of the Ruy Lopez} a6 4. Ba4 Nf6 5. O-O b5 6. Bb3 Bc5 7. a4 Rb8 (7... Bb7 8. d3 O-O 9. Nc3) 8. c3 d6 9. d4`}
       />
-      <div className="flex flex-col gap-2 md:flex-row">
-        <Button
-          variant="primary"
-          onClick={parse}
-          disabled={status == 'loading'}
-        >
-          Import
-        </Button>
-        <Button variant="secondary" onClick={props.back}>
-          Go Back
-        </Button>
+      <div className="flex flex-col gap-2 md:flex-row md:justify-end md:items-center">
+        {error && <p className="text-red-500">Something went wrong: {error}</p>}
+        <div>
+          <Button onClick={props.back}>Go Back</Button>
+        </div>
+        <div>
+          <Button
+            variant="primary"
+            onClick={parse}
+            disabled={status == 'loading'}
+          >
+            Import
+          </Button>
+        </div>
       </div>
-      {error && <p className="text-red-500">Something went wrong: {error}</p>}
     </div>
   )
 }
