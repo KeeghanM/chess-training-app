@@ -1,13 +1,13 @@
 import { prisma } from '~/server/db'
-
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import * as Sentry from '@sentry/nextjs'
 import { errorResponse, successResponse } from '~/app/api/responses'
 
 export async function GET(
   request: Request,
-  { params }: { params: { courseId: string } },
+  props: { params: Promise<{ courseId: string }> },
 ) {
+  const params = await props.params
   const session = getKindeServerSession()
   if (!session) return errorResponse('Unauthorized', 401)
   const user = await session.getUser()
@@ -62,15 +62,14 @@ export async function GET(
   } catch (e) {
     Sentry.captureException(e)
     return errorResponse('Internal Server Error', 500)
-  } finally {
-    await prisma.$disconnect()
   }
 }
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { courseId: string } },
+  props: { params: Promise<{ courseId: string }> },
 ) {
+  const params = await props.params
   const session = getKindeServerSession()
   if (!session) return errorResponse('Unauthorized', 401)
   const user = await session.getUser()
@@ -139,7 +138,5 @@ export async function DELETE(
   } catch (e) {
     Sentry.captureException(e)
     return errorResponse('Internal Server Error', 500)
-  } finally {
-    await prisma.$disconnect()
   }
 }

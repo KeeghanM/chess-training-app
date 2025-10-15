@@ -1,16 +1,13 @@
 import Link from 'next/link'
-
 import { prisma } from '~/server/db'
-
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-
-import Button from '~/app/components/_elements/button'
-import Container from '~/app/components/_elements/container'
-import Heading from '~/app/components/_elements/heading'
-import StyledLink from '~/app/components/_elements/styledLink'
-import PageHeader from '~/app/components/_layouts/pageHeader'
-import { TextWall } from '~/app/components/_layouts/textWall'
-import GetCuratedSet from '~/app/components/ecomm/GetCuratedSet'
+import Button from '@components/_elements/button'
+import Container from '@components/_elements/container'
+import Heading from '@components/_elements/heading'
+import StyledLink from '@components/_elements/styledLink'
+import { TextWall } from '@components/_layouts/textWall'
+import GetCuratedSet from '@components/ecomm/GetCuratedSet'
+import Backdrop from '~/components/_elements/backdrop'
 
 export const metadata = {
   title: 'Curated Chess Tactics Training Sets at ChessTraining.app',
@@ -38,16 +35,18 @@ export default async function CuratedSetsPage() {
     : []
 
   return (
-    <>
-      <PageHeader
-        title="Curated Chess Tactics Training Sets"
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Wooden chess pieces on a chess board',
-        }}
-        subTitle="Designed to supercharge your Chess Tactics"
-      />
-      <TextWall title="What are Curated Sets?" background="dark">
+    <div className="relative">
+      <Backdrop />
+      <Container>
+        <Heading as="h1" className="text-white">
+          Curated Chess Tactics Training Sets
+        </Heading>
+        <Heading as="h2" className="text-primary">
+          Designed to supercharge your Chess Tactics
+        </Heading>
+      </Container>
+
+      <TextWall title="What are Curated Sets?">
         <p>
           Designed to be used with our{' '}
           <StyledLink href="/training/tactics">Tactics Trainer</StyledLink>, our
@@ -56,7 +55,7 @@ export default async function CuratedSetsPage() {
           picked by our team of chess experts.
         </p>
       </TextWall>
-      <Container>
+      <Container className="space-y-4 bg-card-dark rounded-lg shadow">
         <Heading as="h2">All Available Curated Sets</Heading>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {sets
@@ -66,43 +65,45 @@ export default async function CuratedSetsPage() {
                 new Date(b.createdAt).getTime(),
             )
             .map((set) => (
-              <div
-                key={set.id}
-                className="flex flex-col gap-0 border border-gray-300 shadow-md bg-[rgba(0,0,0,0.03)]"
-              >
-                <div className="px-2 py-1 border-b border-gray-300 font-bold  text-orange-500 flex items-center flex-wrap justify-between">
-                  <Link href={`/training/tactics/curated-sets/${set.slug}`}>
-                    {set.name}
-                  </Link>
-                  <p className="font-bold text-green-500">
-                    {set.price > 0 ? <>£{set.price / 100}</> : 'FREE'}
+              <div key={set.id}>
+                <div className="flex flex-col gap-0 bg-card rounded-lg shadow-lg overflow-hidden">
+                  <div className="px-4 py-3 bg-card-light border-b border-gray-200 font-bold text-orange-500 flex items-center flex-wrap justify-between">
+                    <Link href={`/training/tactics/curated-sets/${set.slug}`}>
+                      {set.name}
+                    </Link>
+                    <p className="font-bold text-green-500">
+                      {set.price > 0 ? <>£{set.price / 100}</> : 'FREE'}
+                    </p>
+                  </div>
+                  {set.shortDesc && (
+                    <div
+                      className="p-2"
+                      dangerouslySetInnerHTML={{ __html: set.shortDesc }}
+                    />
+                  )}
+                  <p className="w-full text-center bg-purple-300 py-1 font-bold">
+                    {set.size} puzzles
                   </p>
-                </div>
-                <div
-                  className="p-2"
-                  dangerouslySetInnerHTML={{ __html: set.shortDesc ?? '' }}
-                />
-                <p className="w-full text-center bg-purple-300 py-1 font-bold">
-                  {set.size} puzzles
-                </p>
-                <div className="flex flex-col md:flex-row gap-2 p-2 items-center justify-center">
-                  <GetCuratedSet
-                    setId={set.id}
-                    price={set.price}
-                    slug={set.slug}
-                    userSetId={
-                      userCuratedSets.find((s) => s.curatedSetId === set.id)?.id
-                    }
-                    showPrice={false}
-                  />
-                  <Link href={`/training/tactics/curated-sets/${set.slug}`}>
-                    <Button variant="secondary">Read More</Button>
-                  </Link>
+                  <div className="flex flex-col md:flex-row gap-2 p-2 items-center justify-center">
+                    <GetCuratedSet
+                      setId={set.id}
+                      price={set.price}
+                      slug={set.slug}
+                      userSetId={
+                        userCuratedSets.find((s) => s.curatedSetId === set.id)
+                          ?.id
+                      }
+                      showPrice={false}
+                    />
+                    <Link href={`/training/tactics/curated-sets/${set.slug}`}>
+                      <Button>Read More</Button>
+                    </Link>
+                  </div>
                 </div>
               </div>
             ))}
         </div>
       </Container>
-    </>
+    </div>
   )
 }

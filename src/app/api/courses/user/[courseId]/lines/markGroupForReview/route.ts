@@ -1,13 +1,13 @@
 import { prisma } from '~/server/db'
-
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import * as Sentry from '@sentry/nextjs'
 import { errorResponse, successResponse } from '~/app/api/responses'
 
 export async function POST(
   request: Request,
-  { params }: { params: { courseId: string } },
+  props: { params: Promise<{ courseId: string }> },
 ) {
+  const params = await props.params
   const session = getKindeServerSession()
   if (!session) return errorResponse('Unauthorized', 401)
   const user = await session.getUser()
@@ -55,7 +55,5 @@ export async function POST(
     Sentry.captureException(e)
     if (e instanceof Error) return errorResponse(e.message, 500)
     else return errorResponse('Unknown error', 500)
-  } finally {
-    await prisma.$disconnect()
   }
 }

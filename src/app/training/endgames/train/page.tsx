@@ -1,29 +1,23 @@
 import { redirect } from 'next/navigation'
-
-import Container from '~/app/components/_elements/container'
-import PageHeader from '~/app/components/_layouts/pageHeader'
-import EndgameTrainer from '~/app/components/training/endgames/EndgameTrainer'
-
-import { getUserServer } from '~/app/_util/getUserServer'
+import Container from '@components/_elements/container'
+import EndgameTrainer from '@components/training/endgames/EndgameTrainer'
+import Backdrop from '~/components/_elements/backdrop'
+import Heading from '~/components/_elements/heading'
+import { getUserServer } from '@utils/getUserServer'
 
 export default async function EndgameTrainPage() {
   const { user } = await getUserServer()
   if (!user) redirect('/auth/signin')
 
   return (
-    <>
-      <PageHeader
-        title="Endgame Training"
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Strategic chess endgame setup on a chess board',
-        }}
-      />
-      <div className="bg-gray-100 dark:bg-slate-800">
-        <Container>
-          <EndgameTrainer />
-        </Container>
-      </div>
-    </>
+    <div className="relative">
+      <Backdrop />
+      <Container size="wide">
+        <Heading as="h1" className="text-white">
+          Endgame Trainer
+        </Heading>
+        <EndgameTrainer />
+      </Container>
+    </div>
   )
 }

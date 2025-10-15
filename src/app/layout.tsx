@@ -1,15 +1,11 @@
 import Script from 'next/script'
-
 import type { ReactNode } from 'react'
 import { Suspense } from 'react'
-
-import CookieBanner from './components/template/CookieBanner'
-import Footer from './components/template/footer/Footer'
-import Header from './components/template/header/Header'
-
-import { PostHogPageview } from './_util/PostHog'
-import Providers from './_util/Providers'
-
+import CookieBanner from '@components/template/CookieBanner'
+import Footer from '@components/template/footer/Footer'
+import Header from '@components/template/header/Header'
+import { PostHogPageview } from '@utils/PostHog'
+import Providers from '@utils/Providers'
 import './globals.css'
 
 export const metadata = {
@@ -38,6 +34,7 @@ export const metadata = {
     { rel: 'mask-icon', href: '/safari-pinned-tab.svg', color: '#5bbad5' },
   ],
   meta: [
+    { name: 'charset', content: 'utf-8' },
     { name: 'msapplication-TileColor', content: '#9f00a7' },
     { name: 'theme-color', content: '#7e22ce' },
   ],

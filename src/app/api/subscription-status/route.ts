@@ -1,8 +1,6 @@
 import * as Sentry from '@sentry/nextjs'
-
-import { killBillClient } from '~/app/_util/KillBill'
-import { getUserServer } from '~/app/_util/getUserServer'
-
+import { killBillClient } from '@utils/KillBill'
+import { getUserServer } from '@utils/getUserServer'
 import { errorResponse, successResponse } from '../responses'
 
 export async function GET() {

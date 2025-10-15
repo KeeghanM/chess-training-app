@@ -1,5 +1,4 @@
 import { prisma } from '~/server/db'
-
 import * as Sentry from '@sentry/nextjs'
 
 export async function AddCourseToUser(courseId: string, userId: string) {
@@ -69,7 +68,5 @@ export async function AddCourseToUser(courseId: string, userId: string) {
   } catch (e) {
     Sentry.captureException(e)
     return false
-  } finally {
-    await prisma.$disconnect()
   }
 }

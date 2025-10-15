@@ -1,8 +1,7 @@
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import * as Sentry from '@sentry/nextjs'
 import { errorResponse, successResponse } from '~/app/api/responses'
-
-import { UpdateStreak } from '~/app/_util/UpdateStreak'
+import { UpdateStreak } from '@utils/UpdateStreak'
 
 export async function POST() {
   const session = getKindeServerSession()

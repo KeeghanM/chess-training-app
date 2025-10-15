@@ -11,11 +11,11 @@ const config = {
     '^~/server/(.*)$', // Imports by "~/server"
     '<THIRD_PARTY_MODULES>', // Imports by third-party modules
     '^(.*)components/(.*)$', // Imports by "components"
-    '^(.*)_util/(.*)$', // Imports by "utils"
+    '^(.*)utils/(.*)$', // Imports by "utils"
     '^[./]', // Other imports
     '<TYPE>',
   ],
-  importOrderSeparation: true,
+  importOrderSeparation: false,
   importOrderSortSpecifiers: true,
 }
 

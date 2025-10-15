@@ -1,5 +1,4 @@
 import { prisma } from '~/server/db'
-
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import * as Sentry from '@sentry/nextjs'
 import { errorResponse, successResponse } from '~/app/api/responses'
@@ -58,7 +57,5 @@ export async function POST(request: Request) {
     Sentry.captureException(e)
     if (e instanceof Error) return errorResponse(e.message, 500)
     else return errorResponse('Unknown error', 500)
-  } finally {
-    await prisma.$disconnect()
   }
 }

@@ -1,9 +1,7 @@
 import { prisma } from '~/server/db'
-
 import * as Sentry from '@sentry/nextjs'
 import Stripe from 'stripe'
-
-import type { KindeUser } from '~/app/_util/getUserServer'
+import type { KindeUser } from '@utils/getUserServer'
 
 type ProductType = 'curatedSet' | 'course' | 'subscription'
 

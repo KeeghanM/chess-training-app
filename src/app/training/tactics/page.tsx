@@ -1,11 +1,10 @@
 import Link from 'next/link'
-
-import Button from '~/app/components/_elements/button'
-import Heading from '~/app/components/_elements/heading'
-import StyledLink from '~/app/components/_elements/styledLink'
-import CtaRow from '~/app/components/_layouts/ctaRow'
-import Hero from '~/app/components/_layouts/hero'
-import ImageRowFull from '~/app/components/_layouts/imageRowFull'
+import Button from '@components/_elements/button'
+import Heading from '@components/_elements/heading'
+import StyledLink from '@components/_elements/styledLink'
+import CtaRow from '@components/_layouts/ctaRow'
+import Hero from '@components/_layouts/hero'
+import ImageRowFull from '@components/_layouts/imageRowFull'
 
 export const metadata = {
   title:
@@ -19,22 +18,17 @@ export default async function Tactics() {
     <>
       <Hero
         title="Chess Tactics Training"
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Wooden chess pieces on a chess board',
-        }}
         cta={{
           text: 'Start Training',
           link: '/training/tactics/list',
         }}
       >
-        <Heading color="text-orange-500" as="h2">
+        <Heading className="text-primary" as="h2">
           Train Your Chess Tactics to Master Level
         </Heading>
       </Hero>
       <ImageRowFull
         heading="How to use the Tactics Trainer"
-        background="light"
         image={{
           src: '/images/woman_studying_2.png',
           alt: 'A woman studying chess while sat at a desk',
@@ -61,7 +55,6 @@ export default async function Tactics() {
       </ImageRowFull>
       <ImageRowFull
         heading="What is the Woodpecker Method"
-        background="light"
         image={{
           src: '/images/man_chess_computer.png',
           alt: 'A man sat at a computer studying and improving his chess',
@@ -95,7 +88,6 @@ export default async function Tactics() {
           text: 'Start Training',
           link: '/training/tactics/list',
         }}
-        background="dark"
       >
         <p>Create up to three puzzles sets for free. No costs. Forever.</p>
       </CtaRow>

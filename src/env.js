@@ -8,7 +8,6 @@ export const env = createEnv({
    */
   server: {
     DATABASE_URL: z
-      .string()
       .url()
       .refine(
         (str) => !str.includes('YOUR_MYSQL_URL_HERE'),
@@ -17,14 +16,14 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(['development', 'test', 'production'])
       .default('development'),
-    API_BASE_URL: z.string().url(),
+    API_BASE_URL: z.url(),
     KINDE_CLIENT_ID: z.string(),
     KINDE_CLIENT_SECRET: z.string(),
-    KINDE_ISSUER_URL: z.string().url(),
-    KINDE_SITE_URL: z.string().url(),
-    KINDE_POST_LOGOUT_REDIRECT_URL: z.string().url(),
-    KINDE_POST_LOGIN_REDIRECT_URL: z.string().url(),
-    KINDE_AUDIENCE: z.string().url(),
+    KINDE_ISSUER_URL: z.url(),
+    KINDE_SITE_URL: z.url(),
+    KINDE_POST_LOGOUT_REDIRECT_URL: z.url(),
+    KINDE_POST_LOGIN_REDIRECT_URL: z.url(),
+    KINDE_AUDIENCE: z.url(),
     SMTP_HOST: z.string(),
     SMTP_PORT: z.string(),
     SMTP_USER: z.string(),
@@ -34,7 +33,7 @@ export const env = createEnv({
     RAPIDAPI_KEY: z.string(),
     STRIPE_SECRET_KEY: z.string(),
     STRIPE_WEBHOOK_SECRET: z.string(),
-    KILLBILL_URL: z.string().url(),
+    KILLBILL_URL: z.url(),
     KILLBILL_USERNAME: z.string(),
     KILLBILL_PASSWORD: z.string(),
     KILLBILL_API_KEY: z.string(),
@@ -49,18 +48,18 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_POSTHOG_KEY: z.string(),
     NEXT_PUBLIC_POSTHOG_HOST: z.string(),
-    NEXT_PUBLIC_SITE_URL: z.string().url(),
+    NEXT_PUBLIC_SITE_URL: z.url(),
     NEXT_PUBLIC_STRIPE_PUBLIC_KEY: z.string(),
     NEXT_PUBLIC_MAX_COURSES: z
       .string()
       .transform((val) => parseInt(val))
       .refine((val) => val > 0, { message: 'Must be greater than 0' })
-      .default('2'),
+      .default(2),
     NEXT_PUBLIC_MAX_SETS: z
       .string()
       .transform((val) => parseInt(val))
       .refine((val) => val > 0, { message: 'Must be greater than 0' })
-      .default('2'),
+      .default(2),
   },
 
   /**

@@ -1,9 +1,7 @@
 import { redirect } from 'next/navigation'
-
-import PageHeader from '~/app/components/_layouts/pageHeader'
-import CreateCourseForm from '~/app/components/training/courses/create/CreateCourse'
-
-import { getUserServer } from '~/app/_util/getUserServer'
+import PageHeader from '@components/_layouts/pageHeader'
+import CreateCourseForm from '@components/training/courses/create/CreateCourse'
+import { getUserServer } from '@utils/getUserServer'
 
 export const metadata = {
   title: 'Create a new course - ChessTraining.app',

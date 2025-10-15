@@ -1,6 +1,6 @@
-import StyledLink from '~/app/components/_elements/styledLink'
-import BigText from '~/app/components/_layouts/bigText'
-import { TextWall } from '~/app/components/_layouts/textWall'
+import StyledLink from '@components/_elements/styledLink'
+import BigText from '@components/_layouts/bigText'
+import { TextWall } from '@components/_layouts/textWall'
 
 export const metadata = {
   title: 'Explore Our Open Product Roadmap at ChessTraining.app',
@@ -11,11 +11,7 @@ export const metadata = {
 export default async function ProductRoadmap() {
   return (
     <>
-      <TextWall
-        background="dark"
-        title="Our commitment to open development"
-        titleType="h1"
-      >
+      <TextWall title="Our commitment to open development" titleType="h1">
         <div className="flex flex-1 flex-col gap-2">
           <p>
             We think that transparency is an incredibly valuable thing, both in

@@ -1,13 +1,13 @@
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import * as Sentry from '@sentry/nextjs'
 import { errorResponse, successResponse } from '~/app/api/responses'
-
-import getPuzzleById from '~/app/_util/GetPuzzleById'
+import getPuzzleById from '@utils/GetPuzzleById'
 
 export async function GET(
   request: Request,
-  { params }: { params: { puzzleid: string } },
+  props: { params: Promise<{ puzzleid: string }> },
 ) {
+  const params = await props.params
   const puzzleid = params.puzzleid
   if (!puzzleid) return errorResponse('Missing required fields', 400)
 

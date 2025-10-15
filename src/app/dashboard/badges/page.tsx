@@ -1,10 +1,8 @@
 import { prisma } from '~/server/db'
-
-import Container from '~/app/components/_elements/container'
-import Heading from '~/app/components/_elements/heading'
-import PageHeader from '~/app/components/_layouts/pageHeader'
-
-import { getUserServer } from '~/app/_util/getUserServer'
+import Backdrop from '@components/_elements/backdrop'
+import Container from '@components/_elements/container'
+import Heading from '@components/_elements/heading'
+import { getUserServer } from '@utils/getUserServer'
 
 export default async function BadgesPage() {
   const { badges } = await getUserServer()
@@ -29,49 +27,56 @@ export default async function BadgesPage() {
     })
 
   return (
-    <>
-      <PageHeader
-        title="Your Badges"
-        subTitle={`
-          You have ${badges.length} out of ${allBadges.length} possible badges`}
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Chess board with pieces set up',
-        }}
-      />
-      <Container>
-        <p>
+    <div className="relative">
+      <Backdrop />
+      <Container size="extra-wide">
+        <Heading as="h1" className="text-white">
+          Your Badges
+        </Heading>
+        <Heading as="h2" className="text-card-dark">
+          You have {badges.length} out of {allBadges.length} possible badges
+        </Heading>
+        <p className="text-lg mb-6 text-white">
           Badges are awarded for completing certain tasks on the site. They are
           a fun way to track your progress and show off your achievements.
         </p>
-        {categories.map((category) => (
-          <div key={category}>
-            <Heading as={'h2'}>{category}</Heading>
-            <div className="grid grid-cols-2 gap-1 md:grid-cols-3 lg:grid-cols-4">
-              {allBadges
-                .filter((badge) => badge.category === category)
-                .sort((a, b) => a.sort - b.sort)
-                .map((badge) => (
-                  <div
-                    className={
-                      'flex flex-col items-center justify-start gap-1 p-2 text-white' +
-                      (badges.filter((b) => b.badgeName === badge.name).length >
+        <div className="space-y-8">
+          {categories.map((category) => (
+            <div key={category}>
+              <Heading as={'h2'} className="text-white">
+                {category}
+              </Heading>
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+                {allBadges
+                  .filter((badge) => badge.category === category)
+                  .sort((a, b) => a.sort - b.sort)
+                  .map((badge) => {
+                    const isEarned =
+                      badges.filter((b) => b.badgeName === badge.name).length >
                       0
-                        ? ' border-4 border-orange-500 bg-purple-700'
-                        : ' bg-gray-600')
-                    }
-                    key={badge.name}
-                  >
-                    <p className={'text-center font-bold text-white'}>
-                      {badge.name}
-                    </p>
-                    <p className="text-center text-xs">{badge.description}</p>
-                  </div>
-                ))}
+                    return (
+                      <div
+                        className={`flex flex-col items-center justify-start gap-2 p-4 rounded-lg shadow transition-all ${
+                          isEarned
+                            ? 'bg-card-light ring-4 ring-orange-500'
+                            : 'bg-card opacity-60'
+                        }`}
+                        key={badge.name}
+                      >
+                        <p className="text-center font-bold">
+                          {badge.name}
+                        </p>
+                        <p className="text-center text-xs">
+                          {badge.description}
+                        </p>
+                      </div>
+                    )
+                  })}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </Container>
-    </>
+    </div>
   )
 }

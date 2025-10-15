@@ -1,8 +1,8 @@
-import Heading from '~/app/components/_elements/heading'
-import StyledLink from '~/app/components/_elements/styledLink'
-import CtaRow from '~/app/components/_layouts/ctaRow'
-import Hero from '~/app/components/_layouts/hero'
-import ImageRowFull from '~/app/components/_layouts/imageRowFull'
+import Heading from '@components/_elements/heading'
+import StyledLink from '@components/_elements/styledLink'
+import CtaRow from '@components/_layouts/ctaRow'
+import Hero from '@components/_layouts/hero'
+import ImageRowFull from '@components/_layouts/imageRowFull'
 
 export const metadata = {
   title:
@@ -16,22 +16,17 @@ export default async function Endgames() {
     <>
       <Hero
         title="Endgame Training"
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Strategic chess endgame setup on a chess board',
-        }}
         cta={{
           text: 'Start Training',
           link: '/training/endgames/train',
         }}
       >
-        <Heading color="text-orange-500" as="h2">
+        <Heading className="text-primary" as="h2">
           Master your endgame strategy with ChessTraining.app's Endgame Trainer.
         </Heading>
       </Hero>
       <ImageRowFull
         heading="Understanding Chess Endgames"
-        background="light"
         image={{
           src: '/images/man_chess_1.png',
           alt: 'A player deeply focused on a chess endgame scenario',
@@ -57,7 +52,6 @@ export default async function Endgames() {
       </ImageRowFull>
       <ImageRowFull
         heading="How to Use the Endgame Trainer"
-        background="light"
         image={{
           src: '/images/woman_chess_4.png',
           alt: 'A chess enthusiast analyzing endgame strategies',
@@ -85,7 +79,6 @@ export default async function Endgames() {
           text: 'Start Your Endgame Mastery',
           link: '/training/endgames/train',
         }}
-        background="dark"
       >
         <p>
           The endgame trainer is free to use for all ChessTraining.app members.

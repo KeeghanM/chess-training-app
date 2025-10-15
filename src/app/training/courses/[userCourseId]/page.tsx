@@ -1,14 +1,12 @@
 import { redirect } from 'next/navigation'
-
 import { prisma } from '~/server/db'
-
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import type { Comment, Group, Line, Move, UserLine } from '@prisma/client'
 import * as Sentry from '@sentry/nextjs'
-
-import Container from '~/app/components/_elements/container'
-import PageHeader from '~/app/components/_layouts/pageHeader'
-import CourseTrainer from '~/app/components/training/courses/CourseTrainer'
+import Container from '@components/_elements/container'
+import Backdrop from '@components/_elements/backdrop'
+import Heading from '@components/_elements/heading'
+import CourseTrainer from '@components/training/courses/CourseTrainer'
 
 export type PrismaUserLine = UserLine & {
   line: Line & {
@@ -17,11 +15,10 @@ export type PrismaUserLine = UserLine & {
   }
 }
 
-export default async function CourseTrainPage({
-  params,
-}: {
-  params: { userCourseId: string }
+export default async function CourseTrainPage(props: {
+  params: Promise<{ userCourseId: string }>
 }) {
+  const params = await props.params
   const { getUser } = getKindeServerSession()
   const user = await getUser()
   if (!user) redirect('/auth/signin')
@@ -94,32 +91,28 @@ export default async function CourseTrainPage({
     }
   })()
 
-  await prisma.$disconnect()
-
   if (!userCourse || !userLines || !userFens) {
     redirect('/404')
   }
 
   return (
-    <>
-      <PageHeader
-        title={userCourse.course.courseName}
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Wooden chess pieces on a chess board',
-        }}
-      />
-      <div className="dark:bg-slate-800">
-        <Container>
-          {userCourse && (
-            <CourseTrainer
-              userCourse={userCourse}
-              userLines={userLines}
-              userFens={userFens}
-            />
-          )}
-        </Container>
-      </div>
-    </>
+    <div className="relative">
+      <Backdrop />
+      <Container size="wide">
+        <Heading as="h1" className="text-white">
+          Course Trainer
+        </Heading>
+        <Heading as="h2" className="text-card-dark">
+          {userCourse.course.courseName}
+        </Heading>
+        {userCourse && (
+          <CourseTrainer
+            userCourse={userCourse}
+            userLines={userLines}
+            userFens={userFens}
+          />
+        )}
+      </Container>
+    </div>
   )
 }

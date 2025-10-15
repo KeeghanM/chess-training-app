@@ -1,5 +1,4 @@
 import { prisma } from '~/server/db'
-
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import type { CustomPuzzle } from '@prisma/client'
 import * as Sentry from '@sentry/nextjs'
@@ -29,8 +28,6 @@ export async function POST(request: Request) {
   } catch (e) {
     Sentry.captureException(e)
     return errorResponse('Internal Server Error', 500)
-  } finally {
-    await prisma.$disconnect()
   }
 }
 
@@ -54,7 +51,5 @@ export async function GET() {
   } catch (e) {
     Sentry.captureException(e)
     return errorResponse('Internal Server Error', 500)
-  } finally {
-    await prisma.$disconnect()
   }
 }

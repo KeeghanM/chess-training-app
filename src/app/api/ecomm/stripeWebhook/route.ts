@@ -1,10 +1,7 @@
 import { headers } from 'next/headers'
-
 import { prisma } from '~/server/db'
-
 import * as Sentry from '@sentry/nextjs'
 import Stripe from 'stripe'
-
 import { errorResponse, successResponse } from '../../responses'
 import { AddCourseToUser } from '../functions/AddCourseToUser'
 import { AddCuratedSetToUser } from '../functions/AddCuratedSetToUser'
@@ -16,7 +13,7 @@ export async function POST(request: Request) {
   try {
     const payload = await request.text()
     const webHookSecret = process.env.STRIPE_WEBHOOK_SECRET!
-    const signature = headers().get('stripe-signature')
+    const signature = (await headers()).get('stripe-signature')
 
     if (!signature) {
       Sentry.captureMessage('No signature')

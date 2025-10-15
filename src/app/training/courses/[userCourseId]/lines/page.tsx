@@ -1,20 +1,18 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-
 import { prisma } from '~/server/db'
-
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import * as Sentry from '@sentry/nextjs'
+import Button from '@components/_elements/button'
+import Heading from '@components/_elements/heading'
+import CourseBrowser from '@components/training/courses/browser/CourseBrowser'
+import Backdrop from '~/components/_elements/backdrop'
+import Container from '~/components/_elements/container'
 
-import Button from '~/app/components/_elements/button'
-import Heading from '~/app/components/_elements/heading'
-import CourseBrowser from '~/app/components/training/courses/browser/CourseBrowser'
-
-export default async function CourseTrainPage({
-  params,
-}: {
-  params: { userCourseId: string }
+export default async function CourseTrainPage(props: {
+  params: Promise<{ userCourseId: string }>
 }) {
+  const params = await props.params
   const { getUser } = getKindeServerSession()
   const user = await getUser()
   if (!user) redirect('/auth/signin')
@@ -67,6 +65,7 @@ export default async function CourseTrainPage({
 
       return { userCourse, userLines }
     } catch (e) {
+      console.log(e)
       Sentry.captureException(e)
       return {
         userCourse: undefined,
@@ -80,16 +79,19 @@ export default async function CourseTrainPage({
   }
 
   return (
-    <>
-      <div className="dark:bg-slate-800 p-2 md:p-4 lg:px-6">
-        <Heading as="h1">
-          {userCourse.course.courseName}
-          <Link className="ml-2" href={`/training/courses/`}>
-            <Button variant="accent">Back to courses</Button>
+    <div className="relative">
+      <Backdrop />
+      <Container size="full">
+        <div className="space-y-2 mb-4">
+          <Heading as="h1" className="text-white">
+            {userCourse.course.courseName}
+          </Heading>
+          <Link href={`/training/courses/`}>
+            <Button>Back to courses</Button>
           </Link>
-        </Heading>
+        </div>
         <CourseBrowser lines={userLines} />
-      </div>
-    </>
+      </Container>
+    </div>
   )
 }

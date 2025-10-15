@@ -1,11 +1,9 @@
 import { prisma } from '~/server/db'
-
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import type { Course, Group as PrismaGroup } from '@prisma/client'
 import * as Sentry from '@sentry/nextjs'
 import { errorResponse, successResponse } from '~/app/api/responses'
-
-import type { CleanMove } from '~/app/components/training/courses/create/parse/ParsePGNtoLineData'
+import type { CleanMove } from '@components/training/courses/create/parse/ParsePGNtoLineData'
 
 export async function POST(request: Request) {
   const session = getKindeServerSession()
@@ -131,7 +129,5 @@ export async function POST(request: Request) {
     Sentry.captureException(e)
     if (e instanceof Error) return errorResponse(e.message, 500)
     else return errorResponse('Unknown error', 500)
-  } finally {
-    await prisma.$disconnect()
   }
 }

@@ -1,5 +1,4 @@
 import type { MetadataRoute } from 'next'
-
 import Prismic from '~/prismicio'
 
 export default async function sitemap() {

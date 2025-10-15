@@ -1,8 +1,8 @@
-import { MultiCol, MultiColItem } from '../components/_layouts/multiCol'
-import { TextWall } from '../components/_layouts/textWall'
-import GetPremiumButton from '../components/ecomm/GetPremiumButton'
-import Heading from '~/app/components/_elements/heading'
-import Hero from '~/app/components/_layouts/hero'
+import Heading from '@components/_elements/heading'
+import Hero from '@components/_layouts/hero'
+import { MultiCol, MultiColItem } from '@components/_layouts/multiCol'
+import { TextWall } from '@components/_layouts/textWall'
+import GetPremiumButton from '@components/ecomm/GetPremiumButton'
 
 export const metadata = {
   title: 'Go Premium and Unlock Unlimited Chess Training at ChessTraining.app',
@@ -13,18 +13,12 @@ export const metadata = {
 export default async function PremiumPage() {
   return (
     <>
-      <Hero
-        title="ChessTraining App is free forever"
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Wooden chess pieces on a chess board',
-        }}
-      >
-        <Heading color="text-orange-500" as="h2">
+      <Hero title="ChessTraining App is free forever">
+        <Heading className="text-primary" as="h2">
           But we do offer a Premium account for those who want more
         </Heading>
       </Hero>
-      <TextWall title="Our commitment" background="light">
+      <TextWall title="Our commitment">
         <p>
           ChessTraining.app is committed to our mission of providing an
           accessible, high-quality chess training experience for everyone. We
@@ -34,7 +28,7 @@ export default async function PremiumPage() {
           benefits.
         </p>
       </TextWall>
-      <MultiCol background="dark">
+      <MultiCol>
         <MultiColItem title="Free">
           <ul className="divide-y divide-slate-300">
             <li className="py-1">
@@ -157,7 +151,7 @@ export default async function PremiumPage() {
           <GetPremiumButton />
         </MultiColItem>
       </MultiCol>
-      <TextWall title="Just £2.99/month" background="light">
+      <TextWall title="Just £2.99/month">
         <div className="flex flex-col gap-4">
           <p>
             Our commitment to keeping the barrier to entry low means that
