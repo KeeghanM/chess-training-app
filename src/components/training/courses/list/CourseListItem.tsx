@@ -23,6 +23,7 @@ import {
   RoundProgress,
 } from '~/components/_elements/progress'
 import trackEventOnClient from '@utils/trackEventOnClient'
+import { generateCoursePercentages } from '~/utils/GenerateCoursePercentages'
 import CourseSettings from './CourseSettings'
 
 // TODO: Add revision schedule viewer
@@ -49,45 +50,6 @@ export default function CourseListItem(props: {
         userCourse?.id +
         (mode == 'learn' ? '?mode=newOnly' : ''),
     )
-  }
-
-  const generatePercentages = () => {
-    if (!userCourse) return []
-
-    const totalLines =
-      userCourse.linesLearned +
-      userCourse.linesLearning +
-      userCourse.linesHard +
-      userCourse.linesUnseen
-
-    const learnedPercent = Math.round(
-      (userCourse.linesLearned / totalLines) * 100,
-    )
-    const learningPercent = Math.round(
-      (userCourse.linesLearning / totalLines) * 100,
-    )
-    const hardPercent = Math.round((userCourse.linesHard / totalLines) * 100)
-
-    const percentages: ProgressPercentage[] = []
-    if (learnedPercent > 0)
-      percentages.push({
-        percentage: learnedPercent,
-        color: 'text-[#4ade80]',
-      })
-
-    if (learningPercent > 0)
-      percentages.push({
-        percentage: learningPercent,
-        color: 'text-[#2563eb]',
-      })
-
-    if (hardPercent > 0)
-      percentages.push({
-        percentage: hardPercent,
-        color: 'text-[#ff3030]',
-      })
-
-    return percentages
   }
 
   useEffect(() => {
@@ -168,7 +130,7 @@ export default function CourseListItem(props: {
                 <RoundProgress
                   width="w-20"
                   bgColor="text-card-dark/40"
-                  percentages={generatePercentages()}
+                  percentages={generateCoursePercentages(userCourse)}
                 />
               </TooltipTrigger>
               <TooltipContent className="bg-card-light shadow rounded-lg p-2">

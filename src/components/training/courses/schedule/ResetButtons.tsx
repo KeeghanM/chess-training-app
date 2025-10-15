@@ -66,24 +66,22 @@ export default function ResetButtons({ groups, courseId }: ResetButtonProps) {
     <p className="text-red-500 italic text-sm">{error}</p>
   ) : (
     <>
-      <div className="flex flex-col lg:flex-row gap-2">
-        <Button
-          variant="primary"
-          onClick={() => markAllForReview()}
-          disabled={allLoading}
-        >
-          {allLoading ? (
-            <>
-              Marking <Spinner />
-            </>
-          ) : (
-            'Mark All Lines For Review'
-          )}
-        </Button>
-        <Button variant="accent" onClick={() => setOpen(true)}>
-          Mark Specific Group For Review
-        </Button>
-      </div>
+      <Button
+        variant="primary"
+        onClick={() => markAllForReview()}
+        disabled={allLoading}
+      >
+        {allLoading ? (
+          <>
+            Marking <Spinner />
+          </>
+        ) : (
+          'Mark All Lines For Review'
+        )}
+      </Button>
+      <Button variant="accent" onClick={() => setOpen(true)}>
+        Mark One Group For Review
+      </Button>
       <AlertDialog.Root open={open} onOpenChange={setOpen}>
         <AlertDialog.Portal>
           <AlertDialog.Overlay

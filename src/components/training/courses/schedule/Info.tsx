@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Button from '~/components/_elements/button'
 
 export default function Info() {
   const [open, setOpen] = useState(false)
@@ -30,12 +31,13 @@ export default function Info() {
             training in before you go.
           </p>
           <div>
-            <button
-              className="text-purple-700  underline hover:no-underline"
+            <Button
+              variant="ghost"
+              className="underline hover:underline-none mx-auto w-fit text-lg"
               onClick={() => setOpen(false)}
             >
               Read Less
-            </button>
+            </Button>
           </div>
         </div>
       ) : (
@@ -46,12 +48,13 @@ export default function Info() {
             trainer.
           </p>
           <div>
-            <button
-              className="text-purple-700  underline hover:no-underline"
+            <Button
+              variant="ghost"
+              className="underline hover:underline-none mx-auto w-fit text-lg"
               onClick={() => setOpen(true)}
             >
               Read More
-            </button>
+            </Button>
           </div>
         </>
       )}

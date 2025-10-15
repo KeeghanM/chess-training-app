@@ -14,22 +14,17 @@ export default async function Recall() {
     <>
       <Hero
         title="Recall Trainer - Learn Chess Online"
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Chess pieces set up on a chessboard',
-        }}
         cta={{
           text: 'Start Recalling',
           link: '/training/recall/train',
         }}
       >
-        <Heading color="text-orange-500" as="h2">
+        <Heading className="text-primary" as="h2">
           Enhance Your Chess Memory and Position Visualization
         </Heading>
       </Hero>
       <ImageRowFull
         heading="Why Recall Training Matters"
-        background="light"
         image={{
           src: '/images/woman_kneeling_at_chess.png',
           alt: 'A woman studying chess positions',
@@ -51,7 +46,6 @@ export default async function Recall() {
       </ImageRowFull>
       <ImageRowFull
         heading="How to Use the Recall Trainer"
-        background="light"
         image={{
           src: '/images/chunking.png',
           alt: 'A chessboard with pieces highlighted in the Carlsbad Structure.',
@@ -84,7 +78,6 @@ export default async function Recall() {
           text: 'Start Recalling',
           link: '/training/recall/train',
         }}
-        background="dark"
       >
         <p>
           Improve your memory and visualization skills to enhance your chess

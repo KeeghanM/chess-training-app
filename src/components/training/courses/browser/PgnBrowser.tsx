@@ -34,9 +34,8 @@ export default function PgnBrowser(props: PgnBrowserProps) {
             moveSelected(move)
           }}
           className={
-            'cursor-pointer hover:bg-purple-700' +
-            (mainLine ? ' border border-black px-1 py-0.5' : '') +
-            (isCurrentMove(move) ? ' !bg-orange-500' : ' hover:text-white')
+            'cursor-pointer p-1' +
+            (isCurrentMove(move) ? ' bg-primary' : ' hover:bg-primary/20')
           }
         >
           {move.colour && <span>{move.number}. </span>}
@@ -44,9 +43,7 @@ export default function PgnBrowser(props: PgnBrowserProps) {
           <span>
             {move.notation}
             {!mainLine && move.comment ? (
-              <span className="italic text-xs text-slate-500 ">
-                {move.comment}
-              </span>
+              <span className="italic text-xs ml-1">{move.comment}</span>
             ) : (
               ''
             )}
@@ -57,9 +54,7 @@ export default function PgnBrowser(props: PgnBrowserProps) {
             {move.colour && (
               <div className="flex items-center justify-center">...</div>
             )}
-            <span className="text-xs col-span-2 bg-gray-200 text-black italic p-1">
-              {move.comment}
-            </span>
+            <span className="text-xs col-span-2 italic">{move.comment}</span>
             {move.colour && (
               <div className="flex items-center justify-center">...</div>
             )}
@@ -77,12 +72,10 @@ export default function PgnBrowser(props: PgnBrowserProps) {
 
   const Variation = (props: { moves: Move[] }) => {
     return (
-      <div className="col-span-2 flex flex-row items-center flex-wrap gap-0.5 text-xs bg-purple-100 text-black   border border-slate-800 px-2 md:px-4 py-1">
+      <div className="col-span-2 flex flex-row items-center flex-wrap gap-0.5 text-black px-2 py-1 bg-bg-light/20  mt-2">
         {props.moves.map((move, i) => (
           <Move
-            key={
-              move.number.toString() + move.colour ? 'w' : 'b' + move.notation
-            }
+            key={move.colour + move.notation + move.number}
             move={move}
             ellipses={i === 0 && !move.colour}
           />
@@ -92,10 +85,10 @@ export default function PgnBrowser(props: PgnBrowserProps) {
   }
 
   return (
-    <div className="grid grid-cols-2 auto-rows-min w-full text-sm h-full border lg:border-4 border-purple-700 bg-purple-700 bg-opacity-20 text-black  flex-1 max-h-[70vh] overflow-y-auto">
+    <div className="grid grid-cols-2 auto-rows-min w-full text-sm h-full bg-card rounded-lg p-4 flex-1 max-h-[70vh] overflow-y-auto">
       {pgn.moves.map((move) => (
         <Move
-          key={move.number.toString() + move.colour ? 'w' : 'b' + move.notation}
+          key={move.colour + move.notation + move.number}
           mainLine={true}
           move={move}
         />

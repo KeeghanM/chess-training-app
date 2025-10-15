@@ -618,6 +618,11 @@
     "@babel/helper-string-parser" "^7.27.1"
     "@babel/helper-validator-identifier" "^7.27.1"
 
+"@badrap/result@^0.3":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@badrap/result/-/result-0.3.1.tgz#19af522daeaa353746a7e6dfdba4fecf4b09f611"
+  integrity sha512-ECvpsyZYknoRD0peG1K+UkX5llld3TyK1Ot9Cq2epSoWK19nyzpGKVl98sadSmohu5wHNuiDl+Ex9SVdcIjiFg==
+
 "@commitlint/config-validator@^20.0.0":
   version "20.0.0"
   resolved "https://registry.yarnpkg.com/@commitlint/config-validator/-/config-validator-20.0.0.tgz#d97d83be722a04be2038e54bdd3ec7d11efec557"
@@ -1195,6 +1200,21 @@
   dependencies:
     "@kinde/jwt-decoder" "^0.2.0"
     jsrsasign "^11.1.0"
+
+"@lichess-org/chessground@^9.8.2":
+  version "9.8.2"
+  resolved "https://registry.yarnpkg.com/@lichess-org/chessground/-/chessground-9.8.2.tgz#d5bcfdbac000d1c8e10fc48515905955a2636bac"
+  integrity sha512-5zJ5Ixkkrz/h7GUc7pk/ERLzcRNLdKNNRIGS/pGmyOlrnlHyh8rgMfm46iKuwDRl/wl2T/AoDhSfpbFIBL+oag==
+
+"@lichess-org/pgn-viewer@^2.5.2":
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/@lichess-org/pgn-viewer/-/pgn-viewer-2.5.2.tgz#fa090e69f0c09cc14415628fc624533a0018a3b9"
+  integrity sha512-RPbq5xOa80/p1B7DkZQe4HDJN18gf7SANn8nXfDOmCi9tmqbVAPEtGs7W+qw62B5EZpU98gXxfomZ3Cr/rOkpA==
+  dependencies:
+    "@lichess-org/chessground" "^9.8.2"
+    "@types/node" "^24.3.1"
+    chessops "^0.15.0"
+    snabbdom "^3.5.1"
 
 "@lukeed/csprng@^1.1.0":
   version "1.1.0"
@@ -3104,6 +3124,13 @@
   dependencies:
     undici-types "~7.13.0"
 
+"@types/node@^24.3.1":
+  version "24.7.2"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-24.7.2.tgz#5adf66b6e2ac5cab1d10a2ad3682e359cb652f4a"
+  integrity sha512-/NbVmcGTP+lj5oa4yiYxxeBjRivKQ5Ns1eSZeB99ExsEQ6rX5XYU1Zy/gGxY/ilqtD4Etx9mKyrPxZRetiahhA==
+  dependencies:
+    undici-types "~7.14.0"
+
 "@types/nodemailer@^7.0.2":
   version "7.0.2"
   resolved "https://registry.yarnpkg.com/@types/nodemailer/-/nodemailer-7.0.2.tgz#4d5607f26a3dd45ae7078ff62fc945b87070ed30"
@@ -3907,6 +3934,13 @@ chess.js@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/chess.js/-/chess.js-1.4.0.tgz#edc1439492d1a0d7f530ba72b2b5398baece28a1"
   integrity sha512-BBJgrrtKQOzFLonR0l+k64A98NLemPwNsCskwb+29bRwobUa4iTm51E1kwGPbWXAcfdDa18nad6vpPPKPWarqw==
+
+chessops@^0.15.0:
+  version "0.15.0"
+  resolved "https://registry.yarnpkg.com/chessops/-/chessops-0.15.0.tgz#02c097f325265e359c3c326eea1b6717acf3fc16"
+  integrity sha512-4Ps0O8/UO09tDGbze1mMilUSMZjVYMFtQvrhlCQV385cO0BgdUPUZsq/r1Qrf6UQ4J0i7XcMbRRvFRKu+Ith1w==
+  dependencies:
+    "@badrap/result" "^0.3"
 
 chokidar@^3.5.3:
   version "3.6.0"
@@ -7797,6 +7831,11 @@ slice-machine-ui@^2.18.2:
     "@slicemachine/manager" "0.25.4"
     start-slicemachine "0.12.62"
 
+snabbdom@^3.5.1:
+  version "3.6.3"
+  resolved "https://registry.yarnpkg.com/snabbdom/-/snabbdom-3.6.3.tgz#1cdcd0a7188d3590da77e1fad87dbcc026b87b26"
+  integrity sha512-W2lHLLw2qR2Vv0DcMmcxXqcfdBaIcoN+y/86SmHv8fn4DazEQSH6KN3TjZcWvwujW56OHiiirsbHWZb4vx/0fg==
+
 source-map-js@^1.0.2, source-map-js@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/source-map-js/-/source-map-js-1.2.1.tgz#1ce5650fddd87abc099eda37dcff024c2667ae46"
@@ -8292,6 +8331,11 @@ undici-types@~7.13.0:
   version "7.13.0"
   resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-7.13.0.tgz#a20ba7c0a2be0c97bd55c308069d29d167466bff"
   integrity sha512-Ov2Rr9Sx+fRgagJ5AX0qvItZG/JKKoBRAVITs1zk7IqZGTJUwgUr7qoYBpWwakpWilTZFM98rG/AFRocu10iIQ==
+
+undici-types@~7.14.0:
+  version "7.14.0"
+  resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-7.14.0.tgz#4c037b32ca4d7d62fae042174604341588bc0840"
+  integrity sha512-QQiYxHuyZ9gQUIrmPo3IA+hUl4KYk8uSA7cHrcKd/l3p1OTpZcM0Tbp9x7FAtXdAYhlasd60ncPpgu6ihG6TOA==
 
 universalify@^2.0.0:
   version "2.0.1"

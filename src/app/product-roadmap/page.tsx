@@ -11,11 +11,7 @@ export const metadata = {
 export default async function ProductRoadmap() {
   return (
     <>
-      <TextWall
-        background="dark"
-        title="Our commitment to open development"
-        titleType="h1"
-      >
+      <TextWall title="Our commitment to open development" titleType="h1">
         <div className="flex flex-1 flex-col gap-2">
           <p>
             We think that transparency is an incredibly valuable thing, both in

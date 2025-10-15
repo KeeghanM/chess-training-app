@@ -16,14 +16,8 @@ export const metadata = {
 export default async function WoodPeckerPage() {
   return (
     <>
-      <Hero
-        title={'Chess Tactics Training with the Woodpecker Method'}
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Chess board focusing on tactical positions',
-        }}
-      >
-        <Heading color="text-orange-500" as={'h2'}>
+      <Hero title="Chess Tactics Training with the Woodpecker Method">
+        <Heading className="text-primary" as="h2">
           Train chess puzzles using the WoodPecker Method developed by GM's Axel
           Smith, and Hans Tikkanen.
         </Heading>
@@ -35,7 +29,6 @@ export default async function WoodPeckerPage() {
         }}
         imageSide="left"
         heading="Discover the Woodpecker Method"
-        background="light"
       >
         <p>
           The Woodpecker Method, developed by Grandmasters Axel Smith and Hans
@@ -50,10 +43,10 @@ export default async function WoodPeckerPage() {
           focus solely on puzzle-solving.
         </p>
       </ImageRowFull>
-      <BigText color="secondary">
+      <BigText color="dark">
         Enhance your tactical play now -{' '}
         <Link
-          className="cursor-pointer font-bold !text-purple-500 underline hover:no-underline"
+          className="cursor-pointer font-bold !text-orange-500 underline hover:no-underline"
           href="/training/tactics/list"
         >
           Start Training
@@ -66,7 +59,6 @@ export default async function WoodPeckerPage() {
         }}
         imageSide="right"
         heading="How to Train with the Woodpecker Method"
-        background="light"
       >
         <p>
           Our Tactics Trainer lets you build and solve a customized set of
@@ -95,7 +87,7 @@ export default async function WoodPeckerPage() {
           memory.
         </p>
       </ImageRowFull>
-      <TextWall title="Why the Woodpecker Method?" background="dark">
+      <TextWall title="Why the Woodpecker Method?">
         <ul>
           <li>
             <strong>Effective Learning:</strong> Absorb and retain tactical
@@ -118,7 +110,6 @@ export default async function WoodPeckerPage() {
       <CtaRow
         title="Are You Ready to Revolutionize Your Chess Tactics?"
         cta={{ text: 'Begin Your Journey', link: '/training/tactics/list' }}
-        background="light"
       >
         <p>Start now for free and take your tactical skills to new heights.</p>
       </CtaRow>

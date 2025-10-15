@@ -6,6 +6,8 @@ import * as Sentry from '@sentry/nextjs'
 import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
 import CourseBrowser from '@components/training/courses/browser/CourseBrowser'
+import Backdrop from '~/components/_elements/backdrop'
+import Container from '~/components/_elements/container'
 
 export default async function CourseTrainPage(props: {
   params: Promise<{ userCourseId: string }>
@@ -63,6 +65,7 @@ export default async function CourseTrainPage(props: {
 
       return { userCourse, userLines }
     } catch (e) {
+      console.log(e)
       Sentry.captureException(e)
       return {
         userCourse: undefined,
@@ -76,16 +79,19 @@ export default async function CourseTrainPage(props: {
   }
 
   return (
-    <>
-      <div className=" p-2 md:p-4 lg:px-6">
-        <Heading as="h1">
-          {userCourse.course.courseName}
-          <Link className="ml-2" href={`/training/courses/`}>
-            <Button variant="accent">Back to courses</Button>
+    <div className="relative">
+      <Backdrop />
+      <Container size="full">
+        <div className="space-y-2 mb-4">
+          <Heading as="h1" className="text-white">
+            {userCourse.course.courseName}
+          </Heading>
+          <Link href={`/training/courses/`}>
+            <Button>Back to courses</Button>
           </Link>
-        </Heading>
+        </div>
         <CourseBrowser lines={userLines} />
-      </div>
-    </>
+      </Container>
+    </div>
   )
 }

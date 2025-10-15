@@ -8,6 +8,7 @@ import PageHeader from '@components/_layouts/pageHeader'
 import Info from '@components/training/courses/schedule/Info'
 import LineList from '@components/training/courses/schedule/LineList'
 import ResetButtons from '@components/training/courses/schedule/ResetButtons'
+import Backdrop from '~/components/_elements/backdrop'
 import { getUserServer } from '@utils/getUserServer'
 
 export default async function CourseSchedulePage(props: {
@@ -86,31 +87,18 @@ export default async function CourseSchedulePage(props: {
     }))
 
   return (
-    <>
-      <PageHeader
-        title={`${userCourse.course.courseName}`}
-        subTitle="Revision Schedule"
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Wooden Chess pieces on a chess board',
-        }}
-      />
-      <div className="">
-        <Container>
+    <div className="relative">
+      <Backdrop />
+      <Container>
+        <div className="bg-card rounded-lg shadow-lg p-6 md:p-8 space-y-4 mb-4">
           <Info />
-          <div className="flex flex-col lg:flex-row gap-2 mb-4">
+          <div className="flex flex-row flex-wrap gap-2 mb-4">
             <ResetButtons groups={uniqueGroups} courseId={userCourse.id} />
-            <Link href={`/training/courses/`}>
-              <Button className="w-full" variant="secondary">
-                Back to courses
-              </Button>
+            <Link href={`/training/courses/`} className="w-full md:w-fit">
+              <Button className="w-full md:w-fit">Back to courses</Button>
             </Link>
           </div>
-          <div className="flex flex-col text-black  md:flex-row gap-2 md:gap-4 mb-2">
-            <div className="flex gap-1 items-center">
-              <div className="w-4 h-4 bg-gray-300"></div>
-              <p>Unseen</p>
-            </div>
+          <div className="flex flex-col md:flex-row gap-2 p-4 bg-card-light rounded-lg shadow md:items-center md:justify-center">
             <div className="flex gap-1 items-center">
               <div className="w-4 h-4 bg-green-500"></div>
               <p>Learned</p>
@@ -123,10 +111,14 @@ export default async function CourseSchedulePage(props: {
               <div className="w-4 h-4 bg-red-500"></div>
               <p>Hard</p>
             </div>
+            <div className="flex gap-1 items-center">
+              <div className="w-4 h-4 bg-black"></div>
+              <p>Unseen</p>
+            </div>
           </div>
-          <LineList userLines={userLines} courseId={userCourse.id} />
-        </Container>
-      </div>
-    </>
+        </div>
+        <LineList userLines={userLines} courseId={userCourse.id} />
+      </Container>
+    </div>
   )
 }

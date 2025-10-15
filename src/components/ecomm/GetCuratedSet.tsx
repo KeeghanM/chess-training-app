@@ -57,13 +57,13 @@ export default function GetCuratedSet(props: {
         <Tooltip>
           <TooltipTrigger asChild={true}>
             <Link href={`/training/tactics/list/${userSetId}`}>
-              <Button variant="accent">Train Now</Button>
+              <Button variant="primary">Train Now</Button>
             </Link>
           </TooltipTrigger>
           <TooltipContent>You already own this Tactics Set!</TooltipContent>
         </Tooltip>
       ) : (
-        <Button disabled={loading} variant="accent" onClick={handleBuy}>
+        <Button disabled={loading} variant="primary" onClick={handleBuy}>
           {loading ? (
             <>
               Processing... <Spinner />

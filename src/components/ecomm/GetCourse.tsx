@@ -53,14 +53,14 @@ export default function GetCourse(props: {
     <Tooltip>
       <TooltipTrigger asChild={true}>
         <Link href={`/training/courses/${userCourseId}`}>
-          <Button variant="accent">Train Now</Button>
+          <Button variant="primary">Train Now</Button>
         </Link>
       </TooltipTrigger>
       <TooltipContent>You already own this course!</TooltipContent>
     </Tooltip>
   ) : (
     <>
-      <Button disabled={loading} variant="accent" onClick={handleBuy}>
+      <Button disabled={loading} variant="primary" onClick={handleBuy}>
         {loading ? (
           <>
             Processing... <Spinner />

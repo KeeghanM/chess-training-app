@@ -15,23 +15,18 @@ export default async function VisualisationPage() {
     <>
       <Hero
         title="Visualisation Training"
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Wooden chess pieces on a chess board',
-        }}
         cta={{
           text: 'Start Visualizing',
           link: '/training/visualisation/train',
         }}
       >
-        <Heading color="text-orange-500" as="h2">
+        <Heading className="text-primary" as="h2">
           Enhance your chess foresight with ChessTraining.app's Visualisation
           Trainer.
         </Heading>
       </Hero>
       <ImageRowFull
         heading="Why Visualisation Training Matters"
-        background="light"
         image={{
           src: '/images/woman_frustrated_2.png',
           alt: 'A female chess player pulling her hair in frustration',
@@ -56,7 +51,6 @@ export default async function VisualisationPage() {
       </ImageRowFull>
       <ImageRowFull
         heading="How to Use the Visualisation Trainer"
-        background="light"
         image={{
           src: '/images/man_chess_2.png',
           alt: 'A user engaging with the Visualisation Trainer interface',
@@ -86,7 +80,6 @@ export default async function VisualisationPage() {
           text: 'Start Visualizing',
           link: '/training/visualisation/list',
         }}
-        background="dark"
       >
         <p>
           Improve your ability to foresee complex scenarios and tactics. Begin

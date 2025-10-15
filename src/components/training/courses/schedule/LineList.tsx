@@ -1,8 +1,8 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import LineRow from './LineRow'
 import type { ScheduleLine } from './LineRow'
+import LineRow from './LineRow'
 
 type LineListProps = {
   userLines: ScheduleLine[]

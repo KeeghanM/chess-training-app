@@ -40,9 +40,9 @@ export default function CourseBrowser(props: CourseBrowserProps) {
   )
 
   return (
-    <div className="flex flex-col gap-1 md:flex-row">
-      <div className="border lg:border-4 border-purple-700 bg-purple-100  text-black  p-2">
-        <div className="flex flex-col gap-2 lg:max-w-500px overflow-y-auto max-h-full">
+    <div className="flex flex-col gap-2 md:flex-row">
+      <div className="p-4 bg-card-light/20 rounded-lg w-full lg:max-w-1/3">
+        <div className="flex flex-col gap-2 bg-card rounded-lg p-4 lg:max-w-500px overflow-y-auto max-h-full h-full">
           {groups
             .filter((group) =>
               group.name.toLowerCase().includes(search.toLowerCase()),
@@ -63,15 +63,13 @@ export default function CourseBrowser(props: CourseBrowserProps) {
             })}
         </div>
       </div>
-      <div className="flex-1 flex flex-col">
-        <GroupBrowser
-          lines={
-            openGroupId
-              ? lines.filter((line) => line.line.groupId === openGroupId)
-              : []
-          }
-        />
-      </div>
+      <GroupBrowser
+        lines={
+          openGroupId
+            ? lines.filter((line) => line.line.groupId === openGroupId)
+            : []
+        }
+      />
     </div>
   )
 }

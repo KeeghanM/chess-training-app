@@ -7,6 +7,7 @@ import type { Move } from '@utils/BuildPgn'
 import BuildPGN from '@utils/BuildPgn'
 import getArrows from '@utils/StringToArrows'
 import ChessBoard from '../../ChessBoard'
+import BoardContainer from '../../shared/BoardContainer'
 import type { UserLineWithData } from './CourseBrowser'
 import PgnBrowser from './PgnBrowser'
 
@@ -86,28 +87,30 @@ export default function GroupBrowser(props: { lines: UserLineWithData[] }) {
   }, [props.lines])
 
   return (
-    <div className="flex gap-2 flex-col lg:flex-row">
-      <div>
-        <ChessBoard
-          game={game}
-          position={position}
-          orientation={orientation}
-          readyForInput={false}
-          additionalSquares={highlightSquares}
-          additionalArrows={arrows}
-          enableArrows={true}
-          enableHighlights={true}
-          soundEnabled={soundEnabled}
-          moveMade={null}
-        />
+    <>
+      <div className="relative">
+        <BoardContainer>
+          <ChessBoard
+            game={game}
+            position={position}
+            orientation={orientation}
+            readyForInput={false}
+            additionalSquares={highlightSquares}
+            additionalArrows={arrows}
+            enableArrows={true}
+            enableHighlights={true}
+            soundEnabled={soundEnabled}
+            moveMade={null}
+          />
+        </BoardContainer>
       </div>
-      <div className="flex-1 max-w-fit">
+      <div className="min-w-1/3 md:max-w-1/3 p-4 bg-card-light/20 rounded-lg h-fit my-auto">
         <PgnBrowser
           pgn={pgn}
           moveSelected={setCurrentMove}
           currentMove={currentMove}
         />
       </div>
-    </div>
+    </>
   )
 }

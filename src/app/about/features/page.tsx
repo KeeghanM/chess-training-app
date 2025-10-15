@@ -91,14 +91,8 @@ export default async function FeaturesPage() {
 
   return (
     <>
-      <Hero
-        title="Features & Training Tools"
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Wooden Chess pieces on a chess board',
-        }}
-      >
-        <ol className="text-orange-500 p-2 bg-[rgba(0,0,0,0.3)]">
+      <Hero title="Features & Training Tools">
+        <ol className="text-primary space-y-2">
           {features.map((feature, index) => (
             <li
               key={'li' + index.toString()}
@@ -116,7 +110,6 @@ export default async function FeaturesPage() {
           <a id={feature.anchor} className="anchor" />
           <CtaRow
             title={feature.name}
-            background={index % 2 == 0 ? 'dark' : 'light'}
             key={'feature-' + index.toString()}
             cta={{
               text: 'Learn More',
@@ -131,11 +124,11 @@ export default async function FeaturesPage() {
           </CtaRow>
         </>
       ))}
-      <BigText color="secondary">
-        <p>Ready to transform you chess game?</p>
+      <BigText color="dark">
+        <p>Ready to transform your chess game?</p>
         <p>
           <Link
-            className="cursor-pointer font-bold !text-purple-500 underline hover:no-underline"
+            className="cursor-pointer font-bold !text-orange-500 underline hover:no-underline"
             href="/auth/signin"
           >
             Sign up now

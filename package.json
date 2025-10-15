@@ -22,6 +22,7 @@
     "@floating-ui/react": "^0.27.16",
     "@formkit/auto-animate": "^0.9.0",
     "@kinde-oss/kinde-auth-nextjs": "^2.9.2",
+    "@lichess-org/pgn-viewer": "^2.5.2",
     "@mliebelt/pgn-parser": "^1.4.18",
     "@prisma/client": "^6.16.3",
     "@prismicio/client": "^7.20.1",

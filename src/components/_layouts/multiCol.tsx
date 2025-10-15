@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Button from '@components/_elements/button'
+import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 
 interface MultiColItemProps {
@@ -9,7 +10,6 @@ interface MultiColItemProps {
 
 interface MultiColProps {
   title?: string
-  background: 'light' | 'dark'
   cta?: {
     text: string
     link: string
@@ -19,37 +19,35 @@ interface MultiColProps {
 
 export function MultiColItem(props: MultiColItemProps) {
   return (
-    <div className="flex flex-1 flex-col gap-0 border border-gray-300 bg-[rgba(0,0,0,0.03)]">
-      <div className="px-2 py-1 border-b border-gray-300 font-bold">
-        <Heading as={'h3'} color="text-orange-500 !m-0 !p-0">
+    <div className="flex flex-col bg-card rounded-lg shadow overflow-hidden">
+      <div className="bg-card-light px-4 py-3 border-b border-gray-200">
+        <Heading as="h3" className="text-orange-500 !m-0 !p-0">
           {props.title}
         </Heading>
       </div>
-      <div className="flex flex-col gap-2 p-2">{props.children}</div>
+      <div className="flex flex-1 flex-col gap-3 p-4 text-gray-800">
+        {props.children}
+      </div>
     </div>
   )
 }
 
 export function MultiCol(props: MultiColProps) {
   return (
-    <div
-      className={`w-full ${
-        props.background === 'light' ? 'bg-white' : 'bg-purple-100'
-      }`}
-    >
-      <div className="flex flex-col items-center justify-center gap-4 px-4 py-6 md:px-6 md:py-12 lg:px-12">
-        {props.title && <Heading as={'h2'}>{props.title}</Heading>}
-        <div className="flex flex-col gap-4 md:flex-row md:gap-6">
+    <Container size="extra-wide">
+      <div className="flex flex-col items-center gap-8">
+        {props.title && <Heading as="h2">{props.title}</Heading>}
+        <div className="w-full grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {props.children}
         </div>
         {props.cta && (
-          <div className="">
+          <div className="pt-4">
             <Link href={props.cta.link}>
-              <Button variant="accent">{props.cta.text}</Button>
+              <Button variant="primary">{props.cta.text}</Button>
             </Link>
           </div>
         )}
       </div>
-    </div>
+    </Container>
   )
 }

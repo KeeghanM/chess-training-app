@@ -1,6 +1,13 @@
 'use client'
 
-import { Tooltip, TooltipContent } from '@components/_elements/tooltip'
+import { PrismaUserCourse } from '~/hooks/use-course-queries'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@components/_elements/tooltip'
+import { RoundProgress } from '~/components/_elements/progress'
+import { generateCoursePercentages } from '~/utils/GenerateCoursePercentages'
 import type { UserLineWithData } from './CourseBrowser'
 
 // TODO: Add a "Train by group" button
@@ -36,25 +43,18 @@ export default function GroupListItem(props: {
     },
   )
 
-  const conicGradient = GenerateConicGradient(
-    linesLearned,
-    linesLearning,
-    linesHard,
-    linesUnseen,
-  )
-
   return (
     <div
       className={
-        'flex flex-col gap-0 border-2   cursor-pointer ' +
+        'flex flex-col gap-0 border-2 bg-card rounded-lg shadow ' +
         (open
-          ? 'bg-orange-500 bg-opacity-10 border-orange-500'
-          : 'bg-purple-200 border-purple-700 hover:border-orange-500 hover:bg-orange-500 hover:bg-opacity-10')
+          ? 'border-orange-500'
+          : 'cursor-pointer border-bg-light hover:shadow-lg')
       }
       onClick={() => (!open ? props.onClick() : null)}
     >
-      <div className="flex items-center justify-between text-white gap-2 p-2 text-base">
-        <div className="flex items-center gap-2 text-orange-500 transition-all duration-200">
+      <div className="flex items-center justify-between gap-2 p-2">
+        <div className="flex items-center gap-2 transition-all duration-200">
           <h2 className="font-bold">{name}</h2>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -74,14 +74,18 @@ export default function GroupListItem(props: {
             {lines.length - linesUnseen}/{lines.length}
           </p>
           <Tooltip>
-            <div
-              className="grid h-16 w-16 place-items-center rounded-full"
-              style={{
-                background: conicGradient,
-              }}
-            >
-              <div className="h-12 w-12 rounded-full bg-purple-700"></div>
-            </div>
+            <TooltipTrigger asChild={true}>
+              <RoundProgress
+                width="w-20"
+                bgColor="text-card-dark/40"
+                percentages={generateCoursePercentages({
+                  linesHard,
+                  linesLearned,
+                  linesLearning,
+                  linesUnseen,
+                } as PrismaUserCourse)}
+              />
+            </TooltipTrigger>
             <TooltipContent className="text-base">
               <div className="flex flex-col gap-2">
                 <p className="text-gray-300">{linesUnseen} lines unseen</p>
@@ -95,30 +99,4 @@ export default function GroupListItem(props: {
       </div>
     </div>
   )
-}
-
-function GenerateConicGradient(
-  linesLearned: number,
-  linesLearning: number,
-  linesHard: number,
-  linesUnseen: number,
-) {
-  const totalLines = linesLearned + linesLearning + linesHard + linesUnseen
-
-  const learnedPercent = Math.round((linesLearned / totalLines) * 100)
-  const learningPercent = Math.round((linesLearning / totalLines) * 100)
-  const hardPercent = Math.round((linesHard / totalLines) * 100)
-  const unseenPercent = Math.round((linesUnseen / totalLines) * 100)
-  const conicGradient = `conic-gradient(
-            #4ade80 ${learnedPercent}%,
-            #2563eb ${learnedPercent}% ${learnedPercent + learningPercent}%,
-            #ff3030 ${learnedPercent + learningPercent}% ${
-              learnedPercent + learningPercent + hardPercent
-            }%,
-            #6b21a8 ${learnedPercent + learningPercent + hardPercent}% ${
-              learnedPercent + learningPercent + hardPercent + unseenPercent
-            }%
-          )`
-
-  return conicGradient
 }

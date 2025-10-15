@@ -8,42 +8,33 @@ interface ImageRowProps {
     src: string
     alt: string
   }
-  background: 'light' | 'dark'
   children: React.ReactNode
 }
 
 export default function ImageRowFull(props: ImageRowProps) {
   return (
-    <div
-      className={
-        'relative flex flex-col items-center justify-center py-4 md:flex-row md:py-6 lg:py-12' +
-        (props.imageSide === 'left' ? '' : ' md:flex-row-reverse') +
-        (props.background === 'light' ? ' bg-white' : ' bg-purple-100')
-      }
-    >
+    <Container size="extra-wide">
       <div
-        className={
-          'w-full md:absolute md:inset-0 md:w-1/2' +
-          (props.imageSide === 'left' ? '' : ' md:ml-auto')
-        }
+        className={`flex flex-col gap-8 md:flex-row md:gap-12 items-center ${
+          props.imageSide === 'right' ? 'md:flex-row-reverse' : ''
+        }`}
       >
-        <img
-          className="mx-auto h-full max-h-[350px] w-full max-w-[750px] object-cover object-[50%_25%] md:max-h-full"
-          src={props.image.src}
-          alt={props.image.alt}
-        />
+        <div className="w-full md:w-1/2">
+          <img
+            className="w-full h-auto rounded-lg shadow-lg object-cover max-h-[400px]"
+            src={props.image.src}
+            alt={props.image.alt}
+          />
+        </div>
+        <div className="w-full md:w-1/2">
+          <div className="bg-card rounded-lg shadow-lg p-6 md:p-8 space-y-4">
+            <Heading as="h2">{props.heading}</Heading>
+            <div className="flex flex-col gap-4 text-gray-800">
+              {props.children}
+            </div>
+          </div>
+        </div>
       </div>
-      <div
-        className={
-          'w-full md:w-1/2' +
-          (props.imageSide === 'left' ? ' md:ml-auto' : ' md:mr-auto')
-        }
-      >
-        <Container>
-          <Heading as={'h2'}>{props.heading}</Heading>
-          <div className="flex flex-col gap-4">{props.children}</div>
-        </Container>
-      </div>
-    </div>
+    </Container>
   )
 }

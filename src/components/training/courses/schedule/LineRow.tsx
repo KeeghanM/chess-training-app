@@ -72,44 +72,51 @@ export default function LineRow({
   return (
     <div
       className={
-        'border-4 bg-purple-700 bg-opacity-20 text-black  py-2 flex flex-col md:flex-row gap-2 justify-between ' +
-        (status === 'unseen' ? 'border-gray-300' : '') +
+        'border-4 bg-card rounded-lg p-4 flex flex-col md:flex-row gap-2 justify-between shadow ' +
+        (status === 'unseen' ? 'border-black' : '') +
         (status === 'learning' ? 'border-blue-600' : '') +
         (status === 'learned' ? 'border-green-500' : '') +
         (status === 'hard' ? 'border-red-500' : '')
       }
     >
       <div className="px-2">
-        <h3 className="text-sm border-b w-full mb-2 text-orange-500 italic">
-          {line.line.group.groupName}
+        <h3 className="text-sm border-b w-full mb-2 italic">
+          Group: {line.line.group.groupName}
         </h3>
         <div className="text-sm">
           <PrettyPrintLine line={niceLine} />
         </div>
       </div>
-      <div className="flex flex-col justify-center items-center border-t pt-2 mx-2 md:border-t-0 md:border-l md:pl-4 md:ml-0 md:min-w-fit">
+      <div className="justify-center flex flex-col gap-1 items-center border-t pt-2 mx-2 md:border-t-0 md:border-l md:pl-4 md:ml-0 md:min-w-fit">
         <div>
-          {line.revisionDate?.toLocaleTimeString('en-GB', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
-          }) ?? 'Not yet seen'}
+          <p>Review Date:</p>
+          <p className="text-bg-light italic">
+            {line.revisionDate
+              ? line.revisionDate.toLocaleTimeString('en-GB', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: 'numeric',
+                })
+              : 'Not yet seen'}
+          </p>
         </div>
-        <Button
-          variant="primary"
-          onClick={() => markForReview(line.id)}
-          disabled={loading === true || error !== null}
-        >
-          {loading ? (
-            <>
-              Marking <Spinner />
-            </>
-          ) : (
-            'Mark for Review'
-          )}
-        </Button>
+        <div>
+          <Button
+            variant="primary"
+            onClick={() => markForReview(line.id)}
+            disabled={loading === true || error !== null}
+          >
+            {loading ? (
+              <>
+                Marking <Spinner />
+              </>
+            ) : (
+              'Mark for Review'
+            )}
+          </Button>
+        </div>
       </div>
     </div>
   )
