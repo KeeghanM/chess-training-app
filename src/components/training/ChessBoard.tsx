@@ -102,7 +102,7 @@ export default function ChessBoard(props: ChessBoardProps) {
         const from = sourceSquare ?? startSquare
         const to = targetSquare ?? moveTo
         const promotionPiece = promotion
-          ? piece.split('')[1]!.toLowerCase()
+          ? piece.split('')[0]!.toLowerCase()
           : checkPromotion(from, to, piece)
 
         const move = game.move({
@@ -258,15 +258,14 @@ export default function ChessBoard(props: ChessBoardProps) {
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundColor: 'rgba(0, 0, 0, 0.1)',
+              backgroundColor: 'rgba(0, 0, 0, 0.3)',
               zIndex: 1000,
             }}
           />
           <div
             style={{
               position: 'absolute',
-              top: clickedPiece?.color === 'w' ? 0 : undefined,
-              bottom: clickedPiece?.color === 'b' ? 0 : undefined,
+              top: 0,
               left: getPromotionLeft(moveTo),
               backgroundColor: 'white',
               width: squareWidth,
@@ -274,6 +273,8 @@ export default function ChessBoard(props: ChessBoardProps) {
               display: 'flex',
               flexDirection: 'column',
               boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.5)',
+              borderRadius: '8px',
+              overflow: 'hidden',
             }}
           >
             {(['q', 'r', 'n', 'b'] as const).map((piece) => (
@@ -285,6 +286,7 @@ export default function ChessBoard(props: ChessBoardProps) {
                 onContextMenu={(e) => {
                   e.preventDefault()
                 }}
+                className="hover:bg-primary/20"
                 style={{
                   width: '100%',
                   aspectRatio: '1',
