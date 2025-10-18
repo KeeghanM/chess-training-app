@@ -35,6 +35,7 @@ interface VisualisationTrainProps {
   setAutoNext: (autoNext: boolean) => void
 
   // Actions
+  nextPuzzle: () => Promise<void>
   onPuzzleComplete: (status: 'correct' | 'incorrect') => Promise<void>
   onExit: () => void
 }
@@ -50,6 +51,7 @@ export default function VisualisationTrain({
   puzzleId,
   xpCounter,
   autoNext,
+  nextPuzzle,
   setAutoNext,
   onPuzzleComplete,
   onExit,
@@ -99,7 +101,7 @@ export default function VisualisationTrain({
     await onPuzzleComplete(status)
 
     if (autoNext && status == 'correct') {
-      // Auto next will trigger from parent
+      await nextPuzzle()
     }
   }
 
@@ -179,18 +181,13 @@ export default function VisualisationTrain({
     await onPuzzleComplete('incorrect')
   }
 
-  const handleNextClick = async () => {
-    setSelectedSquares({})
-    await onPuzzleComplete(puzzleStatus as 'correct' | 'incorrect')
-  }
-
   // Create a new game from the puzzle whenever it changes
   useEffect(() => {
     if (!currentPuzzle) return
 
     const newGame = new Chess(currentPuzzle.fen)
     const newDisplayGame = new Chess(currentPuzzle.fen)
-    setOrientation(newGame.turn() == 'w' ? 'black' : 'white') // reversed because the first move is opponents
+    setOrientation(newGame.turn() == 'w' ? 'white' : 'black')
 
     for (const move of currentPuzzle.moves) {
       newGame.move(move)
@@ -276,7 +273,7 @@ export default function VisualisationTrain({
             <div className="flex justify between gap-2">
               {puzzleFinished ? (
                 (!autoNext || puzzleStatus == 'incorrect') && (
-                  <Button variant="primary" onClick={handleNextClick}>
+                  <Button variant="primary" onClick={nextPuzzle}>
                     Next
                   </Button>
                 )
@@ -292,7 +289,7 @@ export default function VisualisationTrain({
                   onChange={async () => {
                     setAutoNext(!autoNext)
                     if (puzzleFinished && puzzleStatus == 'correct')
-                      await handleNextClick()
+                      await nextPuzzle()
                   }}
                 />
               </label>

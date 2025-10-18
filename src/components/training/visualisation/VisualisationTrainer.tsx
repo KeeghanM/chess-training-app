@@ -2,10 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useProfileQueries } from '@hooks/use-profile-queries'
-import { type TrainingPuzzle } from '@hooks/use-puzzle-queries'
 import { useVisualisationQueries } from '@hooks/use-visualisation-queries'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
-import * as Sentry from '@sentry/nextjs'
 import trackEventOnClient from '@utils/trackEventOnClient'
 import VisualisationConfigure from './VisualisationConfigure'
 import VisualisationTrain from './VisualisationTrain'
@@ -15,8 +13,11 @@ export default function VisualisationTrainer() {
 
   // --- Hooks ---
   const { updateStreak } = useProfileQueries()
-  const { useRandomVisualisationQuery, updateVisualisationStreak } =
-    useVisualisationQueries()
+  const {
+    useRandomVisualisationQuery,
+    updateVisualisationStreak,
+    difficultyAdjuster,
+  } = useVisualisationQueries()
 
   // Setup state for settings
   const [length, setLength] = useState(6)
@@ -33,7 +34,6 @@ export default function VisualisationTrainer() {
 
   const [xpCounter, setXpCounter] = useState(0)
   const [currentStreak, setCurrentStreak] = useState(0)
-  const [currentPuzzle, setCurrentPuzzle] = useState<TrainingPuzzle>()
 
   // Setup SFX
   const [soundEnabled] = useState(true)
@@ -44,28 +44,9 @@ export default function VisualisationTrainer() {
     difficulty,
     length,
   })
+  const currentPuzzle = puzzleQuery.data
 
-  // Update current puzzle when query succeeds
-  useEffect(() => {
-    if (!puzzleQuery.data) return
-
-    setCurrentPuzzle(puzzleQuery.data)
-    setError('')
-  }, [puzzleQuery.data])
-
-  // Handle query errors
-  useEffect(() => {
-    if (!puzzleQuery.error) return
-
-    Sentry.captureException(puzzleQuery.error)
-    setError(puzzleQuery.error.message || 'Failed to fetch puzzle')
-  }, [puzzleQuery.error])
-
-  const difficultyAdjuster = (d: number) => {
-    return d == 0 ? 0.9 : d == 1 ? 1 : 1.2
-  }
-
-  const getNewPuzzle = () => {
+  const nextPuzzle = async () => {
     const trueRating = Math.max(
       Math.round(rating * difficultyAdjuster(difficulty)),
       500,
@@ -77,42 +58,31 @@ export default function VisualisationTrainer() {
       return
     }
 
-    puzzleQuery.refetch()
+    await puzzleQuery.refetch()
+    setPuzzleStatus('none')
   }
 
   const handlePuzzleComplete = async (status: 'correct' | 'incorrect') => {
     setPuzzleStatus(status)
 
-    // Increase the "Last Trained" on the profile
-    updateStreak.mutate(undefined, {
-      onError: (e) => Sentry.captureException(e),
-    })
+    updateStreak.mutate()
 
-    // Increase the streak if correct
-    // and send it to the server incase a badge needs adding
-    if (status == 'correct') {
-      trackEventOnClient('Visualisation_correct', {})
-      updateVisualisationStreak.mutate(
-        { currentStreak: currentStreak + 1 },
-        {
-          onError: (e) => Sentry.captureException(e),
-        },
-      )
-      setCurrentStreak(currentStreak + 1)
-      setXpCounter(xpCounter + 1)
-    } else if (status == 'incorrect') {
+    if (status == 'incorrect') {
       trackEventOnClient('visualisation_incorrect', {})
+      return
     }
-    getNewPuzzle()
 
-    setPuzzleStatus('none')
+    trackEventOnClient('Visualisation_correct', {})
+    updateVisualisationStreak.mutate({ currentStreak: currentStreak + 1 })
+    setCurrentStreak(currentStreak + 1)
+    setXpCounter(xpCounter + 1)
   }
 
   const exit = async () => {
     setXpCounter(0)
     setCurrentStreak(0)
-    setCurrentPuzzle(undefined)
     setMode('settings')
+    nextPuzzle()
   }
 
   const getDifficulty = () => {
@@ -128,11 +98,6 @@ export default function VisualisationTrainer() {
     }
   }
 
-  useEffect(() => {
-    if (mode == 'settings') return
-    getNewPuzzle()
-  }, [mode])
-
   if (!user) return null
 
   return mode == 'settings' ? (
@@ -144,7 +109,7 @@ export default function VisualisationTrainer() {
       length={length}
       setLength={setLength}
       onStartTraining={() => setMode('training')}
-      error={error}
+      error={puzzleQuery.error?.message || error}
     />
   ) : (
     <VisualisationTrain
@@ -157,6 +122,7 @@ export default function VisualisationTrainer() {
       puzzleStatus={puzzleStatus}
       puzzleId={currentPuzzle?.puzzleid}
       xpCounter={xpCounter}
+      nextPuzzle={nextPuzzle}
       autoNext={autoNext}
       setAutoNext={setAutoNext}
       onPuzzleComplete={handlePuzzleComplete}

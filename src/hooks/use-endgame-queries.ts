@@ -70,6 +70,7 @@ export function useEndgameQueries() {
   })
 
   return {
+    difficultyAdjuster,
     useRandomEndgameQuery,
     updateEndgameStreak,
   }

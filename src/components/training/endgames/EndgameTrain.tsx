@@ -22,7 +22,6 @@ interface EndgameTrainProps {
   // Display props
   type: 'Queen' | 'Rook' | 'Knight' | 'Bishop' | 'Pawn' | 'All'
   rating: number
-  difficulty: number
   getDifficulty: () => string
 
   // Puzzle data
@@ -40,6 +39,7 @@ interface EndgameTrainProps {
   setAutoNext: (autoNext: boolean) => void
 
   // Actions
+  nextPuzzle: () => Promise<void>
   onPuzzleComplete: (status: 'correct' | 'incorrect') => Promise<void>
   onExit: () => void
 }
@@ -47,7 +47,6 @@ interface EndgameTrainProps {
 export default function EndgameTrain({
   type,
   rating,
-  difficulty,
   getDifficulty,
   currentPuzzle,
   soundEnabled,
@@ -56,6 +55,7 @@ export default function EndgameTrain({
   puzzleId,
   xpCounter,
   autoNext,
+  nextPuzzle,
   setAutoNext,
   onPuzzleComplete,
   onExit,
@@ -102,13 +102,13 @@ export default function EndgameTrain({
       // We have reached the end of the line
       if (soundEnabled) correctSound()
       setPuzzleFinished(true)
-      await onPuzzleComplete('correct')
 
-      if (autoNext && puzzleStatus != 'incorrect') {
-        // Auto next will trigger from parent
-      }
+      await onPuzzleComplete('correct')
+      if (autoNext) await nextPuzzle()
+
       return true
     }
+
     return false
   }
 
@@ -156,10 +156,6 @@ export default function EndgameTrain({
     }
     setPosition(newGame.fen())
     trackEventOnClient('endgame_set_jump_to_move', {})
-  }
-
-  const handleNextClick = async () => {
-    await onPuzzleComplete(puzzleStatus as 'correct' | 'incorrect')
   }
 
   // Create a new game from the puzzle whenever it changes
@@ -242,7 +238,7 @@ export default function EndgameTrain({
             <div className="flex justify between gap-2">
               {puzzleFinished ? (
                 (!autoNext || puzzleStatus == 'incorrect') && (
-                  <Button variant="primary" onClick={handleNextClick}>
+                  <Button variant="primary" onClick={nextPuzzle}>
                     Next
                   </Button>
                 )
@@ -263,7 +259,7 @@ export default function EndgameTrain({
                   onChange={async () => {
                     setAutoNext(!autoNext)
                     if (puzzleFinished && puzzleStatus == 'correct')
-                      await handleNextClick()
+                      await nextPuzzle()
                   }}
                 />
               </label>

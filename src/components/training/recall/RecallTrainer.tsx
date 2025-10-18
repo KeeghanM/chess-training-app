@@ -29,37 +29,33 @@ export default function RecallTrainer() {
   const [piecesToRecall, setPiecesToRecall] = useState(1)
 
   // Setup state for the settings/general
-  const [loading, setLoading] = useState(true)
-  const [mode, setMode] = useState<'training' | 'settings'>('settings')
   const [puzzleStatus, setPuzzleStatus] = useState<
     'none' | 'correct' | 'incorrect'
   >('none')
+  const [mode, setMode] = useState<'training' | 'settings'>('settings')
+  const [error, setError] = useState('')
+
   const [xpCounter, setXpCounter] = useState(0)
   const [currentStreak, setCurrentStreak] = useState(0)
 
+  const nextPuzzle = async () => {
+    await recallQuery.refetch()
+    setPuzzleStatus('none')
+  }
+
   const handlePuzzleComplete = async (status: 'correct' | 'incorrect') => {
-    setLoading(true)
     setPuzzleStatus(status)
 
-    // Increase the "Last Trained" on the profile
     updateStreak.mutate()
-
-    // Increase the streak if correct
-    // and send it to the server incase a badge needs adding
-    if (status == 'correct') {
-      trackEventOnClient('recall_correct', {})
-      updateRecallStreak.mutate({ currentStreak: currentStreak + 1 })
-      setCurrentStreak(currentStreak + 1)
-      setXpCounter(xpCounter + 1)
-    } else if (status == 'incorrect') {
+    if (status == 'incorrect') {
       trackEventOnClient('recall_incorrect', {})
+      return
     }
 
-    // Refetch a new puzzle instead of calling getPuzzle
-    await recallQuery.refetch()
-
-    setPuzzleStatus('none')
-    setLoading(false)
+    trackEventOnClient('recall_correct', {})
+    updateRecallStreak.mutate({ currentStreak: currentStreak + 1 })
+    setCurrentStreak(currentStreak + 1)
+    setXpCounter(xpCounter + 1)
   }
 
   const exit = async () => {
@@ -81,14 +77,6 @@ export default function RecallTrainer() {
         return 'Medium'
     }
   }
-
-  // Here are all our useEffect functions
-  useEffect(() => {
-    if (mode == 'settings') return
-    // The puzzle data will be fetched automatically by React Query
-    // when the component mounts or mode changes
-    setLoading(recallQuery.isLoading)
-  }, [mode, recallQuery.isLoading])
 
   if (!user) return null
 
@@ -113,6 +101,7 @@ export default function RecallTrainer() {
     />
   ) : (
     <RecallTrain
+      loading={recallQuery.isFetching}
       difficulty={difficulty}
       getDifficulty={getDifficulty}
       piecesToRecall={piecesToRecall}
@@ -120,10 +109,10 @@ export default function RecallTrainer() {
       timerLength={timerLength}
       currentPuzzle={currentPuzzle}
       soundEnabled={soundEnabled}
-      loading={loading}
       puzzleStatus={puzzleStatus}
       xpCounter={xpCounter}
       onPuzzleComplete={handlePuzzleComplete}
+      nextPuzzle={nextPuzzle}
       onExit={exit}
     />
   )

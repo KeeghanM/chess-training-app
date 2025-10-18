@@ -13,7 +13,8 @@ export default function EndgameTrainer() {
   const { user } = useKindeBrowserClient()
 
   // --- Hooks ---
-  const { useRandomEndgameQuery, updateEndgameStreak } = useEndgameQueries()
+  const { useRandomEndgameQuery, updateEndgameStreak, difficultyAdjuster } =
+    useEndgameQueries()
   const { updateStreak } = useProfileQueries()
   const { preferences, setAutoNext } = useAppStore()
   const { soundEnabled, autoNext } = preferences
@@ -30,44 +31,52 @@ export default function EndgameTrainer() {
   const currentPuzzle = endgameQuery.data
 
   // Setup state for the settings/general
-  const [loading, setLoading] = useState(true)
   const [puzzleStatus, setPuzzleStatus] = useState<
     'none' | 'correct' | 'incorrect'
   >('none')
   const [mode, setMode] = useState<'training' | 'settings'>('settings')
+  const [error, setError] = useState('')
 
   const [xpCounter, setXpCounter] = useState(0)
   const [currentStreak, setCurrentStreak] = useState(0)
 
-  const handlePuzzleComplete = async (status: 'correct' | 'incorrect') => {
-    setLoading(true)
-    setPuzzleStatus(status)
-
-    // Increase the "Last Trained" on the profile
-    updateStreak.mutate()
-
-    // Increase the streak if correct
-    // and send it to the server incase a badge needs adding
-    if (status == 'correct') {
-      trackEventOnClient('endgame_correct', {})
-      updateEndgameStreak.mutate({ currentStreak: currentStreak + 1 })
-      setCurrentStreak(currentStreak + 1)
-      setXpCounter(xpCounter + 1)
-    } else if (status == 'incorrect') {
-      trackEventOnClient('endgame_incorrect', {})
+  const nextPuzzle = async () => {
+    const trueRating = Math.max(
+      Math.round(rating * difficultyAdjuster(difficulty)),
+      500,
+    )
+    if (trueRating < 500 || trueRating > 3000) {
+      setError(
+        'Puzzle ratings must be between 500 & 3000, try adjusting the difficulty or the base rating',
+      )
+      return
     }
 
-    // Refetch a new puzzle instead of calling getPuzzle
     await endgameQuery.refetch()
-
     setPuzzleStatus('none')
-    setLoading(false)
+  }
+
+  const handlePuzzleComplete = async (status: 'correct' | 'incorrect') => {
+    setPuzzleStatus(status)
+
+    updateStreak.mutate()
+
+    if (status === 'incorrect') {
+      trackEventOnClient('endgame_incorrect', {})
+      return
+    }
+
+    trackEventOnClient('endgame_correct', {})
+    updateEndgameStreak.mutate({ currentStreak: currentStreak + 1 })
+    setCurrentStreak(currentStreak + 1)
+    setXpCounter(xpCounter + 1)
   }
 
   const exit = async () => {
     setXpCounter(0)
     setCurrentStreak(0)
     setMode('settings')
+    nextPuzzle()
   }
 
   const getDifficulty = () => {
@@ -83,14 +92,6 @@ export default function EndgameTrainer() {
     }
   }
 
-  // Here are all our useEffect functions
-  useEffect(() => {
-    if (mode == 'settings') return
-    // The puzzle data will be fetched automatically by React Query
-    // when the component mounts or filters change
-    setLoading(endgameQuery.isLoading)
-  }, [mode, endgameQuery.isLoading])
-
   if (!user) return null
 
   return mode == 'settings' ? (
@@ -102,20 +103,20 @@ export default function EndgameTrainer() {
       difficulty={difficulty}
       setDifficulty={setDifficulty}
       onStartTraining={() => setMode('training')}
-      error={endgameQuery.error?.message}
+      error={endgameQuery.error?.message || error}
     />
   ) : (
     <EndgameTrain
       type={type}
       rating={rating}
-      difficulty={difficulty}
       getDifficulty={getDifficulty}
       currentPuzzle={currentPuzzle}
       soundEnabled={soundEnabled}
-      loading={loading}
+      loading={endgameQuery.isFetching}
       puzzleStatus={puzzleStatus}
       puzzleId={currentPuzzle?.puzzleid}
       xpCounter={xpCounter}
+      nextPuzzle={nextPuzzle}
       autoNext={autoNext}
       setAutoNext={setAutoNext}
       onPuzzleComplete={handlePuzzleComplete}

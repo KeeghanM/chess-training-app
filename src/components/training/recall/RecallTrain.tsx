@@ -29,6 +29,7 @@ interface RecallTrainProps {
   xpCounter: number
 
   // Actions
+  nextPuzzle: () => Promise<void>
   onPuzzleComplete: (status: 'correct' | 'incorrect') => Promise<void>
   onExit: () => void
 }
@@ -44,6 +45,7 @@ export default function RecallTrain({
   loading,
   puzzleStatus,
   xpCounter,
+  nextPuzzle,
   onPuzzleComplete,
   onExit,
 }: RecallTrainProps) {
@@ -182,7 +184,7 @@ export default function RecallTrain({
   const handleNextClick = async () => {
     setSelectedSquares({})
     setTimer(timerLength)
-    await onPuzzleComplete(puzzleStatus as 'correct' | 'incorrect')
+    await nextPuzzle()
   }
 
   // Create a new game from the puzzle whenever it changes

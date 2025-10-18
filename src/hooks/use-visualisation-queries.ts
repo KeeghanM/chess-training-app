@@ -46,6 +46,7 @@ export function useVisualisationQueries() {
   })
 
   return {
+    difficultyAdjuster,
     useRandomVisualisationQuery,
     updateVisualisationStreak,
   }
