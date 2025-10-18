@@ -4,17 +4,20 @@ interface PgnNavigatorProps {
   game: Chess
   puzzleFinished: boolean
   onMoveClick?: (moveIndex: number) => void
+  hideLastMove?: boolean
 }
 
 export default function PgnNavigator({
   game,
   puzzleFinished,
   onMoveClick,
+  hideLastMove = false,
 }: PgnNavigatorProps) {
   const moves = game.history().map((move, index) => {
     const moveNumber =
       Math.floor(index / 2) + 1 + (game.moveNumber() - game.history().length)
     const moveColour = game.history({ verbose: true })[index]!.color
+
     const FlexText = () => (
       <p>
         {(moveColour == 'w' || (moveColour == 'b' && index == 0)) && (
@@ -23,7 +26,11 @@ export default function PgnNavigator({
             {moveColour == 'b' && index == 0 && '..'}
           </span>
         )}{' '}
-        <span>{move}</span>
+        <span>
+          {hideLastMove && index == game.history().length - 1 && !puzzleFinished
+            ? '???'
+            : move}
+        </span>
       </p>
     )
 

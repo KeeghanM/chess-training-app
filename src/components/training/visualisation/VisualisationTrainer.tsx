@@ -25,7 +25,6 @@ export default function VisualisationTrainer() {
 
   // Setup state for the settings/general
   const [autoNext, setAutoNext] = useState(false)
-  const [loading, setLoading] = useState(true)
   const [puzzleStatus, setPuzzleStatus] = useState<
     'none' | 'correct' | 'incorrect'
   >('none')
@@ -35,7 +34,6 @@ export default function VisualisationTrainer() {
   const [xpCounter, setXpCounter] = useState(0)
   const [currentStreak, setCurrentStreak] = useState(0)
   const [currentPuzzle, setCurrentPuzzle] = useState<TrainingPuzzle>()
-  const [fetchPuzzle, setFetchPuzzle] = useState(false)
 
   // Setup SFX
   const [soundEnabled] = useState(true)
@@ -49,21 +47,18 @@ export default function VisualisationTrainer() {
 
   // Update current puzzle when query succeeds
   useEffect(() => {
-    if (puzzleQuery.data && fetchPuzzle) {
-      setCurrentPuzzle(puzzleQuery.data)
-      setFetchPuzzle(false)
-      setLoading(false)
-      setError('')
-    }
-  }, [puzzleQuery.data, fetchPuzzle])
+    if (!puzzleQuery.data) return
+
+    setCurrentPuzzle(puzzleQuery.data)
+    setError('')
+  }, [puzzleQuery.data])
 
   // Handle query errors
   useEffect(() => {
-    if (puzzleQuery.error) {
-      Sentry.captureException(puzzleQuery.error)
-      setError(puzzleQuery.error.message || 'Failed to fetch puzzle')
-      setLoading(false)
-    }
+    if (!puzzleQuery.error) return
+
+    Sentry.captureException(puzzleQuery.error)
+    setError(puzzleQuery.error.message || 'Failed to fetch puzzle')
   }, [puzzleQuery.error])
 
   const difficultyAdjuster = (d: number) => {
@@ -82,13 +77,10 @@ export default function VisualisationTrainer() {
       return
     }
 
-    setFetchPuzzle(true)
-    setLoading(true)
     puzzleQuery.refetch()
   }
 
   const handlePuzzleComplete = async (status: 'correct' | 'incorrect') => {
-    setLoading(true)
     setPuzzleStatus(status)
 
     // Increase the "Last Trained" on the profile
@@ -136,7 +128,6 @@ export default function VisualisationTrainer() {
     }
   }
 
-  // Here are all our useEffect functions
   useEffect(() => {
     if (mode == 'settings') return
     getNewPuzzle()
@@ -158,12 +149,11 @@ export default function VisualisationTrainer() {
   ) : (
     <VisualisationTrain
       rating={rating}
-      difficulty={difficulty}
       getDifficulty={getDifficulty}
       length={length}
       currentPuzzle={currentPuzzle}
       soundEnabled={soundEnabled}
-      loading={loading}
+      loading={puzzleQuery.isFetching}
       puzzleStatus={puzzleStatus}
       puzzleId={currentPuzzle?.puzzleid}
       xpCounter={xpCounter}

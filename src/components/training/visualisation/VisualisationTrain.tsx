@@ -17,7 +17,6 @@ import StatusIndicator from '../shared/StatusIndicator'
 interface VisualisationTrainProps {
   // Display props
   rating: number
-  difficulty: number
   getDifficulty: () => string
   length: number
 
@@ -42,7 +41,6 @@ interface VisualisationTrainProps {
 
 export default function VisualisationTrain({
   rating,
-  difficulty,
   getDifficulty,
   length,
   currentPuzzle,
@@ -189,6 +187,7 @@ export default function VisualisationTrain({
   // Create a new game from the puzzle whenever it changes
   useEffect(() => {
     if (!currentPuzzle) return
+
     const newGame = new Chess(currentPuzzle.fen)
     const newDisplayGame = new Chess(currentPuzzle.fen)
     setOrientation(newGame.turn() == 'w' ? 'black' : 'white') // reversed because the first move is opponents
@@ -201,6 +200,7 @@ export default function VisualisationTrain({
 
     setDisplayPosition(newDisplayGame.fen())
     setDisplayGame(newDisplayGame)
+
     setReadyForInput(true)
     setPuzzleFinished(false)
     setSelectedSquares({})
@@ -271,6 +271,7 @@ export default function VisualisationTrain({
               game={game}
               puzzleFinished={puzzleFinished}
               onMoveClick={handleMoveClick}
+              hideLastMove={true}
             />
             <div className="flex justify between gap-2">
               {puzzleFinished ? (
