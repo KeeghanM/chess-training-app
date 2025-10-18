@@ -1,14 +1,13 @@
 import { headers } from 'next/headers'
-
 import { prisma } from '~/server/db'
-
-import * as Sentry from '@sentry/nextjs'
+import { getPostHogServer } from '~/server/posthog-server'
 import Stripe from 'stripe'
-
 import { errorResponse, successResponse } from '../../responses'
 import { AddCourseToUser } from '../functions/AddCourseToUser'
 import { AddCuratedSetToUser } from '../functions/AddCuratedSetToUser'
 import SubscribeUser from '../functions/SubscribeUser'
+
+const posthog = getPostHogServer()
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
@@ -16,10 +15,10 @@ export async function POST(request: Request) {
   try {
     const payload = await request.text()
     const webHookSecret = process.env.STRIPE_WEBHOOK_SECRET!
-    const signature = headers().get('stripe-signature')
+    const signature = (await headers()).get('stripe-signature')
 
     if (!signature) {
-      Sentry.captureMessage('No signature')
+      posthog.captureException(new Error('No stripe signature provided'))
       return errorResponse('Invalid signature', 400)
     }
 
@@ -30,7 +29,7 @@ export async function POST(request: Request) {
     } catch (err) {
       let message = 'Unknown Error'
       if (err instanceof Error) message = err.message
-      Sentry.captureException(err)
+      posthog.captureException(err)
       return errorResponse(`Webhook Error: ${message}`, 400)
     }
 
@@ -67,7 +66,9 @@ export async function POST(request: Request) {
         }
 
         if (!added)
-          Sentry.captureMessage(`Failed to add ${item.productType} to user`)
+          posthog.captureException(
+            new Error(`Failed to add ${item.productType} to user`),
+          )
       }
 
       await prisma.checkoutSession.update({
@@ -95,7 +96,7 @@ export async function POST(request: Request) {
 
     return successResponse('Session Completed', {}, 200)
   } catch (e) {
-    // Sentry.captureException(e)
+    posthog.captureException(e)
     if (e instanceof Error) return errorResponse(e.message, 500)
     else return errorResponse('Unknown error', 500)
   }

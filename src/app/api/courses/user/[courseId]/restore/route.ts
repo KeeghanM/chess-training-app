@@ -1,13 +1,14 @@
-import { prisma } from '~/server/db'
-
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import * as Sentry from '@sentry/nextjs'
 import { errorResponse, successResponse } from '~/app/api/responses'
+import { prisma } from '~/server/db'
+import { getPostHogServer } from '~/server/posthog-server'
+const posthog = getPostHogServer()
 
 export async function POST(
   request: Request,
-  { params }: { params: { courseId: string } },
+  props: { params: Promise<{ courseId: string }> },
 ) {
+  const params = await props.params
   const session = getKindeServerSession()
   if (!session) return errorResponse('Unauthorized', 401)
 
@@ -64,9 +65,7 @@ export async function POST(
 
     return successResponse('Course restored', result, 200)
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     return errorResponse('Internal server error', 500)
-  } finally {
-    await prisma.$disconnect()
   }
 }

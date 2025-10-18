@@ -1,12 +1,11 @@
 import Link from 'next/link'
-
-import Button from '~/app/components/_elements/button'
-import Heading from '~/app/components/_elements/heading'
-import BigText from '~/app/components/_layouts/bigText'
-import CtaRow from '~/app/components/_layouts/ctaRow'
-import Hero from '~/app/components/_layouts/hero'
-import ImageRowFull from '~/app/components/_layouts/imageRowFull'
-import { TextWall } from '~/app/components/_layouts/textWall'
+import Button from '@components/_elements/button'
+import Heading from '@components/_elements/heading'
+import BigText from '@components/_layouts/bigText'
+import CtaRow from '@components/_layouts/ctaRow'
+import Hero from '@components/_layouts/hero'
+import ImageRowFull from '@components/_layouts/imageRowFull'
+import { TextWall } from '@components/_layouts/textWall'
 
 export const metadata = {
   title:
@@ -18,18 +17,12 @@ export const metadata = {
 export default async function NaturalPlayLearningPage() {
   return (
     <>
-      <Hero
-        title={'Master Chess Openings with Natural Play Learning'}
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Wooden Chess pieces on a chess board',
-        }}
-      >
-        <Heading color="text-orange-500" as={'h2'}>
+      <Hero title="Master Chess Openings with Natural Play Learning">
+        <Heading className="text-primary" as="h2">
           Welcome to a Revolutionary Chess Training Experience
         </Heading>
       </Hero>
-      <BigText size="small" color="primary">
+      <BigText size="small">
         At ChessTraining.app, we're redefining the way you learn chess openings.
         Our unique Natural Play Learning method is here to transform your
         understanding and mastery of chess openings.
@@ -41,7 +34,6 @@ export default async function NaturalPlayLearningPage() {
         }}
         imageSide="right"
         heading="Courses Powered by Natural Play Learning"
-        background="light"
       >
         <p>
           Our Course Trainer is specifically designed to help you learn chess
@@ -73,10 +65,10 @@ export default async function NaturalPlayLearningPage() {
           <Button variant="primary">Explore Courses</Button>
         </Link>
       </ImageRowFull>
-      <BigText color="secondary">
+      <BigText color="dark">
         Start improving your chess now -{' '}
         <Link
-          className="cursor-pointer font-bold !text-purple-500 underline hover:no-underline"
+          className="cursor-pointer font-bold !text-orange-500 underline hover:no-underline"
           href="/auth/signin"
         >
           Sign Up
@@ -90,7 +82,6 @@ export default async function NaturalPlayLearningPage() {
         }}
         imageSide="left"
         heading="What is Natural Play Learning?"
-        background="light"
       >
         <p>
           Natural Play Learning is a groundbreaking technique developed
@@ -125,7 +116,7 @@ export default async function NaturalPlayLearningPage() {
           </li>
         </ul>
       </ImageRowFull>
-      <TextWall title="Why choose Natural Play Learning?" background="dark">
+      <TextWall title="Why choose Natural Play Learning?">
         <ul>
           <li>
             <strong>Faster Learning:</strong> Absorb and comprehend chess
@@ -148,7 +139,6 @@ export default async function NaturalPlayLearningPage() {
       <CtaRow
         title="Ready to transform your chess game?"
         cta={{ text: 'Sign Up Now', link: '/auth/signin' }}
-        background="light"
       >
         <p>Sign up now for free and start your journey to chess mastery.</p>
       </CtaRow>

@@ -1,6 +1,7 @@
 import { prisma } from '~/server/db'
+import { getPostHogServer } from '~/server/posthog-server'
 
-import * as Sentry from '@sentry/nextjs'
+const posthog = getPostHogServer()
 
 export async function AddCourseToUser(courseId: string, userId: string) {
   if (!userId) return false
@@ -67,9 +68,7 @@ export async function AddCourseToUser(courseId: string, userId: string) {
 
     return true
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     return false
-  } finally {
-    await prisma.$disconnect()
   }
 }

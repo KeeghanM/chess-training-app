@@ -1,14 +1,13 @@
 import Link from 'next/link'
 import Script from 'next/script'
-
-import Button from './components/_elements/button'
-import Heading from './components/_elements/heading'
-import StyledLink from './components/_elements/styledLink'
-import BigText from './components/_layouts/bigText'
-import CtaRow from './components/_layouts/ctaRow'
-import Hero from './components/_layouts/hero'
-import ImageRowFull from './components/_layouts/imageRowFull'
-import { MultiCol, MultiColItem } from './components/_layouts/multiCol'
+import Button from '@components/_elements/button'
+import Heading from '@components/_elements/heading'
+import StyledLink from '@components/_elements/styledLink'
+import BigText from '@components/_layouts/bigText'
+import CtaRow from '@components/_layouts/ctaRow'
+import Hero from '@components/_layouts/hero'
+import ImageRowFull from '@components/_layouts/imageRowFull'
+import { MultiCol, MultiColItem } from '@components/_layouts/multiCol'
 
 export const metadata = {
   title:
@@ -19,6 +18,41 @@ export const metadata = {
 
 export default async function Home() {
   const reviews = [
+    {
+      name: 'Anonymous',
+      date: '2025-09-30',
+      text: 'Thank you so much for this amazing website!!',
+    },
+    {
+      name: 'Anonymous',
+      date: '2025-09-28',
+      text: 'i just wanna say that this site is top tier. [...] this woodpecker section is a life saver',
+    },
+    {
+      name: 'Alice',
+      date: '2025-07-02',
+      text: 'just started using the woodpecker sets. been looking for a faff free way to train this method digitally, and so far this app is definitely the best way ive found!',
+    },
+    {
+      name: 'Anonymous',
+      date: '2025-03-27',
+      text: 'Thank you for making this wonderful site! I cant emphasize how grateful I am for this site!',
+    },
+    {
+      name: 'Thomas',
+      date: '2024-02-26',
+      text: 'Massive improvement on existing teaching resources. Innovative and well-reasoned training mechanisms, takes a step forward from existing platforms',
+    },
+    {
+      name: 'Jack',
+      date: '2024-02-26',
+      text: 'My chess is stronger since Ive used this, now I am strong with endgames.',
+    },
+    {
+      name: 'Ayush Gudipati',
+      date: '2024-02-11',
+      text: 'Great Free Tool to Improve your Chess game. An amazing website, with great customer support, lots of tools, and overall a great way to improve your chess game!',
+    },
     {
       name: 'Matthias',
       date: '2023-12-06',
@@ -50,12 +84,8 @@ export default async function Home() {
           text: 'Start Training',
           link: '/auth/signin',
         }}
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Chess board with pieces set up',
-        }}
       >
-        <Heading color="text-orange-500" as="h2">
+        <Heading className="text-primary" as="h2">
           Discover the power of science backed chess training - Available for
           free forever!
         </Heading>
@@ -63,7 +93,6 @@ export default async function Home() {
       <ImageRowFull
         heading="The definitive destination for chess enthusiasts of all skill levels"
         imageSide="left"
-        background="light"
         image={{
           src: '/images/chess_group_detailed.png',
           alt: 'Abstract art of a varied group of people learning chess',
@@ -99,7 +128,6 @@ export default async function Home() {
       <ImageRowFull
         heading="Introducing Natural Play Learning"
         imageSide="right"
-        background="light"
         image={{
           src: '/images/two_women_playing_chess.png',
           alt: 'Two women sat down studying chess surrounded by abstract art chess pieces',
@@ -131,7 +159,6 @@ export default async function Home() {
       </BigText>
       <MultiCol
         title="Our Training Tools"
-        background="light"
         cta={{
           text: 'See all features',
           link: '/about/features',
@@ -146,16 +173,11 @@ export default async function Home() {
             developed by GM's Axel Smith, and Hans Tikkanen.
           </p>
           <p>
-            Re-program your unconscious mind. With benefits including sharper
-            chess tactical vision, fewer blunders, and better play when in time
-            trouble as well as improved chess intuition.
-          </p>
-          <p>
             Generate puzzle sets and train on them, while the site takes care of
             tracking your accuracy & time spent. You just focus on your chess
             training experience.
           </p>
-          <Link href="/training/tactics">
+          <Link href="/training/tactics" className="mt-auto">
             <Button variant="primary">Start Training</Button>
           </Link>
         </MultiColItem>
@@ -171,7 +193,7 @@ export default async function Home() {
             Train using a course you have created, or one that has been shared
             with you. You won't find a better way to learn chess.
           </p>
-          <Link href="/courses">
+          <Link href="/courses" className="mt-auto">
             <Button variant="primary">Browse Courses</Button>
           </Link>
         </MultiColItem>
@@ -186,13 +208,7 @@ export default async function Home() {
             sequence of moves. Your task is to visualize these moves in your
             mind, and find the correct final move.
           </p>
-          <p>
-            The tool was designed with both beginners and advanced chess players
-            in mind, with completely customisable settings. You can choose the
-            number of moves to visualise and the difficulty of the puzzles, to
-            really set the level of challenge you want.
-          </p>
-          <Link href="/training/visualisation">
+          <Link href="/training/visualisation" className="mt-auto">
             <Button variant="primary">Let's See</Button>
           </Link>
         </MultiColItem>
@@ -200,12 +216,11 @@ export default async function Home() {
       <CtaRow
         title="Ready to transform your chess game?"
         cta={{ text: 'Sign Up Now', link: '/auth/signin' }}
-        background="dark"
       >
         <p>Sign up now for free and start your journey to chess mastery.</p>
       </CtaRow>
       <div className="item flex flex-col items-center pb-6 md:pb-12">
-        <MultiCol title="What Our Members Say" background="light">
+        <MultiCol title="What Our Members Say">
           {reviews
             .sort((a, b) => {
               return new Date(b.date).getTime() - new Date(a.date).getTime()

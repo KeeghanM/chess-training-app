@@ -1,19 +1,17 @@
 import { redirect } from 'next/navigation'
-
 import { prisma } from '~/server/db'
-
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
+import Container from '@components/_elements/container'
+import PageHeader from '@components/_layouts/pageHeader'
+import CourseAdminPanel from '@components/training/courses/admin/AdminPanel'
+import Backdrop from '~/components/_elements/backdrop'
+import Heading from '~/components/_elements/heading'
 
-import Container from '~/app/components/_elements/container'
-import PageHeader from '~/app/components/_layouts/pageHeader'
-import CourseAdminPanel from '~/app/components/training/courses/admin/AdminPanel'
-
-export default async function CourseAdminPage({
-  params,
-}: {
-  params: { courseId: string }
+export default async function CourseAdminPage(props: {
+  params: Promise<{ courseId: string }>
 }) {
+  const params = await props.params
   const { getUser } = getKindeServerSession()
   const user = await getUser()
   if (!user) redirect('/auth/signin')
@@ -42,14 +40,12 @@ export default async function CourseAdminPage({
         course,
       }
     } catch (e) {
-      Sentry.captureException(e)
+      posthog.captureException(e)
       return {
         course: undefined,
       }
     }
   })()
-
-  await prisma.$disconnect()
 
   if (!course) {
     redirect('/404')
@@ -60,20 +56,12 @@ export default async function CourseAdminPage({
   }
 
   return (
-    <>
-      <PageHeader
-        title={course.courseName}
-        subTitle="Admin Panel"
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Wooden chess pieces on a chess board',
-        }}
-      />
-      <div className="dark:bg-slate-800">
-        <Container>
-          <CourseAdminPanel course={course} />
-        </Container>
-      </div>
-    </>
+    <div className="relative">
+      <Backdrop />
+      <Container>
+        <Heading as="h1">Admin Panel</Heading>
+        <CourseAdminPanel course={course} />
+      </Container>
+    </div>
   )
 }

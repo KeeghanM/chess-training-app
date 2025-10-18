@@ -1,9 +1,9 @@
-import * as Sentry from '@sentry/nextjs'
-
-import { killBillClient } from '~/app/_util/KillBill'
-import { getUserServer } from '~/app/_util/getUserServer'
-
+import { getPostHogServer } from '~/server/posthog-server'
+import { killBillClient } from '@utils/KillBill'
+import { getUserServer } from '@utils/getUserServer'
 import { errorResponse, successResponse } from '../responses'
+
+const posthog = getPostHogServer()
 
 export async function POST(request: Request) {
   try {
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
     return errorResponse('Invalid action', 400)
   } catch (error) {
     console.error('Subscription API error:', error)
-    Sentry.captureException(error)
+    posthog.captureException(error)
     return errorResponse('Internal server error', 500)
   }
 }
@@ -75,8 +75,7 @@ export async function DELETE() {
       200,
     )
   } catch (error) {
-    console.error('Subscription cancellation error:', error)
-    Sentry.captureException(error)
+    posthog.captureException(error)
     return errorResponse(
       'Failed to cancel subscription. Please try again.',
       500,

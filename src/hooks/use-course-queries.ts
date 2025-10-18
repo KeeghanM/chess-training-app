@@ -5,8 +5,7 @@ import type {
 } from '@prisma/client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ResponseJson } from '~/app/api/responses'
-
-import { CleanMove } from '~/app/components/training/courses/create/parse/ParsePGNtoLineData'
+import { CleanMove } from '@components/training/courses/create/parse/ParsePGNtoLineData'
 
 // Types
 export type PrismaUserCourse = UserCourse & {
@@ -87,10 +86,7 @@ export function useCourseQueries() {
 
   // Upload trained FENs
   const uploadTrainedFens = useMutation({
-    mutationFn: async (data: {
-      userCourseId: string
-      fens: TrainingFen[]
-    }) => {
+    mutationFn: async (data: { userCourseId: string; fens: TrainingFen[] }) => {
       await fetch(`/api/courses/user/${data.userCourseId}/fens/upload`, {
         method: 'POST',
         headers: {
@@ -304,10 +300,7 @@ export function useCourseQueries() {
   })
 
   const markGroupForReview = useMutation({
-    mutationFn: async (data: {
-      courseId: string
-      groupId: number
-    }) => {
+    mutationFn: async (data: { courseId: string; groupId: number }) => {
       await fetch(
         `/api/courses/user/${data.courseId}/lines/markGroupForReview`,
         {

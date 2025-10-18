@@ -1,8 +1,6 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-
 import { prisma } from '~/server/db'
-
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import type {
   Course,
@@ -11,18 +9,16 @@ import type {
   UserCourse,
   UserProfile,
 } from '@prisma/client'
-import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
+import Container from '@components/_elements/container'
+import Heading from '@components/_elements/heading'
+import StyledLink from '@components/_elements/styledLink'
+import GetCourse from '@components/ecomm/GetCourse'
 
-import Container from '~/app/components/_elements/container'
-import Heading from '~/app/components/_elements/heading'
-import StyledLink from '~/app/components/_elements/styledLink'
-import GetCourse from '~/app/components/ecomm/GetCourse'
-
-export default async function CoursePage({
-  params,
-}: {
-  params: { slug: string }
+export default async function CoursePage(props: {
+  params: Promise<{ slug: string }>
 }) {
+  const params = await props.params
   const { slug } = params
   const session = getKindeServerSession()
   const user = await session.getUser()
@@ -69,7 +65,7 @@ export default async function CoursePage({
 
       return { course, createdBy }
     } catch (e) {
-      Sentry.captureException(e)
+      posthog.captureException(e)
       return { course: undefined, createdBy: undefined }
     }
   })()
@@ -105,8 +101,6 @@ export default async function CoursePage({
     name,
     count: groupLineCounts[name],
   }))
-
-  await prisma.$disconnect()
 
   return (
     <>

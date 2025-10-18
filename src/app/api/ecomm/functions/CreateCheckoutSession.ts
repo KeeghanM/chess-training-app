@@ -1,9 +1,9 @@
 import { prisma } from '~/server/db'
-
-import * as Sentry from '@sentry/nextjs'
+import { getPostHogServer } from '~/server/posthog-server'
 import Stripe from 'stripe'
+import type { KindeUser } from '@utils/getUserServer'
 
-import type { KindeUser } from '~/app/_util/getUserServer'
+const posthog = getPostHogServer()
 
 type ProductType = 'curatedSet' | 'course' | 'subscription'
 
@@ -84,7 +84,7 @@ export async function CreateCheckoutSession(
 
     return checkoutSession.url
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     return undefined
   }
 }
@@ -116,7 +116,7 @@ export async function getProductDetails(
       throw new Error('Invalid product type')
     }
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     return { price: undefined, name: undefined }
   }
 }

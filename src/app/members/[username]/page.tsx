@@ -1,19 +1,15 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-
 import { prisma } from '~/server/db'
+import Container from '@components/_elements/container'
+import Heading from '@components/_elements/heading'
+import XpDisplay from '@components/dashboard/XpDisplay'
+import CalculateXpRank from '@utils/CalculateXpRank'
 
-import Container from '~/app/components/_elements/container'
-import Heading from '~/app/components/_elements/heading'
-import XpDisplay from '~/app/components/dashboard/XpDisplay'
-
-import CalculateXpRank from '~/app/_util/CalculateXpRank'
-
-export default async function MemberPage({
-  params,
-}: {
-  params: { username: string }
+export default async function MemberPage(props: {
+  params: Promise<{ username: string }>
 }) {
+  const params = await props.params
   const { username } = params
 
   const account = await prisma.userProfile.findUnique({
@@ -21,7 +17,6 @@ export default async function MemberPage({
       username,
     },
   })
-  await prisma.$disconnect()
 
   if (!account) {
     redirect('/404')
@@ -34,7 +29,10 @@ export default async function MemberPage({
           <Link className="text-purple-700 hover:underline" href="/">
             Home
           </Link>
-          <Link className="text-purple-700 hover:underline" href="/members">
+          <Link
+            className="text-purple-700 hover:underline"
+            href="/members/page/1"
+          >
             /Members
           </Link>
           /{username}
@@ -50,10 +48,7 @@ export default async function MemberPage({
               )}
             </div>
             <div className="w-fit">
-              <XpDisplay
-                displayLink={false}
-                data={CalculateXpRank(account.experience)}
-              />
+              <XpDisplay data={CalculateXpRank(account.experience)} />
             </div>
             {account.description && (
               <p className="bg-purple-700 text-white p-2">

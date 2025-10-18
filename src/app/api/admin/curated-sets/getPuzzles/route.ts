@@ -1,12 +1,11 @@
 import { prisma } from '~/server/db'
-
+import { getPostHogServer } from '~/server/posthog-server'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import * as Sentry from '@sentry/nextjs'
 import { errorResponse, successResponse } from '~/app/api/responses'
+import type { TrainingPuzzle } from '@components/training/tactics/TacticsTrainer'
+import getPuzzleById from '@utils/GetPuzzleById'
 
-import type { TrainingPuzzle } from '~/app/components/training/tactics/TacticsTrainer'
-
-import getPuzzleById from '~/app/_util/GetPuzzleById'
+const posthog = getPostHogServer()
 
 export async function POST(request: Request) {
   const session = getKindeServerSession()
@@ -49,9 +48,7 @@ export async function POST(request: Request) {
 
     return successResponse('Puzzles found', { puzzles: puzzles }, 200)
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     return errorResponse('Internal Server Error', 500)
-  } finally {
-    await prisma.$disconnect()
   }
 }

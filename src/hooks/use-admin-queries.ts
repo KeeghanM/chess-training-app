@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ResponseJson } from '~/app/api/responses'
-
 import type { TrainingPuzzle } from './use-puzzle-queries'
 
 // Types based on existing admin components

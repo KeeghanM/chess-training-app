@@ -1,9 +1,9 @@
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import * as Sentry from '@sentry/nextjs'
+import { AddBadgeToUser } from '@utils/AddBadge'
+import { TacticStreakBadges } from '@utils/RanksAndBadges'
 import { errorResponse, successResponse } from '~/app/api/responses'
-
-import { AddBadgeToUser } from '~/app/_util/AddBadge'
-import { TacticStreakBadges } from '~/app/_util/RanksAndBadges'
+import { getPostHogServer } from '~/server/posthog-server'
+const posthog = getPostHogServer()
 
 export async function POST(request: Request) {
   const session = getKindeServerSession()
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
 
     return successResponse('Badge Added', {}, 200)
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     if (e instanceof Error) return errorResponse(e.message, 500)
     else return errorResponse('Unknown error', 500)
   }

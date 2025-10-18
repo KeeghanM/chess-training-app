@@ -1,15 +1,12 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-
 import { prisma } from '~/server/db'
-
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-
-import Button from '~/app/components/_elements/button'
-import Container from '~/app/components/_elements/container'
-import Heading from '~/app/components/_elements/heading'
-import StyledLink from '~/app/components/_elements/styledLink'
-import PageHeader from '~/app/components/_layouts/pageHeader'
+import Button from '@components/_elements/button'
+import Container from '@components/_elements/container'
+import Heading from '@components/_elements/heading'
+import StyledLink from '@components/_elements/styledLink'
+import PageHeader from '@components/_layouts/pageHeader'
 
 export default async function CheckoutSuccessPage() {
   const session = getKindeServerSession()
@@ -67,13 +64,7 @@ export default async function CheckoutSuccessPage() {
 
   return (
     <>
-      <PageHeader
-        title="Thank you for your purchase"
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Wooden Chess pieces on a chess board',
-        }}
-      />
+      <PageHeader title="Thank you for your purchase" />
       <Container>
         <Heading as="h2">Your purchase has been successful!</Heading>
         <ul className="mb-4">

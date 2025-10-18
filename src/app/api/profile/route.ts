@@ -1,10 +1,10 @@
 import { prisma } from '~/server/db'
-
+import { getPostHogServer } from '~/server/posthog-server'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import * as Sentry from '@sentry/nextjs'
 import { errorResponse, successResponse } from '~/app/api/responses'
+import { AddBadgeToUser } from '@utils/AddBadge'
 
-import { AddBadgeToUser } from '~/app/_util/AddBadge'
+const posthog = getPostHogServer()
 
 export async function PUT(request: Request) {
   const session = getKindeServerSession()
@@ -106,10 +106,8 @@ export async function PUT(request: Request) {
 
     return successResponse('Profile Updated', { profile }, 200)
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     if (e instanceof Error) return errorResponse(e.message, 500)
     else return errorResponse('Unknown error', 500)
-  } finally {
-    await prisma.$disconnect()
   }
 }

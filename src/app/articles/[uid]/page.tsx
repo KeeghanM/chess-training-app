@@ -1,20 +1,18 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-
 import { type ContentRelationshipField, asText } from '@prismicio/client'
 import Prismic from '~/prismicio'
-
-import Container from '~/app/components/_elements/container'
-import Heading from '~/app/components/_elements/heading'
-import CtaRow from '~/app/components/_layouts/ctaRow'
-
-import { PrismicRichToHtml } from '~/app/_util/PrismicRichToHtml'
-import type { RichTextContent } from '~/app/_util/PrismicRichToHtml'
+import Container from '@components/_elements/container'
+import Heading from '@components/_elements/heading'
+import CtaRow from '@components/_layouts/ctaRow'
+import type { RichTextContent } from '@utils/PrismicRichToHtml'
+import { PrismicRichToHtml } from '@utils/PrismicRichToHtml'
 
 type Params = { uid: string }
 
-export default async function Page({ params }: { params: Params }) {
+export default async function Page(props: { params: Promise<Params> }) {
+  const params = await props.params
   const page = await Prismic.getByUID('article', params.uid, {
     fetchLinks: ['author.name', 'author.uid'],
   }).catch(() => notFound())
@@ -111,7 +109,6 @@ export default async function Page({ params }: { params: Params }) {
       </Container>
       <CtaRow
         title="Ready to Elevate Your Chess Game?"
-        background="dark"
         cta={{
           text: 'Start Training Now',
           link: '/auth/signin',
@@ -127,11 +124,10 @@ export default async function Page({ params }: { params: Params }) {
   )
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Params
+export async function generateMetadata(props: {
+  params: Promise<Params>
 }): Promise<Metadata> {
+  const params = await props.params
   const page = await Prismic.getByUID('article', params.uid).catch(() =>
     notFound(),
   )

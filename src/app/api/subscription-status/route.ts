@@ -1,9 +1,9 @@
-import * as Sentry from '@sentry/nextjs'
-
-import { killBillClient } from '~/app/_util/KillBill'
-import { getUserServer } from '~/app/_util/getUserServer'
-
+import { getPostHogServer } from '~/server/posthog-server'
+import { killBillClient } from '@utils/KillBill'
+import { getUserServer } from '@utils/getUserServer'
 import { errorResponse, successResponse } from '../responses'
+
+const posthog = getPostHogServer()
 
 export async function GET() {
   try {
@@ -23,7 +23,7 @@ export async function GET() {
     )
   } catch (error) {
     console.error('Subscription status API error:', error)
-    Sentry.captureException(error)
+    posthog.captureException(error)
     return errorResponse('Internal server error', 500)
   }
 }

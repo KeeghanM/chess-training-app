@@ -1,10 +1,9 @@
-import { prisma } from '~/server/db'
-
-import * as Sentry from '@sentry/nextjs'
+import { getUserServer } from '@utils/getUserServer'
 import { errorResponse, successResponse } from '~/app/api/responses'
 import { env } from '~/env'
-
-import { getUserServer } from '~/app/_util/getUserServer'
+import { prisma } from '~/server/db'
+import { getPostHogServer } from '~/server/posthog-server'
+const posthog = getPostHogServer()
 
 export async function GET() {
   const { user, isPremium } = await getUserServer()
@@ -28,9 +27,7 @@ export async function GET() {
 
     return successResponse('Courses found', { canCreate }, 200)
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     return errorResponse('Internal Server Error', 500)
-  } finally {
-    await prisma.$disconnect()
   }
 }

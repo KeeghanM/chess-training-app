@@ -1,10 +1,10 @@
 import { prisma } from '~/server/db'
-
+import { getPostHogServer } from '~/server/posthog-server'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import * as Sentry from '@sentry/nextjs'
 import { errorResponse, successResponse } from '~/app/api/responses'
+import getPuzzleById from '@utils/GetPuzzleById'
 
-import getPuzzleById from '~/app/_util/GetPuzzleById'
+const posthog = getPostHogServer()
 
 export async function POST(request: Request) {
   const session = getKindeServerSession()
@@ -61,11 +61,9 @@ export async function POST(request: Request) {
 
     return successResponse('Puzzle added to set', { set: updatedSet }, 200)
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     if (e instanceof Error) return errorResponse(e.message, 500)
     else return errorResponse('Unknown error', 500)
-  } finally {
-    await prisma.$disconnect()
   }
 }
 
@@ -142,11 +140,9 @@ export async function PATCH(request: Request) {
 
     return successResponse('Puzzle updated', {}, 200)
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     if (e instanceof Error) return errorResponse(e.message, 500)
     else return errorResponse('Unknown error', 500)
-  } finally {
-    await prisma.$disconnect()
   }
 }
 
@@ -173,10 +169,8 @@ export async function DELETE(request: Request) {
 
     return successResponse('Puzzle deleted', {}, 200)
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     if (e instanceof Error) return errorResponse(e.message, 500)
     else return errorResponse('Unknown error', 500)
-  } finally {
-    await prisma.$disconnect()
   }
 }

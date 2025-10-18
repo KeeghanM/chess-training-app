@@ -1,20 +1,19 @@
-import Image from 'next/image'
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
-
 import { prisma } from '~/server/db'
-
-import PremiumDisplay from '../components/dashboard/PremiumDisplay'
-import Container from '~/app/components/_elements/container'
-import Heading from '~/app/components/_elements/heading'
-import StreakDisplay from '~/app/components/dashboard/StreakDisplay'
-import ToolGrid from '~/app/components/dashboard/ToolGrid'
-import XpDisplay from '~/app/components/dashboard/XpDisplay'
-import ThemeSwitch from '~/app/components/template/header/ThemeSwitch'
-
-import CalculateStreakBadge from '../_util/CalculateStreakBadge'
-import CalculateXpRank from '../_util/CalculateXpRank'
-import { getUserServer } from '../_util/getUserServer'
-import { PostHogClient } from '~/app/_util/trackEventOnServer'
+import { IconName } from 'lucide-react/dynamic'
+import Backdrop from '@components/_elements/backdrop'
+import Container from '@components/_elements/container'
+import Heading from '@components/_elements/heading'
+import BadgeDisplay from '@components/dashboard/BadgeDisplay'
+import PremiumDisplay from '@components/dashboard/PremiumDisplay'
+import StreakDisplay from '@components/dashboard/StreakDisplay'
+import ToolCard from '@components/dashboard/ToolCard'
+import XpDisplay from '@components/dashboard/XpDisplay'
+import CalculateStreakBadge from '@utils/CalculateStreakBadge'
+import CalculateXpRank from '@utils/CalculateXpRank'
+import { getUserServer } from '@utils/getUserServer'
+import { PostHogClient } from '@utils/trackEventOnServer'
 
 export type Tool = {
   name: string
@@ -24,6 +23,7 @@ export type Tool = {
   buttonText: string
   active: boolean
   id?: string
+  icon?: IconName
 }
 
 export const metadata = {
@@ -47,9 +47,8 @@ export default async function Dashboard() {
       userId: user.id,
     },
   })
-  await prisma.$disconnect()
 
-  const override = process.env.NODE_ENV === 'development'
+  const override = false // process.env.NODE_ENV === 'development'
 
   // Identify the user immediately upon signin
   const posthog = PostHogClient()
@@ -75,6 +74,7 @@ export default async function Dashboard() {
       buttonText: 'Train',
       active: true || override,
       id: 'tooltip-1',
+      icon: 'puzzle',
     },
     {
       name: 'Openings',
@@ -87,6 +87,7 @@ export default async function Dashboard() {
       buttonText: 'Train',
       active: true || override,
       id: 'tooltip-2',
+      icon: 'book',
     },
     {
       name: 'Visualisation',
@@ -100,6 +101,7 @@ export default async function Dashboard() {
       buttonText: 'Train',
       active: true || override,
       id: 'tooltip-3',
+      icon: 'eye',
     },
     {
       name: 'Board Recall',
@@ -113,6 +115,7 @@ export default async function Dashboard() {
       buttonText: 'Train',
       active: true || override,
       id: 'tooltip-4',
+      icon: 'brain',
     },
     {
       name: 'Endgames',
@@ -126,6 +129,7 @@ export default async function Dashboard() {
       buttonText: 'Train',
       active: true || override,
       id: 'tooltip-5',
+      icon: 'target',
     },
     {
       name: 'Play the Masters',
@@ -171,43 +175,23 @@ export default async function Dashboard() {
   ]
 
   return (
-    <>
-      <div className="relative">
-        <div className="absolute inset-0">
-          <Image
-            fill={true}
-            className="object-cover object-center w-full h-full filter grayscale brightness-[.3]"
-            src="/images/hero.avif"
-            alt="Chess board with pieces set up"
-          />
+    <div className="relative">
+      <Backdrop />
+      <Container size="extra-wide" className="flex flex-col gap-6">
+        <div className="flex gap-4 items-center mx-auto">
+          <StreakDisplay data={CalculateStreakBadge(profile)} />
+          <PremiumDisplay isPremium={isPremium} />
         </div>
-        <Container size="wide">
-          <Heading color="text-white" as={'h1'}>
-            Welcome back,{' '}
-            <span id="tooltip-6">
-              {user.given_name ?? profile.username ?? user.email}
-            </span>
-            <PremiumDisplay isPremium={isPremium} />
-          </Heading>
-          <div
-            id="tooltip-0"
-            className="flex flex-col flex-wrap gap-2 md:flex-row"
-          >
-            <StreakDisplay
-              data={CalculateStreakBadge(profile)}
-              badges={badges}
-            />
-            <XpDisplay data={CalculateXpRank(profile.experience)} />
-          </div>
-        </Container>
-      </div>
-      <div className="p-4 dark:bg-slate-800 md:p-6">
-        <div className="mb-6 w-fit flex items-center gap-1 rounded-full border border-gray-300 px-2 text-black dark:border-slate-600 dark:text-white">
-          <p>Light</p>
-          <ThemeSwitch />
-          <p>Dark</p>
+        <Heading className="text-white mx-auto" as="h1">
+          Welcome back, {user.given_name ?? profile.username ?? user.email}
+        </Heading>
+        <div className="flex justify-center gap-2 text-white md:gap-6 text-center">
+          <XpDisplay data={CalculateXpRank(profile.experience)} />
+          <BadgeDisplay userBadgeCount={badges.length} />
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
+      </Container>
+      <Container size="full">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-4">
           {tools
             .sort((a, b) => {
               if (a.active && !b.active) return -1
@@ -215,22 +199,22 @@ export default async function Dashboard() {
               return 0
             })
             .map((tool) => (
-              <ToolGrid tool={tool} key={tool.name} />
+              <ToolCard tool={tool} key={tool.name} />
             ))}
         </div>
         {isStaff && (
           <div>
-            <Heading color="text-purple-700" as={'h2'}>
+            <Heading className="text-white" as={'h2'}>
               Staff Tools
             </Heading>
             <div className="mb-2 grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
               {staffTools.map((tool) => (
-                <ToolGrid tool={tool} key={tool.name} />
+                <ToolCard tool={tool} key={tool.name} />
               ))}
             </div>
           </div>
         )}
-      </div>
-    </>
+      </Container>
+    </div>
   )
 }

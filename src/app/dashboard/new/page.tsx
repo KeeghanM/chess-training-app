@@ -1,14 +1,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-
-import Button from '~/app/components/_elements/button'
-import Container from '~/app/components/_elements/container'
-import StyledLink from '~/app/components/_elements/styledLink'
-import PageHeader from '~/app/components/_layouts/pageHeader'
-
-import { createUserProfile, getUserServer } from '~/app/_util/getUserServer'
-import { trackEventOnServer } from '~/app/_util/trackEventOnServer'
+import Button from '@components/_elements/button'
+import Container from '@components/_elements/container'
+import StyledLink from '@components/_elements/styledLink'
+import PageHeader from '@components/_layouts/pageHeader'
+import { createUserProfile, getUserServer } from '@utils/getUserServer'
+import { trackEventOnServer } from '@utils/trackEventOnServer'
 
 export default async function NewUserWelcome() {
   const { user, profile } = await getUserServer()
@@ -23,10 +21,6 @@ export default async function NewUserWelcome() {
       <PageHeader
         title={'Welcome to ChessTraining.app!'}
         subTitle="I hope you enjoy your time here."
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Wooden chess pieces on a chess board',
-        }}
       />
       <Container>
         <div className="flex flex-col gap-4">

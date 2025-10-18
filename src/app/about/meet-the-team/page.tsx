@@ -1,6 +1,6 @@
-import Heading from '~/app/components/_elements/heading'
-import { MultiCol, MultiColItem } from '~/app/components/_layouts/multiCol'
-import PageHeader from '~/app/components/_layouts/pageHeader'
+import Heading from '@components/_elements/heading'
+import { MultiCol, MultiColItem } from '@components/_layouts/multiCol'
+import PageHeader from '@components/_layouts/pageHeader'
 
 export const metadata = {
   title: 'Meet Our Team - The Minds Behind ChessTraining.app',
@@ -61,19 +61,11 @@ export default function MeetTheTeam() {
 
   return (
     <>
-      <PageHeader
-        title="We've grown since Keeghan first built the site in 2020..."
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Wooden Chess pieces on a chess board',
-        }}
-      />
-      <MultiCol title="Meet the Team" background="light">
+      <PageHeader title="We've grown since Keeghan first built the site in 2020..." />
+      <MultiCol title="Meet the Team">
         {teamMembers.map((member, index) => (
           <MultiColItem key={index} title={member.name}>
-            <Heading as="h4" color="text-[rgba(0,0,0,0.5)]">
-              {member.title}
-            </Heading>
+            <Heading as="h4">{member.title}</Heading>
             <p>{member.bio}</p>
           </MultiColItem>
         ))}

@@ -1,6 +1,7 @@
 import { prisma } from '~/server/db'
+import { getPostHogServer } from '~/server/posthog-server'
 
-import * as Sentry from '@sentry/nextjs'
+const posthog = getPostHogServer()
 
 export default async function SubscribeUser(
   stripeCustomerId: string,
@@ -22,7 +23,7 @@ export default async function SubscribeUser(
 
     return true
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     return false
   }
 }

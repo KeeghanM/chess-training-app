@@ -1,8 +1,6 @@
 import { redirect } from 'next/navigation'
-
 import { env } from '~/env'
-
-import { getUserServer } from '~/app/_util/getUserServer'
+import { getUserServer } from '@utils/getUserServer'
 
 export default async function SignIn() {
   const { user } = await getUserServer()

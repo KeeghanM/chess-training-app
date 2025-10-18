@@ -1,6 +1,8 @@
-import * as Sentry from '@sentry/nextjs'
+import { getPostHogServer } from '~/server/posthog-server'
 import nodemailer from 'nodemailer'
 import { errorResponse, successResponse } from '~/app/api/responses'
+
+const posthog = getPostHogServer()
 
 export async function POST(request: Request) {
   try {
@@ -37,7 +39,7 @@ ${message}`,
 
     return successResponse('Message sent', {}, 200)
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     if (e instanceof Error) return errorResponse(e.message, 500)
     else return errorResponse('Unknown error', 500)
   }

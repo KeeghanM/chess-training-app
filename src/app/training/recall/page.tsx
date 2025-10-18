@@ -1,7 +1,7 @@
-import Heading from '~/app/components/_elements/heading'
-import CtaRow from '~/app/components/_layouts/ctaRow'
-import Hero from '~/app/components/_layouts/hero'
-import ImageRowFull from '~/app/components/_layouts/imageRowFull'
+import Heading from '@components/_elements/heading'
+import CtaRow from '@components/_layouts/ctaRow'
+import Hero from '@components/_layouts/hero'
+import ImageRowFull from '@components/_layouts/imageRowFull'
 
 export const metadata = {
   title: 'Recall Trainer - Learn Chess Online with ChessTraining.app',
@@ -14,22 +14,17 @@ export default async function Recall() {
     <>
       <Hero
         title="Recall Trainer - Learn Chess Online"
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Chess pieces set up on a chessboard',
-        }}
         cta={{
           text: 'Start Recalling',
           link: '/training/recall/train',
         }}
       >
-        <Heading color="text-orange-500" as="h2">
+        <Heading className="text-primary" as="h2">
           Enhance Your Chess Memory and Position Visualization
         </Heading>
       </Hero>
       <ImageRowFull
         heading="Why Recall Training Matters"
-        background="light"
         image={{
           src: '/images/woman_kneeling_at_chess.png',
           alt: 'A woman studying chess positions',
@@ -51,7 +46,6 @@ export default async function Recall() {
       </ImageRowFull>
       <ImageRowFull
         heading="How to Use the Recall Trainer"
-        background="light"
         image={{
           src: '/images/chunking.png',
           alt: 'A chessboard with pieces highlighted in the Carlsbad Structure.',
@@ -84,7 +78,6 @@ export default async function Recall() {
           text: 'Start Recalling',
           link: '/training/recall/train',
         }}
-        background="dark"
       >
         <p>
           Improve your memory and visualization skills to enhance your chess

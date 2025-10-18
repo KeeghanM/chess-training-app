@@ -1,10 +1,12 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
-
-import Container from '~/app/components/_elements/container'
-import PageHeader from '~/app/components/_layouts/pageHeader'
-import ArchivedSetList from '~/app/components/training/tactics/list/ArhivedList'
-
-import { getUserServer } from '~/app/_util/getUserServer'
+import { ArrowLeft } from 'lucide-react'
+import Backdrop from '@components/_elements/backdrop'
+import Button from '@components/_elements/button'
+import Container from '@components/_elements/container'
+import Heading from '@components/_elements/heading'
+import ArchivedSetList from '@components/training/tactics/list/ArchivedList'
+import { getUserServer } from '@utils/getUserServer'
 
 export const metadata = {
   title: 'Your Archived Sets - ChessTraining.app',
@@ -15,19 +17,23 @@ export default async function ArchivedSetsPage() {
 
   if (!user) redirect('/auth/signin')
   return (
-    <>
-      <PageHeader
-        title="Your Archived Sets"
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Wooden chess pieces on a chess board',
-        }}
-      />
-      <div className="dark:bg-slate-800">
-        <Container>
-          <ArchivedSetList hasUnlimitedSets={isPremium} />
-        </Container>
-      </div>
-    </>
+    <div className="relative">
+      <Backdrop />
+      <Container size="extra-wide">
+        <Heading as="h1" className="text-white">
+          Tactics Trainer
+        </Heading>
+        <Heading as="h2" className="text-card-dark">
+          Your archived sets
+        </Heading>
+        <Link href="/training/tactics/list">
+          <Button>
+            <ArrowLeft />
+            Back to active Sets
+          </Button>
+        </Link>
+        <ArchivedSetList hasUnlimitedSets={isPremium} />
+      </Container>
+    </div>
   )
 }

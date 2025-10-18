@@ -1,5 +1,5 @@
-import CtaRow from '~/app/components/_layouts/ctaRow'
-import PageHeader from '~/app/components/_layouts/pageHeader'
+import CtaRow from '@components/_layouts/ctaRow'
+import PageHeader from '@components/_layouts/pageHeader'
 
 export const metadata = {
   title:
@@ -11,17 +11,9 @@ export const metadata = {
 export default async function PlayMastersPage() {
   return (
     <>
-      <PageHeader
-        title="Play the Masters"
-        subTitle="Coming soon!"
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Wooden chess pieces on a chess board',
-        }}
-      />
+      <PageHeader title="Play the Masters" subTitle="Coming soon!" />
       <CtaRow
         title="Curious?"
-        background="light"
         cta={{
           text: 'View our roadmap',
           link: '/product-roadmap',

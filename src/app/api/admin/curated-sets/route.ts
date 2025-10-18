@@ -1,8 +1,9 @@
 import { prisma } from '~/server/db'
-
+import { getPostHogServer } from '~/server/posthog-server'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import * as Sentry from '@sentry/nextjs'
 import { errorResponse, successResponse } from '~/app/api/responses'
+
+const posthog = getPostHogServer()
 
 export async function POST(request: Request) {
   const session = getKindeServerSession()
@@ -45,10 +46,8 @@ export async function POST(request: Request) {
 
     return successResponse('Set created', { set }, 200)
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     return errorResponse('An error occurred', 500)
-  } finally {
-    await prisma.$disconnect()
   }
 }
 
@@ -132,10 +131,8 @@ export async function PATCH(request: Request) {
 
     return successResponse('Set updated', { set }, 200)
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     return errorResponse('An error occurred', 500)
-  } finally {
-    await prisma.$disconnect()
   }
 }
 
@@ -164,7 +161,7 @@ export async function DELETE(request: Request) {
 
     return successResponse('Set deleted', {}, 200)
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     return errorResponse('An error occurred', 500)
   }
 }

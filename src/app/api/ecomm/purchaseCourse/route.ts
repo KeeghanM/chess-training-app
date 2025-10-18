@@ -1,16 +1,15 @@
 import { prisma } from '~/server/db'
-
-import * as Sentry from '@sentry/nextjs'
+import { getPostHogServer } from '~/server/posthog-server'
 import { env } from '~/env'
-
-import { getUserServer } from '~/app/_util/getUserServer'
-
+import { getUserServer } from '@utils/getUserServer'
 import { errorResponse, successResponse } from '../../responses'
 import { AddCourseToUser } from '../functions/AddCourseToUser'
 import {
   CreateCheckoutSession,
   getProductDetails,
 } from '../functions/CreateCheckoutSession'
+
+const posthog = getPostHogServer()
 
 export async function POST(request: Request) {
   try {
@@ -92,7 +91,7 @@ export async function POST(request: Request) {
       200,
     )
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     if (e instanceof Error) return errorResponse(e.message, 500)
     else return errorResponse('Something went wrong', 500)
   }

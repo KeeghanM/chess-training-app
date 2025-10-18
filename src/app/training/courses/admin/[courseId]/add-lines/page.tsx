@@ -1,19 +1,15 @@
 import { redirect } from 'next/navigation'
-
 import { prisma } from '~/server/db'
-
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
+import Container from '@components/_elements/container'
+import PageHeader from '@components/_layouts/pageHeader'
+import AddLines from '@components/training/courses/admin/AddLines'
 
-import Container from '~/app/components/_elements/container'
-import PageHeader from '~/app/components/_layouts/pageHeader'
-import AddLines from '~/app/components/training/courses/admin/AddLines'
-
-export default async function AddLinesPage({
-  params,
-}: {
-  params: { courseId: string }
+export default async function AddLinesPage(props: {
+  params: Promise<{ courseId: string }>
 }) {
+  const params = await props.params
   const { getUser } = getKindeServerSession()
   const user = await getUser()
   if (!user) redirect('/auth/signin')
@@ -34,14 +30,12 @@ export default async function AddLinesPage({
         course,
       }
     } catch (e) {
-      Sentry.captureException(e)
+      posthog.captureException(e)
       return {
         course: undefined,
       }
     }
   })()
-
-  await prisma.$disconnect()
 
   if (!course) {
     redirect('/404')
@@ -53,15 +47,8 @@ export default async function AddLinesPage({
 
   return (
     <>
-      <PageHeader
-        title={course.courseName}
-        subTitle="Add Lines"
-        image={{
-          src: '/images/hero.avif',
-          alt: 'Wooden chess pieces on a chess board',
-        }}
-      />
-      <div className="dark:bg-slate-800">
+      <PageHeader title={course.courseName} subTitle="Add Lines" />
+      <div className="">
         <Container>
           <AddLines courseId={courseId} />
         </Container>

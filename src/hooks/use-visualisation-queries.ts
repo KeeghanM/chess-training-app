@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-
 import { usePuzzleQueries } from './use-puzzle-queries'
 
 // Visualisation Queries
@@ -47,6 +46,7 @@ export function useVisualisationQueries() {
   })
 
   return {
+    difficultyAdjuster,
     useRandomVisualisationQuery,
     updateVisualisationStreak,
   }
