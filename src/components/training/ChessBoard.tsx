@@ -80,6 +80,93 @@ export default function ChessBoard(props: ChessBoardProps) {
     return undefined
   }
 
+  const highlightMoves = (clickedSquare: Square) => {
+    const validMoves =
+      game?.moves({ square: clickedSquare, verbose: true }) || []
+    const newOptions: Record<string, React.CSSProperties> = {}
+    // Highlight the start square
+    newOptions[clickedSquare] = {
+      background: 'rgba(255, 255, 0, 0.4)',
+    }
+
+    if (validMoves.length === 0) {
+      setOptionSquares({})
+      return
+    }
+
+    // Highlight the valid moves
+    validMoves.map((move) => {
+      newOptions[move.to] = {
+        background:
+          game?.get(move.to) &&
+          game?.get(move.to)?.color !== game?.get(clickedSquare)?.color
+            ? 'radial-gradient(circle, transparent 50%,  rgba(0, 0, 0, 0.2) 51%,  rgba(0, 0, 0, 0.2) 65%,transparent 66%)'
+            : 'radial-gradient(circle, rgba(0,0,0,.2) 20%, transparent 22%)',
+        borderRadius: '50%',
+        cursor: 'pointer',
+      }
+      return move
+    })
+    setOptionSquares(newOptions)
+  }
+
+  const handleSquareMouseDown = (clickedSquare: Square) => {
+    console.log('CLICKED', clickedSquare)
+    if (!props.readyForInput) return
+
+    const piece = game.get(clickedSquare)
+    if (
+      !piece ||
+      startSquare === clickedSquare ||
+      piece.color !== game.turn()
+    ) {
+      setStartSquare(undefined)
+      setClickedPiece(undefined)
+      setOptionSquares({})
+      return
+    }
+
+    // if we click our own piece
+    // then set the start square and clicked piece to that
+    if (piece.color === game.turn()) {
+      setStartSquare(clickedSquare)
+      setClickedPiece(piece)
+      highlightMoves(clickedSquare)
+      return
+    }
+
+    // If it's the second click, we need to check for promotion
+    // before we make the move
+    if (!startSquare || !clickedPiece) return
+
+    const availableMove = game
+      .moves({ square: startSquare, verbose: true })
+      .find((move) => move.to === clickedSquare)
+
+    if (!availableMove) return
+
+    // Check if this is a promotion move
+    if (
+      (clickedPiece.color === 'w' &&
+        clickedPiece.type === 'p' &&
+        clickedSquare[1] === '8') ||
+      (clickedPiece.color === 'b' &&
+        clickedPiece.type === 'p' &&
+        clickedSquare[1] === '1')
+    ) {
+      setShowPromotionDialog(true)
+      setMoveTo(clickedSquare)
+      return
+    }
+
+    // Otherwise, make the move
+    handlePieceDrop(
+      startSquare,
+      clickedSquare,
+      clickedPiece.type + clickedPiece.color,
+    )
+  }
+
   const handlePieceDrop = (
     sourceSquare: Square,
     targetSquare: Square | null,
@@ -117,67 +204,20 @@ export default function ChessBoard(props: ChessBoardProps) {
       }
     })()
 
-    if (playerMove === null) return false // invalid move
+    if (playerMove === null) {
+      // invalid move
+      return false
+    }
 
     setStartSquare(undefined)
     setClickedPiece(undefined)
     setMoveTo(undefined)
     setShowPromotionDialog(false)
     setOptionSquares({})
+
     if (props.moveMade) props.moveMade(playerMove)
+
     return true
-  }
-
-  const handleSquareClick = (clickedSquare: Square) => {
-    if (!props.readyForInput) return
-
-    const piece = game.get(clickedSquare)
-    // if we click the same square twice
-    // then unselect the piece
-    if (startSquare === clickedSquare) {
-      setStartSquare(undefined)
-      setClickedPiece(undefined)
-      return
-    }
-
-    // if we click our own piece
-    // then set the start square and clicked piece
-    // (highlighting is handled by a useEffect)
-    if (piece?.color === game.turn()) {
-      setStartSquare(clickedSquare)
-      setClickedPiece(piece)
-      return
-    }
-
-    // If this is our second click, we check if we need to show the promotion dialog
-    if (startSquare && clickedPiece) {
-      const availableMove = game
-        .moves({ square: startSquare, verbose: true })
-        .find((move) => move.to === clickedSquare)
-      if (!availableMove) return
-
-      // Check if this is a promotion move
-      if (
-        (clickedPiece.color === 'w' &&
-          clickedPiece.type === 'p' &&
-          clickedSquare[1] === '8') ||
-        (clickedPiece.color === 'b' &&
-          clickedPiece.type === 'p' &&
-          clickedSquare[1] === '1')
-      ) {
-        setShowPromotionDialog(true)
-        setMoveTo(clickedSquare)
-        return
-      }
-
-      // Otherwise, make the move
-      handlePieceDrop(
-        startSquare,
-        clickedSquare,
-        clickedPiece.type + clickedPiece.color,
-      )
-      return
-    }
   }
 
   const handlePromotionSelection = (piece: string) => {
@@ -187,38 +227,6 @@ export default function ChessBoard(props: ChessBoardProps) {
     handlePieceDrop(startSquare!, moveTo, piece, true)
     return true
   }
-
-  useEffect(() => {
-    if (!game || !startSquare || !clickedPiece) {
-      setOptionSquares({})
-      return
-    }
-    const validMoves = game?.moves({ square: startSquare, verbose: true }) || []
-    const newOptions: Record<string, React.CSSProperties> = {}
-    // Highlight the start square
-    newOptions[startSquare] = {
-      background: 'rgba(255, 255, 0, 0.4)',
-    }
-
-    if (validMoves.length === 0) {
-      setOptionSquares(newOptions)
-      return
-    }
-    // Highlight the valid moves
-    validMoves.map((move) => {
-      newOptions[move.to] = {
-        background:
-          game?.get(move.to) &&
-          game?.get(move.to)?.color !== game?.get(startSquare)?.color
-            ? 'radial-gradient(circle, transparent 50%,  rgba(0, 0, 0, 0.2) 51%,  rgba(0, 0, 0, 0.2) 65%,transparent 66%)'
-            : 'radial-gradient(circle, rgba(0,0,0,.2) 20%, transparent 22%)',
-        borderRadius: '50%',
-        cursor: 'pointer',
-      }
-      return move
-    })
-    setOptionSquares(newOptions)
-  }, [startSquare, clickedPiece])
 
   useEffect(() => {
     if (!props.soundEnabled) return
@@ -310,24 +318,20 @@ export default function ChessBoard(props: ChessBoardProps) {
           position: props.position,
           boardOrientation: props.orientation,
           allowDragging: props.readyForInput,
-          onPieceDrop: ({ sourceSquare, targetSquare }) =>
-            handlePieceDrop(
+          onPieceDrop: ({ sourceSquare, targetSquare }) => {
+            console.log('<=== DROPPED ===>', { sourceSquare, targetSquare })
+            return handlePieceDrop(
               sourceSquare as Square,
               targetSquare as Square,
               '',
               false,
-            ),
-          onSquareClick: ({ square }) => handleSquareClick(square as Square),
+            )
+          },
+          onSquareMouseDown: ({ square }) =>
+            handleSquareMouseDown(square as Square),
           onSquareRightClick: () => {
             setStartSquare(undefined)
             setClickedPiece(undefined)
-          },
-          onPieceDrag: ({ square }) => {
-            if (!startSquare) {
-              setStartSquare(square as Square)
-              const piece = game.get(square as Square)
-              if (piece) setClickedPiece(piece)
-            }
           },
           boardStyle: {
             marginInline: 'auto',

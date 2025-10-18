@@ -26,12 +26,14 @@ export default function CourseList(props: { hasUnlimitedCourses: boolean }) {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row items-center gap-2">
         {courses.length < maxCourses || hasUnlimitedCourses ? (
-          <Link href="/courses/create">
-            <Button variant="primary">
-              <PlusIcon />
-              Create New Course
-            </Button>
-          </Link>
+          <div>
+            <Link href="/courses/create">
+              <Button variant="primary">
+                <PlusIcon />
+                Create New Course
+              </Button>
+            </Link>
+          </div>
         ) : (
           <PremiumSubscribe
             title="Create a new course"
