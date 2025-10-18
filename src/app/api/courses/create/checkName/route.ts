@@ -1,6 +1,7 @@
-import { prisma } from '~/server/db'
-import * as Sentry from '@sentry/nextjs'
 import { errorResponse, successResponse } from '~/app/api/responses'
+import { prisma } from '~/server/db'
+import { getPostHogServer } from '~/server/posthog-server'
+const posthog = getPostHogServer()
 
 export async function POST(request: Request) {
   const { name } = (await request.json()) as { name: string }
@@ -31,7 +32,7 @@ export async function POST(request: Request) {
       200,
     )
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     if (e instanceof Error) return errorResponse(e.message, 500)
     else return errorResponse('Unknown error', 500)
   }

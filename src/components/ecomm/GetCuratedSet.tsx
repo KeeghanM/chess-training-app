@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
-import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
 import type { ResponseJson } from '~/app/api/responses'
 import { env } from '~/env'
 import Button from '../_elements/button'
@@ -43,7 +43,7 @@ export default function GetCuratedSet(props: {
 
       window.location.href = json.data.url as string
     } catch (e) {
-      Sentry.captureException(e)
+      posthog.captureException(e)
       setError('Something went wrong, please try again later')
       setLoading(false)
     }

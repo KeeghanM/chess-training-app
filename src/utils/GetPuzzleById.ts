@@ -1,5 +1,5 @@
 import { prisma } from '~/server/db'
-import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
 import type { TrainingPuzzle } from '@components/training/tactics/TacticsTrainer'
 
 export default async function getPuzzleById(puzzleid: string) {
@@ -44,7 +44,7 @@ export default async function getPuzzleById(puzzleid: string) {
 
     return puzzle
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     return undefined
   }
 }

@@ -9,7 +9,7 @@ import type {
   UserCourse,
   UserProfile,
 } from '@prisma/client'
-import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
 import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import StyledLink from '@components/_elements/styledLink'
@@ -65,7 +65,7 @@ export default async function CoursePage(props: {
 
       return { course, createdBy }
     } catch (e) {
-      Sentry.captureException(e)
+      posthog.captureException(e)
       return { course: undefined, createdBy: undefined }
     }
   })()

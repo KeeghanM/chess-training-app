@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { parse as PGNParse } from '@mliebelt/pgn-parser'
-import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
 import Button from '@components/_elements/button'
 import trackEventOnClient from '@utils/trackEventOnClient'
 import type { Line } from './parse/ParsePGNtoLineData'
@@ -28,7 +28,7 @@ export default function PgnToLinesForm(props: {
 
       return false
     } catch (e) {
-      Sentry.captureException(e)
+      posthog.captureException(e)
       if (e instanceof Error) setError(e.message)
       else setError('Unknown error')
 
@@ -51,7 +51,7 @@ export default function PgnToLinesForm(props: {
       trackEventOnClient('create_course_pgn_imported', {})
       props.finished(lines)
     } catch (e) {
-      Sentry.captureException(e)
+      posthog.captureException(e)
       if (e instanceof Error) setError(e.message)
       else setError('Unknown error')
       setStatus('idle')

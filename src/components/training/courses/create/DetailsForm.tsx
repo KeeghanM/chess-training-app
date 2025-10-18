@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useCourseQueries } from '@hooks/use-course-queries'
-import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
 import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
 import Spinner from '@components/general/Spinner'
@@ -56,7 +56,7 @@ export default function DetailsForm(props: {
       trackEventOnClient('create_course_details_submitted', { name })
       props.finished(name, description)
     } catch (error) {
-      Sentry.captureException(error)
+      posthog.captureException(error)
       setError('Oops! Something went wrong. Please try again later.')
       setStatus('idle')
     }

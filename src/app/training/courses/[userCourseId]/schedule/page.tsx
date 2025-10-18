@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { prisma } from '~/server/db'
-import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
 import Button from '@components/_elements/button'
 import Container from '@components/_elements/container'
 import PageHeader from '@components/_layouts/pageHeader'
@@ -67,7 +67,7 @@ export default async function CourseSchedulePage(props: {
 
       return { userCourse, userLines }
     } catch (e) {
-      Sentry.captureException(e)
+      posthog.captureException(e)
       return {
         userCourse: undefined,
         userLines: undefined,

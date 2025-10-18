@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useProfileQueries } from '@hooks/use-profile-queries'
-import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
 
 export type availableTypes = 'line' | 'tactic'
 
@@ -45,7 +45,7 @@ export default function XpTracker(props: {
       { xp: xpToAdd, type: props.type },
       {
         onError: (error) => {
-          Sentry.captureException(error)
+          posthog.captureException(error)
         },
       },
     )

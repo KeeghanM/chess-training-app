@@ -1,5 +1,5 @@
 import { prisma } from '~/server/db'
-import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
 
 export async function AddBadgeToUser(userId: string, name: string) {
   if (!name || !userId) return
@@ -28,7 +28,7 @@ export async function AddBadgeToUser(userId: string, name: string) {
     })
     return
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
   }
 }
 
@@ -58,6 +58,6 @@ export async function RemoveBadgeFromUser(userId: string, name: string) {
     })
     return
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
   }
 }

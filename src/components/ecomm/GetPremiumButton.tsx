@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
-import * as Sentry from '@sentry/react'
+import posthog from 'posthog-js'
 import type { ResponseJson } from '~/app/api/responses'
 import Button from '../_elements/button'
 import Spinner from '../general/Spinner'
@@ -77,7 +77,7 @@ export default function GetPremiumButton() {
       })
     } catch (e) {
       console.error('Checkout process error:', e)
-      Sentry.captureException(e)
+      posthog.captureException(e)
       setLoading(false)
       setError(true)
     }

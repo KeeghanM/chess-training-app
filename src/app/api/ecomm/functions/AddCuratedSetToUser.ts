@@ -1,5 +1,7 @@
 import { prisma } from '~/server/db'
-import * as Sentry from '@sentry/nextjs'
+import { getPostHogServer } from '~/server/posthog-server'
+
+const posthog = getPostHogServer()
 
 export async function AddCuratedSetToUser(setId: string, userId: string) {
   if (!setId || !userId) return false
@@ -76,7 +78,7 @@ export async function AddCuratedSetToUser(setId: string, userId: string) {
 
     return true
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     return false
   }
 }

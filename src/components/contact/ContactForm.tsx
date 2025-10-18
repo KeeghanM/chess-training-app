@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
 import type { ResponseJson } from '~/app/api/responses'
 import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
@@ -70,7 +70,7 @@ export default function ContactForm() {
       setLoading(false)
       setSuccess(true)
     } catch (e) {
-      Sentry.captureException(e)
+      posthog.captureException(e)
       if (e instanceof Error) setError(e.message)
       else setError('Something went wrong')
 

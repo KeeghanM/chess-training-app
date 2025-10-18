@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import * as Sentry from '@sentry/nextjs'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import posthog from 'posthog-js'
 import type { ResponseJson } from '~/app/api/responses'
 import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
@@ -41,7 +41,7 @@ export default function BadgeCreator() {
       return json
     },
     onError: (error) => {
-      Sentry.captureException(error)
+      posthog.captureException(error)
       setError('Failed to create badge')
     },
     onSuccess: () => {
@@ -73,7 +73,7 @@ export default function BadgeCreator() {
       window.location.reload()
     },
     onError: (error) => {
-      Sentry.captureException(error)
+      posthog.captureException(error)
       setError('Failed to load code badges')
     },
   })

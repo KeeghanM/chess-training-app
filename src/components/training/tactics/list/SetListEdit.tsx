@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useTacticsQueries } from '@hooks/use-tactics-queries'
 import * as AlertDialog from '@radix-ui/react-alert-dialog'
-import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
 import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
 import type { PrismaTacticsSet } from '@components/training/tactics/create/TacticsSetCreator'
@@ -49,7 +49,7 @@ export default function SetListEdit({
       })
       close()
     } catch (e) {
-      Sentry.captureException(e)
+      posthog.captureException(e)
     }
   }
 
@@ -65,7 +65,7 @@ export default function SetListEdit({
       })
       close()
     } catch (e) {
-      Sentry.captureException(e)
+      posthog.captureException(e)
     }
   }
 
@@ -81,7 +81,7 @@ export default function SetListEdit({
       })
       close()
     } catch (e) {
-      Sentry.captureException(e)
+      posthog.captureException(e)
     }
   }
 

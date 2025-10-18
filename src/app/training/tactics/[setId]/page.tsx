@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { prisma } from '~/server/db'
-import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
 import Container from '@components/_elements/container'
 import type { PrismaTacticsSetWithPuzzles } from '@components/training/tactics/TacticsTrainer'
 import TacticsTrainer from '@components/training/tactics/TacticsTrainer'
@@ -37,15 +37,15 @@ export default async function TacticsTrainPage(props: {
       },
     })) as PrismaTacticsSetWithPuzzles | null
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     return redirect('/training/tactics/list')
   }
 
   if (!set) {
-    Sentry.captureEvent({
-      message: `User tried to access set but not found`,
-      extra: { userId: user.id, setId: params.setId },
-    })
+    posthog.captureException(
+      new Error(`User tried to access set but not found`),
+      { userId: user.id, setId: params.setId },
+    )
     return redirect('/training/tactics/list')
   }
 

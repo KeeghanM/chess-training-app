@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { prisma } from '~/server/db'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
 import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import StyledLink from '@components/_elements/styledLink'
@@ -37,7 +37,7 @@ export default async function CuratedSetPage(props: {
 
       return { set, userSetId: userSet?.id ?? undefined }
     } catch (e) {
-      Sentry.captureException(e)
+      posthog.captureException(e)
       return { set: undefined, userSetId: undefined }
     }
   })()

@@ -5,8 +5,8 @@ import { useTacticsQueries } from '@hooks/use-tactics-queries'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import type { TacticsSet, TacticsSetRound } from '@prisma/client'
 import * as AlertDialog from '@radix-ui/react-alert-dialog'
-import * as Sentry from '@sentry/nextjs'
 import { Plus } from 'lucide-react'
+import posthog from 'posthog-js'
 import Select from 'react-select'
 import Button from '@components/_elements/button'
 import StyledLink from '@components/_elements/styledLink'
@@ -86,7 +86,7 @@ export default function TacticsSetCreator({
         themes: string[]
       }[]
     } catch (e) {
-      Sentry.captureException(e)
+      posthog.captureException(e)
       return []
     }
   }
@@ -160,7 +160,7 @@ export default function TacticsSetCreator({
       resetForm()
       setOpen(false)
     } catch (e) {
-      Sentry.captureException(e)
+      posthog.captureException(e)
     }
   }
 

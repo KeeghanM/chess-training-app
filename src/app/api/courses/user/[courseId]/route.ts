@@ -1,7 +1,9 @@
 import { prisma } from '~/server/db'
+import { getPostHogServer } from '~/server/posthog-server'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import * as Sentry from '@sentry/nextjs'
 import { errorResponse, successResponse } from '~/app/api/responses'
+
+const posthog = getPostHogServer()
 
 export async function GET(
   request: Request,
@@ -60,7 +62,7 @@ export async function GET(
       200,
     )
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     return errorResponse('Internal Server Error', 500)
   }
 }
@@ -136,7 +138,7 @@ export async function DELETE(
 
     return successResponse('Course archived', {}, 200)
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     return errorResponse('Internal Server Error', 500)
   }
 }

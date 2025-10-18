@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { prisma } from '~/server/db'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
 import Container from '@components/_elements/container'
 import PageHeader from '@components/_layouts/pageHeader'
 import CourseAdminPanel from '@components/training/courses/admin/AdminPanel'
@@ -40,7 +40,7 @@ export default async function CourseAdminPage(props: {
         course,
       }
     } catch (e) {
-      Sentry.captureException(e)
+      posthog.captureException(e)
       return {
         course: undefined,
       }

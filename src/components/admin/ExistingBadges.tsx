@@ -17,8 +17,8 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import type { Badge } from '@prisma/client'
-import * as Sentry from '@sentry/nextjs'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import posthog from 'posthog-js'
 import Heading from '@components/_elements/heading'
 import SortableItem from '@utils/SortableItem'
 
@@ -47,7 +47,7 @@ export default function ExistingBadges(props: { existingBadges: Badge[] }) {
       return response.json()
     },
     onError: (error) => {
-      Sentry.captureException(error)
+      posthog.captureException(error)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['badges'] })

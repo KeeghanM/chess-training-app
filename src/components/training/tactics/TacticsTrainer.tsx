@@ -7,10 +7,10 @@ import { usePuzzleQueries } from '@hooks/use-puzzle-queries'
 import { useTacticsQueries } from '@hooks/use-tactics-queries'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import type { Puzzle } from '@prisma/client'
-import * as Sentry from '@sentry/nextjs'
 import { useAppStore } from '@stores/app-store'
 import type { Move } from 'chess.js'
 import { Chess } from 'chess.js'
+import posthog from 'posthog-js'
 import TimeAgo from 'react-timeago'
 import Toggle from 'react-toggle'
 import 'react-toggle/style.css'
@@ -96,7 +96,7 @@ export default function TacticsTrainer(props: {
       // honestly, do nothing
       // I dunno why this is firing, I replicated it once but it didn;t actually affect the usage
       // I think it's to do with premoving and the chess.js library, but nothing actually breaks
-      // so this is just here to stop logging it in sentry as an "unhandled error"
+      // so this is just here to stop logging it as an "unhandled error"
     }
   }
 
@@ -151,7 +151,7 @@ export default function TacticsTrainer(props: {
             puzzleRating: props.set.rating ?? 1500, // Default to 1500 if null
           })
         } catch (e) {
-          Sentry.captureException(e)
+          posthog.captureException(e)
         }
       }
 
@@ -311,7 +311,7 @@ export default function TacticsTrainer(props: {
       if (e.key === ' ') {
         e.preventDefault()
         if (puzzleFinished && puzzleStatus == 'correct')
-          goToNextPuzzle().catch((e) => Sentry.captureException(e))
+          goToNextPuzzle().catch((e) => posthog.captureException(e))
       }
     }
     window.addEventListener('keydown', handleKeyPress)

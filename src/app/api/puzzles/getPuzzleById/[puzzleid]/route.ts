@@ -1,7 +1,8 @@
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import * as Sentry from '@sentry/nextjs'
-import { errorResponse, successResponse } from '~/app/api/responses'
 import getPuzzleById from '@utils/GetPuzzleById'
+import { errorResponse, successResponse } from '~/app/api/responses'
+import { getPostHogServer } from '~/server/posthog-server'
+const posthog = getPostHogServer()
 
 export async function GET(
   request: Request,
@@ -22,7 +23,7 @@ export async function GET(
 
     return successResponse('Puzzle found', { puzzle }, 200)
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     return errorResponse('Internal Server Error', 500)
   }
 }

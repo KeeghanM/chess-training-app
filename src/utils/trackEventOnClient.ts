@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
 
 export default function trackEventOnClient(
   eventName: string,
@@ -14,5 +14,5 @@ export default function trackEventOnClient(
     headers: {
       'Content-Type': 'application/json',
     },
-  }).catch((e) => Sentry.captureException(e))
+  }).catch((e) => posthog.captureException(e))
 }

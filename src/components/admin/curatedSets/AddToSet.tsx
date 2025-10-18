@@ -1,8 +1,8 @@
 'use client'
 
 import { useContext } from 'react'
-import * as Sentry from '@sentry/react'
 import { useMutation } from '@tanstack/react-query'
+import posthog from 'posthog-js'
 import type { ResponseJson } from '~/app/api/responses'
 import Button from '../../_elements/button'
 import Spinner from '../../general/Spinner'
@@ -26,7 +26,7 @@ export default function AddToSet() {
       return json
     },
     onError: (error) => {
-      Sentry.captureException(error)
+      posthog.captureException(error)
     },
   })
 

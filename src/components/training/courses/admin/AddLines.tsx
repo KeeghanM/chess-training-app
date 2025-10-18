@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { useCourseQueries } from '@hooks/use-course-queries'
 import type { Course, Move } from '@prisma/client'
-import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
 import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
 import StyledLink from '@components/_elements/styledLink'
@@ -43,7 +43,7 @@ export default function AddLines(props: { courseId: string }) {
       trackEventOnClient('course_lines_added', {})
       setStep('success')
     } catch (e) {
-      Sentry.captureException(e)
+      posthog.captureException(e)
       setStep('error')
     }
   }
@@ -68,7 +68,7 @@ export default function AddLines(props: { courseId: string }) {
       )
       setStep('groups')
     } catch (e) {
-      Sentry.captureException(e)
+      posthog.captureException(e)
       setStep('error')
     }
   }

@@ -1,6 +1,6 @@
 import { prisma } from '~/server/db'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
 import { v4 as uuidv4 } from 'uuid'
 import { killBillClient } from './KillBill'
 
@@ -43,7 +43,7 @@ export async function getUserServer() {
 
       return { user, hasAuth, profile, isStaff, isPremium, badges }
     } catch (e) {
-      Sentry.captureException(e)
+      posthog.captureException(e)
     }
   }
   return {
@@ -97,6 +97,6 @@ export async function createUserProfile(user: KindeUser) {
       }),
     })
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
   }
 }

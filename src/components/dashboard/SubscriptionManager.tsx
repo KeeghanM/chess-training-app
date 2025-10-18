@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import * as Sentry from '@sentry/react'
+import posthog from 'posthog-js'
 import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
 import GetPremiumButton from '@components/ecomm/GetPremiumButton'
@@ -64,7 +64,7 @@ export default function SubscriptionManager() {
       }
     } catch (err) {
       console.error('Error canceling subscription:', err)
-      Sentry.captureException(err)
+      posthog.captureException(err)
       setError('Failed to cancel subscription')
     } finally {
       setActionLoading(false)

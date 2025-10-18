@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react'
-import * as Sentry from '@sentry/react'
+import posthog from 'posthog-js'
 import type { ResponseJson } from '~/app/api/responses'
 import Button from '@components/_elements/button'
 import {
@@ -73,7 +73,7 @@ export default function LiChessSearch() {
       setPuzzle(puzzle)
       setPuzzleId('')
     } catch (e) {
-      Sentry.captureException(e)
+      posthog.captureException(e)
     } finally {
       setLoading(false)
     }

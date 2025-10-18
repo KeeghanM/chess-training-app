@@ -1,7 +1,10 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import Button from '@components/_elements/button'
+import Heading from '@components/_elements/heading'
+import StyledLink from '@components/_elements/styledLink'
+import Spinner from '@components/general/Spinner'
+import XpTracker from '@components/general/XpTracker'
 import {
   PrismaUserCourse,
   type TrainingFen,
@@ -9,24 +12,21 @@ import {
 } from '@hooks/use-course-queries'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import type { Comment, Move, UserFen } from '@prisma/client'
-import * as Sentry from '@sentry/nextjs'
 import { useAppStore } from '@stores/app-store'
 import { useWindowSize } from '@uidotdev/usehooks'
+import getArrows from '@utils/StringToArrows'
+import trackEventOnClient from '@utils/trackEventOnClient'
 import type { Move as ChessMove } from 'chess.js'
 import { Chess } from 'chess.js'
 import { ThumbsDown, ThumbsUp } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import posthog from 'posthog-js'
+import { useEffect, useState } from 'react'
 import type { Arrow } from 'react-chessboard'
 import Toggle from 'react-toggle'
 import 'react-toggle/style.css'
 import useSound from 'use-sound'
 import type { PrismaUserLine } from '~/app/training/courses/[userCourseId]/page'
-import Button from '@components/_elements/button'
-import Heading from '@components/_elements/heading'
-import StyledLink from '@components/_elements/styledLink'
-import Spinner from '@components/general/Spinner'
-import XpTracker from '@components/general/XpTracker'
-import getArrows from '@utils/StringToArrows'
-import trackEventOnClient from '@utils/trackEventOnClient'
 import ChessBoard from '../ChessBoard'
 import BoardContainer from '../shared/BoardContainer'
 
@@ -179,7 +179,7 @@ export default function CourseTrainer(props: {
       // honestly, do nothing
       // I dunno why this is firing, I replicated it once but it didn;t actually affect the usage
       // I think it's to do with premoving and the chess.js library, but nothing actually breaks
-      // so this is just here to stop logging it in sentry as an "unhandled error"
+      // so this is just here to stop logging it as an "unhandled error"
     }
   }
 
@@ -327,7 +327,7 @@ export default function CourseTrainer(props: {
       setLineCorrect(true)
       setInteractive(false)
     } catch (e) {
-      Sentry.captureException(e)
+      posthog.captureException(e)
       if (e instanceof Error) setError(e.message)
       else setError('An unknown error occurred')
     } finally {
@@ -357,7 +357,7 @@ export default function CourseTrainer(props: {
       setInteractive(true)
       setPosition(game.fen())
     } catch (e) {
-      Sentry.captureException(e)
+      posthog.captureException(e)
       if (e instanceof Error) setError(e.message)
       else setError('An unknown error occurred')
     } finally {
@@ -420,7 +420,7 @@ export default function CourseTrainer(props: {
         },
         {
           onError: (error) => {
-            Sentry.captureException(error) // Don't do anything with the error, just log it
+            posthog.captureException(error) // Don't do anything with the error, just log it
           },
         },
       )
@@ -481,7 +481,7 @@ export default function CourseTrainer(props: {
       },
       {
         onError: (error) => {
-          Sentry.captureException(error)
+          posthog.captureException(error)
           // Revert to the previous state or handle the error
         },
       },
@@ -661,7 +661,7 @@ export default function CourseTrainer(props: {
   useEffect(() => {
     if (!nextLine || !autoNext) return
     ;(async () => await startNextLine())().catch((e) => {
-      Sentry.captureException(e)
+      posthog.captureException(e)
       if (e instanceof Error) setError(e.message)
       else setError('An unknown error occurred')
     })
@@ -673,7 +673,7 @@ export default function CourseTrainer(props: {
       if (e.key === ' ') {
         e.preventDefault()
         if (nextLine && !autoNext)
-          startNextLine().catch((e) => Sentry.captureException(e))
+          startNextLine().catch((e) => posthog.captureException(e))
         if (teaching) resetTeachingMove()
       }
     }

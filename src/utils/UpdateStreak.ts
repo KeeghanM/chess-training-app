@@ -1,5 +1,5 @@
 import { prisma } from '~/server/db'
-import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
 import { StreakBadges } from '@utils/RanksAndBadges'
 import { AddBadgeToUser } from './AddBadge'
 
@@ -57,6 +57,6 @@ export async function UpdateStreak(userId: string) {
 
     return
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
   }
 }

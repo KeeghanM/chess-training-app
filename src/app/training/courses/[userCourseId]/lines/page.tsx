@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { prisma } from '~/server/db'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
 import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
 import CourseBrowser from '@components/training/courses/browser/CourseBrowser'
@@ -66,7 +66,7 @@ export default async function CourseTrainPage(props: {
       return { userCourse, userLines }
     } catch (e) {
       console.log(e)
-      Sentry.captureException(e)
+      posthog.captureException(e)
       return {
         userCourse: undefined,
         userLines: undefined,

@@ -4,8 +4,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Course, UserCourse } from '@prisma/client'
-import * as Sentry from '@sentry/nextjs'
 import { Book } from 'lucide-react'
+import posthog from 'posthog-js'
 import TimeAgo from 'react-timeago'
 import type { ResponseJson } from '~/app/api/responses'
 import { PrismaUserCourse } from '~/hooks/use-course-queries'
@@ -68,10 +68,10 @@ export default function CourseListItem(props: {
           setNextReview(new Date(json.data!.nextReview as string))
         }
       } catch (e) {
-        Sentry.captureException(e)
+        posthog.captureException(e)
       }
     })()
-      .catch((e) => Sentry.captureException(e))
+      .catch((e) => posthog.captureException(e))
       .finally(() => setLoading(false))
   }, [])
 

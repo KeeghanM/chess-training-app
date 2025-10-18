@@ -1,6 +1,7 @@
 import { prisma } from '~/server/db'
-import * as Sentry from '@sentry/nextjs'
+import { getPostHogServer } from '~/server/posthog-server'
 import { errorResponse, successResponse } from '../../responses'
+const posthog = getPostHogServer()
 
 export async function GET() {
   const now = new Date()
@@ -23,7 +24,7 @@ export async function GET() {
 
     return successResponse('Reset streaks', {}, 200)
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     if (e instanceof Error) return errorResponse(e.message, 500)
     return errorResponse('Something went wrong', 500)
   }

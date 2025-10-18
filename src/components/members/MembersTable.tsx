@@ -55,7 +55,7 @@ export default function MembersTable({ members }: MembersTableProps) {
               ref={isHighlighted ? highlightRef : null}
               className={
                 isHighlighted
-                  ? 'text-center bg-primary/10 text-white border-x-4 border-x-primary'
+                  ? 'text-center bg-primary/10 !text-white border-x-4 border-x-primary'
                   : 'text-center ' +
                     (index % 2 === 0 ? 'bg-card' : 'bg-card-light')
               }

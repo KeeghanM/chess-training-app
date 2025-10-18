@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
 import { getUserServer } from './getUserServer'
 
 export default async function getDistinctId() {
@@ -13,7 +13,7 @@ export default async function getDistinctId() {
     const json = (await resp.json()) as { sessionId: string }
     if (json.sessionId) return json.sessionId
   } catch (e) {
-    Sentry.captureException(e)
+    posthog.captureException(e)
     return 'anonymous'
   }
 

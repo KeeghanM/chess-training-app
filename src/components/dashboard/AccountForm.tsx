@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import type { UserProfile } from '@prisma/client'
-import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
 import type { ResponseJson } from '~/app/api/responses'
 import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
@@ -39,7 +39,7 @@ export default function AccountForm(props: { profile: UserProfile }) {
   const [error, setError] = useState('')
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    if (!user) return Sentry.captureException(new Error('User not found'))
+    if (!user) return posthog.captureException(new Error('User not found'))
     e.preventDefault()
     setLoading(true)
     setError('')
@@ -91,7 +91,7 @@ export default function AccountForm(props: { profile: UserProfile }) {
       const timeout = setTimeout(() => setSuccess(false), 3000)
       return () => clearTimeout(timeout)
     } catch (e) {
-      Sentry.captureException(e)
+      posthog.captureException(e)
       if (e instanceof Error) setError(e.message)
       else setError('Something went wrong. Please try again later.')
       setLoading(false)

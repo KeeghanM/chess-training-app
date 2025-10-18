@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import { useCourseQueries } from '@hooks/use-course-queries'
 import type { Course, Group } from '@prisma/client'
-import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
 import Button from '@components/_elements/button'
 import {
   Tooltip,
@@ -69,7 +69,7 @@ export default function CourseAdminPanel(props: CourseAdminPanelProps) {
       setLines(lines.filter((line) => !linesToDelete.includes(line.id)))
       setLinesToDelete([])
     } catch (e) {
-      Sentry.captureException(e)
+      posthog.captureException(e)
     }
     setSaving(false)
     setHasHadChanges(false)
