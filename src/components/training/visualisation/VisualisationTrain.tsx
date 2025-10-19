@@ -187,7 +187,7 @@ export default function VisualisationTrain({
 
     const newGame = new Chess(currentPuzzle.fen)
     const newDisplayGame = new Chess(currentPuzzle.fen)
-    setOrientation(newGame.turn() == 'w' ? 'white' : 'black')
+    setOrientation(newGame.turn() == 'w' ? 'black' : 'white') // reversed because the first move is opponents
 
     for (const move of currentPuzzle.moves) {
       newGame.move(move)
@@ -261,7 +261,9 @@ export default function VisualisationTrain({
           <div className="flex flex-col gap-2 bg-card rounded-lg p-4">
             <StatusIndicator
               status={puzzleStatus}
-              orientation={orientation}
+              orientation={
+                orientation === 'white' ? 'black' : 'white' // this is flipped, because we want the user to start from the beginning. Orientation is the USERS orientation, but the first move they need to visualise is OPPONENTS - so we flip it
+              }
               puzzleId={puzzleId}
             />
             <PgnNavigator
