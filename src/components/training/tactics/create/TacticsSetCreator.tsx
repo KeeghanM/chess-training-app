@@ -72,7 +72,6 @@ export default function TacticsSetCreator({
     const params = {
       rating: Math.round(rating * difficultyAdjuster(difficulty)),
       count: count.toString(),
-      themesType: 'ONE' as const,
       themes: themes.length > 0 ? JSON.stringify(themes) : undefined,
     }
 
