@@ -1,7 +1,8 @@
-import type { TrainingPuzzle } from '@components/training/tactics/TacticsTrainer'
+import { getPostHogServer } from '~/server/posthog-server'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import { errorResponse, successResponse } from '~/app/api/responses'
-import { getPostHogServer } from '~/server/posthog-server'
+import type { TrainingPuzzle } from '@components/training/tactics/TacticsTrainer'
+
 const posthog = getPostHogServer()
 
 export async function POST(request: Request) {
@@ -11,16 +12,14 @@ export async function POST(request: Request) {
   const user = await session.getUser()
   if (!user) return errorResponse('Unauthorized', 401)
 
-  const { rating, themesType, themes, count, playerMoves } =
-    (await request.json()) as {
-      rating: number
-      themesType: string
-      themes: string
-      count: number
-      playerMoves: number
-    }
+  const { rating, themes, count, playerMoves } = (await request.json()) as {
+    rating: number
+    themes: string
+    count: number
+    playerMoves: number
+  }
 
-  if (!rating || count == undefined || (themes && !themesType))
+  if (!rating || count == undefined)
     return errorResponse('Missing required fields', 400)
 
   if (count < 1 || count > 500)
@@ -32,7 +31,7 @@ export async function POST(request: Request) {
   let params: {
     rating: string
     count: string
-    themesType?: string
+    themesType?: 'ALL'
     themes?: string
     playerMoves?: string
   } = {
@@ -40,11 +39,13 @@ export async function POST(request: Request) {
     count: count.toString(),
   }
 
-  if (themes) params = { ...params, themesType, themes }
+  if (themes) params = { ...params, themesType: 'ALL', themes }
   if (playerMoves) params = { ...params, playerMoves: playerMoves.toString() }
 
   try {
     const paramsString = new URLSearchParams(params).toString()
+
+    console.log(paramsString)
 
     const resp = await fetch(
       'https://chess-puzzles.p.rapidapi.com/?' + paramsString,

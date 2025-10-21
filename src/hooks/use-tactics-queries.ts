@@ -174,7 +174,6 @@ export function useTacticsQueries() {
       ratingDeviation?: number
       themes?: string
       count?: string
-      themesType?: string
     }): Promise<TrainingPuzzle[]> => {
       const response = await fetch('/api/puzzles/getPuzzles', {
         method: 'POST',
