@@ -24,6 +24,11 @@ export default async function Home() {
       text: 'Thank you so much for this amazing website!!',
     },
     {
+      name: 'Coral',
+      date: '2025-09-29',
+      text: 'This site is incredible. Just what I have always wished existed.',
+    },
+    {
       name: 'Anonymous',
       date: '2025-09-28',
       text: 'i just wanna say that this site is top tier. [...] this woodpecker section is a life saver',

@@ -18,6 +18,7 @@ interface ButtonProps {
   id?: string
   className?: string
   shadow?: 'sm' | 'lg' | 'xl' | 'inset-sm' | 'inset-lg' | 'inset-xl'
+  type?: 'button' | 'submit'
 }
 export default function Button({
   id,
@@ -26,6 +27,7 @@ export default function Button({
   className,
   onClick,
   children,
+  type = 'button',
 }: ButtonProps) {
   const styles = {
     default: 'bg-card-light border-card border-1 hover:bg-card-dark text-black',
@@ -42,8 +44,7 @@ export default function Button({
 
   return (
     <button
-      type="button"
-      id={id}
+      type={type}
       className={`cursor-pointer flex-1 w-fit min-w-fit flex items-center justify-center gap-2 text-sm rounded-full py-2 px-4 shadow ${styles[variant]} ${disabled ? ' cursor-not-allowed opacity-50 pointer-events-none' : ''} ${className}`}
       onClick={onClick ? onClick : undefined}
       disabled={disabled}

@@ -19,18 +19,25 @@ interface XpDisplayProps {
     percentage: number
   }
   width?: string
+  color?: 'white' | 'black'
 }
-export default function XpDisplay({ data, width = 'w-30' }: XpDisplayProps) {
+export default function XpDisplay({
+  data,
+  width = 'w-30',
+  color = 'white',
+}: XpDisplayProps) {
   const { currentXp, rank, nextRank, percentage } = data
 
   return (
-    <div className="bg-card/10 text-white rounded-lg p-4 flex flex-col gap-2 items-center">
+    <div
+      className={`bg-card/10 rounded-lg p-4 flex flex-col gap-2 items-center ${color === 'white' ? 'text-white' : 'text-black'}`}
+    >
       <RoundProgress
         width={width}
         percentages={[{ percentage, color: 'text-green-500' }]}
       >
         <text
-          fill="white"
+          fill={color}
           x="50"
           y="47"
           textAnchor="middle"
@@ -42,7 +49,7 @@ export default function XpDisplay({ data, width = 'w-30' }: XpDisplayProps) {
           %
         </text>
         <text
-          fill="white"
+          fill={color}
           x="50"
           y="62"
           textAnchor="middle"
