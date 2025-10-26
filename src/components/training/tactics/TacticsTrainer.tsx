@@ -41,7 +41,16 @@ export interface TrainingPuzzle {
   comment?: string
 }
 
-// TODO: "Show solution" button
+/**
+ * Renders an interactive tactics trainer UI for practicing puzzles from a tactics set.
+ *
+ * The component manages game state, user progress, timing, sounds, and persistence of round
+ * statistics while providing board controls, move navigation, and session controls (skip,
+ * auto-next, exit). It returns nothing visible when the user is not authenticated.
+ *
+ * @param props.set - The tactics set to train on, including its puzzles and rounds.
+ * @returns The trainer UI for the provided tactics set; `null` when no authenticated user is present.
+ */
 
 export default function TacticsTrainer(props: {
   set: PrismaTacticsSetWithPuzzles

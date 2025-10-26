@@ -790,6 +790,12 @@ class SilktideCookieBanner {
   let config = {};
   let cookieBanner;
 
+  /**
+   * Update the cookie banner configuration, recreate any existing banner with the new settings, and initialize it when the document is ready.
+   * 
+   * Merges provided configuration values into the existing manager configuration, destroys and clears the current banner instance if present, and initializes a new banner immediately if document.body exists or once the DOM is loaded.
+   * 
+   * @param {Object} [userConfig={}] - Partial configuration values to merge into the current banner configuration. Only supplied keys are overwritten.
   function updateCookieBannerConfig(userConfig = {}) {
     config = {...config, ...userConfig};
 
@@ -808,12 +814,23 @@ class SilktideCookieBanner {
     }
   }
 
+  /**
+   * Initialize the global cookie banner instance if it has not already been created.
+   *
+   * Creates a new SilktideCookieBanner using the current configuration and assigns it
+   * to the module-scoped `cookieBanner` variable only when no instance exists.
+   */
   function initCookieBanner() {
     if (!cookieBanner) {
       cookieBanner = new SilktideCookieBanner(config); // Pass config to the CookieBanner instance
     }
   }
 
+  /**
+   * Inserts a script tag for the given URL into the document head if one does not already exist.
+   * @param {string} url - The script URL to load.
+   * @param {'async'|'defer'|undefined} [loadOption] - If `'async'`, sets the script's `async` attribute; if `'defer'`, sets the `defer` attribute; otherwise neither attribute is set.
+   */
   function injectScript(url, loadOption) {
     // Check if script with this URL already exists
     const existingScript = document.querySelector(`script[src="${url}"]`);
