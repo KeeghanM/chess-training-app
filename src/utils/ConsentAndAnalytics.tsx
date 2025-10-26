@@ -41,6 +41,10 @@ export function ConsentAndAnalytics() {
           required: false,
           onAccept: function () {
             posthog.opt_in_capturing()
+            try {
+              const url = window.location.href
+              posthog.capture('$pageview', { $current_url: url })
+            } catch {}
           },
           onReject: function () {
             posthog.opt_out_capturing()
@@ -70,15 +74,15 @@ export function ConsentAndAnalytics() {
   }
 
   useEffect(() => {
-    if (pathname) {
-      let url = window.origin + pathname
-      if (searchParams) {
-        url = url + `?${searchParams.toString()}`
-      }
-      posthog.capture('$pageview', {
-        $current_url: url,
-      })
+    if (!pathname || !posthog?.has_opted_in_capturing()) return
+
+    let url = window.origin + pathname
+    if (searchParams) {
+      url = url + `?${searchParams.toString()}`
     }
+    posthog.capture('$pageview', {
+      $current_url: url,
+    })
   }, [pathname, searchParams])
 
   return (

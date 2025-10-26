@@ -20,11 +20,17 @@ export default function TermsPage() {
             </p>
             <p>
               Your data is protected by our umbrella{' '}
-              <a href="/legal/privacy-policy" className="text-primary">
+              <a
+                href="https://www.humansideofcode.org/legal/privacy"
+                className="text-primary"
+              >
                 Privacy Policy
               </a>{' '}
               and{' '}
-              <a href="/legal/cookie-policy" className="text-primary">
+              <a
+                href="https://www.humansideofcode.org/legal/cookies"
+                className="text-primary"
+              >
                 Cookie Policy
               </a>
               .

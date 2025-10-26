@@ -65,7 +65,6 @@ export default async function CourseTrainPage(props: {
 
       return { userCourse, userLines }
     } catch (e) {
-      console.log(e)
       posthog.captureException(e)
       return {
         userCourse: undefined,

@@ -19,8 +19,6 @@ export async function POST(request: Request) {
   }
   if (!roundId || !timeTaken) return errorResponse('Missing fields', 400)
 
-  console.log({ roundId, timeTaken, userId: user.id })
-
   try {
     await prisma.tacticsSetRound.update({
       where: {

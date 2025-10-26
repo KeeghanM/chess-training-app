@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import Heading from '@components/_elements/heading'
-import Button from '~/components/_elements/button'
 import ConsentManager from './ConsentManager'
 
 export default function Footer() {

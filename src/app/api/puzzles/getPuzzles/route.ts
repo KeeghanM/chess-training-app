@@ -45,8 +45,6 @@ export async function POST(request: Request) {
   try {
     const paramsString = new URLSearchParams(params).toString()
 
-    console.log(paramsString)
-
     const resp = await fetch(
       'https://chess-puzzles.p.rapidapi.com/?' + paramsString,
       {
