@@ -225,8 +225,8 @@ export default async function Home() {
             .sort((a, b) => {
               return new Date(b.date).getTime() - new Date(a.date).getTime()
             })
-            .map((review) => (
-              <MultiColItem key={review.name} title={review.name}>
+            .map((review, i) => (
+              <MultiColItem key={`${review.name}-${i}`} title={review.name}>
                 <p className="text-sm italic ">{review.date}</p>
                 <p>{review.text}</p>
               </MultiColItem>

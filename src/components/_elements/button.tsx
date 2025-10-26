@@ -13,6 +13,7 @@ interface ButtonProps {
     | 'success'
     | 'info'
     | 'ghost'
+    | 'link'
   disabled?: boolean
   children: React.ReactNode
   id?: string
@@ -38,6 +39,7 @@ export default function Button({
     success: 'bg-green-500 hover:bg-green-600 text-white',
     info: 'bg-blue-600 hover:bg-blue-500 text-white',
     ghost: 'bg-none border-none !p-0 shadow-none',
+    link: 'bg-none border-none flex-none !p-0 hover:underline',
   }
 
   return (
