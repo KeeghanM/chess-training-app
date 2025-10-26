@@ -4,6 +4,7 @@ import { prisma } from '~/server/db'
 import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import XpDisplay from '@components/dashboard/XpDisplay'
+import Backdrop from '~/components/_elements/backdrop'
 import CalculateXpRank from '@utils/CalculateXpRank'
 
 export default async function MemberPage(props: {
@@ -38,51 +39,59 @@ export default async function MemberPage(props: {
           /{username}
         </p>
       </div>
-      <Container>
-        {account.public ? (
-          <div className="bg-gray-100 p-2 flex flex-col gap-2">
-            <div className="flex items-center gap-2 flex-col md:flex-row">
+      <div className="relative">
+        <Backdrop />
+        <Container>
+          <div className="p-4 bg-card-light/20 rounded-lg text-black">
+            <div className="bg-card rounded-lg p-4 space-y-6">
               <Heading as={'h1'}>{account.username}</Heading>
-              {account.fullName && (
-                <p className="italic text-sm">({account.fullName})</p>
+              {account.public ? (
+                <>
+                  {account.fullName && (
+                    <p className="italic text-sm">({account.fullName})</p>
+                  )}
+                  <div className="w-fit mx-auto bg-card-light rounded-xl shadow">
+                    <XpDisplay
+                      color="black"
+                      data={CalculateXpRank(account.experience)}
+                    />
+                  </div>
+                  {(account.description ||
+                    account.highestOTBRating ||
+                    account.highestOnlineRating ||
+                    account.puzzleRating) && (
+                    <div className="bg-card-light rounded-xl shadow space-y-2 p-4">
+                      {account.description && <p>{account.description}</p>}
+                      {account.highestOTBRating && (
+                        <p>
+                          <span className="font-bold">OTB Rating:</span>{' '}
+                          {account.highestOTBRating}
+                        </p>
+                      )}
+                      {account.highestOnlineRating && (
+                        <p>
+                          <span className="font-bold">Online Rating:</span>{' '}
+                          {account.highestOnlineRating}
+                        </p>
+                      )}
+                      {account.puzzleRating && (
+                        <p>
+                          <span className="font-bold">Puzzle Rating:</span>{' '}
+                          {account.puzzleRating}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <p className="text-gray-600">
+                  This user has chosen to keep their profile private.
+                </p>
               )}
             </div>
-            <div className="w-fit">
-              <XpDisplay data={CalculateXpRank(account.experience)} />
-            </div>
-            {account.description && (
-              <p className="bg-purple-700 text-white p-2">
-                {account.description}
-              </p>
-            )}
-            {account.highestOTBRating && (
-              <p>
-                <span className="font-bold">OTB Rating:</span>{' '}
-                {account.highestOTBRating}
-              </p>
-            )}
-            {account.highestOnlineRating && (
-              <p>
-                <span className="font-bold">Online Rating:</span>{' '}
-                {account.highestOnlineRating}
-              </p>
-            )}
-            {account.puzzleRating && (
-              <p>
-                <span className="font-bold">Puzzle Rating:</span>{' '}
-                {account.puzzleRating}
-              </p>
-            )}
           </div>
-        ) : (
-          <div className="bg-gray-100 p-2">
-            <Heading as={'h1'}>{account.username}</Heading>
-            <p className="text-gray-600">
-              This user has chosen to keep their profile private.
-            </p>
-          </div>
-        )}
-      </Container>
+        </Container>
+      </div>
     </>
   )
 }
