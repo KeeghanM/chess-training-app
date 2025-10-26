@@ -16,6 +16,14 @@ export const metadata = {
     'Improve your chess skills using the Woodpecker Method and our innovative Natural Play Learning. With a variety of training tools including tactics, courses, and endgames training. Learn chess in an intuitive, efficient, and enjoyable way, backed by a community of chess enthusiasts and professionals. Designed for those looking to elevate their chess game through science-backed, personalized training.',
 }
 
+/**
+ * Render the Home page for ChessTraining.app.
+ *
+ * The page includes a hero banner, feature and training tool sections (Tactics, Course, Visualisation),
+ * descriptive image rows, a prominent accent text, a call-to-action row, member testimonials, and external widgets/links.
+ *
+ * @returns The React element representing the complete Home page UI
+ */
 export default async function Home() {
   const reviews = [
     {
@@ -230,8 +238,8 @@ export default async function Home() {
             .sort((a, b) => {
               return new Date(b.date).getTime() - new Date(a.date).getTime()
             })
-            .map((review) => (
-              <MultiColItem key={review.name} title={review.name}>
+            .map((review, i) => (
+              <MultiColItem key={`${review.name}-${i}`} title={review.name}>
                 <p className="text-sm italic ">{review.date}</p>
                 <p>{review.text}</p>
               </MultiColItem>

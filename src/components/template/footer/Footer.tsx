@@ -1,6 +1,14 @@
 import Link from 'next/link'
 import Heading from '@components/_elements/heading'
+import ConsentManager from './ConsentManager'
 
+/**
+ * Renders the site footer with navigation sections, legal/company information, and consent controls.
+ *
+ * Renders three sections ("ChessTraining.app", "The Company", "Support") populated from a static sections array; the "Support" section also includes the ConsentManager component. The bottom area shows copyright and company address.
+ *
+ * @returns The footer JSX element containing section links, conditional consent controls, and company/legal text.
+ */
 export default function Footer() {
   const sections: {
     title: string
@@ -96,16 +104,20 @@ export default function Footer() {
           url: '/contact',
         },
         {
-          text: 'Report an issue',
-          url: '/contact/report-an-issue',
+          text: 'Privacy Policy',
+          url: 'https://www.humansideofcode.org/legal/privacy',
         },
         {
-          text: 'Twitter/X',
-          url: 'https://twitter.com/ChessTrainApp',
+          text: 'Cookie Policy',
+          url: 'https://www.humansideofcode.org/legal/cookies',
+        },
+        {
+          text: 'Terms & Conditions',
+          url: '/legal/terms',
         },
       ],
     },
-  ]
+  ] as const
 
   return (
     <footer className="flex flex-col gap-4 border-t border-slate-600 bg-slate-800 p-4 text-sm text-white md:px-12">
@@ -123,11 +135,17 @@ export default function Footer() {
                 <span>{link.text}</span>
               </Link>
             ))}
+            {section.title === 'Support' && <ConsentManager />}
           </div>
         ))}
       </div>
-      <div className="flex justify-center text-xs italic">
+      <div className="flex flex-col items-center justify-center text-xs italic">
         <p>&copy; 2020-{new Date().getFullYear()} ChessTraining.app</p>
+        <p>
+          Human Side of Code LTD T/A ChessTraining.app Registered in England &
+          Wales Companies House No 16784240
+        </p>
+        <p>83 Strathmore Road, NE3 5JS, Newcastle upon Tyne, United Kingdom</p>
       </div>
     </footer>
   )

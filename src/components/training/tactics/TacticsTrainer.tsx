@@ -41,7 +41,16 @@ export interface TrainingPuzzle {
   comment?: string
 }
 
-// TODO: "Show solution" button
+/**
+ * Renders an interactive tactics trainer UI for practicing puzzles from a tactics set.
+ *
+ * The component manages game state, user progress, timing, sounds, and persistence of round
+ * statistics while providing board controls, move navigation, and session controls (skip,
+ * auto-next, exit). It returns nothing visible when the user is not authenticated.
+ *
+ * @param props.set - The tactics set to train on, including its puzzles and rounds.
+ * @returns The trainer UI for the provided tactics set; `null` when no authenticated user is present.
+ */
 
 export default function TacticsTrainer(props: {
   set: PrismaTacticsSetWithPuzzles
@@ -173,12 +182,6 @@ export default function TacticsTrainer(props: {
       setPuzzleStatus('correct')
       setPuzzleFinished(true)
       setXpCounter(xpCounter + 1)
-
-      increaseTimeTaken.mutate({
-        roundId: currentRound.id,
-        timeTaken: (Date.now() - startTime) / 1000,
-        setId: props.set.id,
-      })
 
       increaseCorrect.mutate({
         roundId: currentRound.id,
@@ -323,15 +326,17 @@ export default function TacticsTrainer(props: {
   // Increase timer whenever puzzle is finished
   useEffect(() => {
     const newTime = Date.now()
-    if (puzzleFinished) {
-      increaseTimeTaken.mutate({
-        roundId: currentRound.id,
-        timeTaken: (newTime - startTime) / 1000,
-        setId: props.set.id,
-      })
-    } else {
+
+    if (!puzzleFinished) {
       setStartTime(newTime)
+      return
     }
+
+    increaseTimeTaken.mutate({
+      roundId: currentRound.id,
+      timeTaken: (newTime - startTime) / 1000,
+      setId: props.set.id,
+    })
   }, [puzzleFinished])
 
   // Last check to ensure we have a user
