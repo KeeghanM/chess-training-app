@@ -5,6 +5,13 @@ import Script from 'next/script'
 import { useEffect } from 'react'
 import posthog from 'posthog-js'
 
+/**
+ * Integrates a Silktide consent banner and PostHog analytics, loading the consent manager script and configuring tracking and cookie preferences.
+ *
+ * Initializes PostHog (with automatic pageview capture disabled and opt-out by default), configures the cookie banner (including required "necessary" and optional "analytics" cookie types with accept/reject handlers that toggle PostHog capturing), and captures a manual pageview whenever the route or query string changes.
+ *
+ * @returns The Script element that loads the Silktide consent manager and runs the analytics/cookie configuration when loaded.
+ */
 export function ConsentAndAnalytics() {
   const pathname = usePathname()
   const searchParams = useSearchParams()

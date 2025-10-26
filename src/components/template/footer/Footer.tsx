@@ -3,6 +3,13 @@ import Heading from '@components/_elements/heading'
 import Button from '~/components/_elements/button'
 import ConsentManager from './ConsentManager'
 
+/**
+ * Renders the site footer with navigation sections, legal/company information, and consent controls.
+ *
+ * Renders three sections ("ChessTraining.app", "The Company", "Support") populated from a static sections array; the "Support" section also includes the ConsentManager component. The bottom area shows copyright and company address.
+ *
+ * @returns The footer JSX element containing section links, conditional consent controls, and company/legal text.
+ */
 export default function Footer() {
   const sections: {
     title: string

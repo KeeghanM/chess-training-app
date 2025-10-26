@@ -21,6 +21,18 @@ interface ButtonProps {
   shadow?: 'sm' | 'lg' | 'xl' | 'inset-sm' | 'inset-lg' | 'inset-xl'
   type?: 'button' | 'submit'
 }
+/**
+ * Renders a styled button element with configurable visual variant and behavior.
+ *
+ * @param id - Optional id attribute for the button.
+ * @param variant - Visual style variant to apply (default, primary, accent, dark, tertiary, danger, warning, success, info, ghost, link).
+ * @param disabled - When true, disables interaction and applies disabled styling.
+ * @param className - Additional CSS classes to merge with the component's default classes.
+ * @param onClick - Optional click event handler.
+ * @param children - Content to render inside the button.
+ * @param type - Button type attribute ('button' or 'submit').
+ * @returns The rendered button element.
+ */
 export default function Button({
   id,
   variant = 'default',

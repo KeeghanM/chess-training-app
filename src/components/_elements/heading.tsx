@@ -1,3 +1,12 @@
+/**
+ * Render a heading element at the specified level with preset styling.
+ *
+ * @param children - Content to be rendered inside the heading element
+ * @param as - Heading level to render; accepted values are 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
+ * @param className - Optional additional CSS classes to append to the predefined styles
+ * @param id - Optional id attribute applied to the rendered heading element
+ * @returns The corresponding heading JSX element (`h1`–`h4`) with merged classes and optional `id`, or `undefined` if `as` is not handled
+ */
 export default function Heading({
   children,
   as,

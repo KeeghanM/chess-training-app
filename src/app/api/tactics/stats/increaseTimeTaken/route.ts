@@ -5,6 +5,14 @@ import { errorResponse, successResponse } from '~/app/api/responses'
 
 const posthog = getPostHogServer()
 
+/**
+ * Record additional time spent on a tactics round and update the set's last trained timestamp.
+ *
+ * Expects the request JSON body to contain `timeTaken` (number), `roundId` (string) and `setId` (string); `timeTaken` and `roundId` are required. Authenticates the user and applies updates scoped to that user's records.
+ *
+ * @param request - The incoming HTTP request with a JSON body `{ timeTaken, roundId, setId }`
+ * @returns An API response object: on success, a message "Time taken updated" with HTTP 200; on failure, an error message with an appropriate HTTP status (401 for unauthorized, 400 for missing fields, 500 for server errors).
+ */
 export async function POST(request: Request) {
   const session = getKindeServerSession()
   if (!session) return errorResponse('Unauthorized', 401)
