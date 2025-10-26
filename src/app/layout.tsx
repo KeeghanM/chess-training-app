@@ -1,5 +1,5 @@
 import Script from 'next/script'
-import type { ReactNode } from 'react'
+import { type ReactNode, Suspense } from 'react'
 import Footer from '@components/template/footer/Footer'
 import Header from '@components/template/header/Header'
 import Providers from '@utils/Providers'
@@ -53,7 +53,9 @@ export default async function RootLayout({
   return (
     <>
       <html lang="en" suppressHydrationWarning={true}>
-        <ConsentAndAnalytics />
+        <Suspense>
+          <ConsentAndAnalytics />
+        </Suspense>
         <Script src="https://js.stripe.com/v3/" strategy="lazyOnload" />
         <Script id="brevo-conversations">
           {`(function(d, w, c) {
