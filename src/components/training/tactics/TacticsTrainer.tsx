@@ -174,12 +174,6 @@ export default function TacticsTrainer(props: {
       setPuzzleFinished(true)
       setXpCounter(xpCounter + 1)
 
-      increaseTimeTaken.mutate({
-        roundId: currentRound.id,
-        timeTaken: (Date.now() - startTime) / 1000,
-        setId: props.set.id,
-      })
-
       increaseCorrect.mutate({
         roundId: currentRound.id,
         currentStreak: currentStreak + 1,
@@ -322,16 +316,16 @@ export default function TacticsTrainer(props: {
 
   // Increase timer whenever puzzle is finished
   useEffect(() => {
+    if (!puzzleFinished) return
+
     const newTime = Date.now()
-    if (puzzleFinished) {
-      increaseTimeTaken.mutate({
-        roundId: currentRound.id,
-        timeTaken: (newTime - startTime) / 1000,
-        setId: props.set.id,
-      })
-    } else {
-      setStartTime(newTime)
-    }
+    console.log({ startTime, newTime, timeTaken: (newTime - startTime) / 1000 })
+    increaseTimeTaken.mutate({
+      roundId: currentRound.id,
+      timeTaken: (newTime - startTime) / 1000,
+      setId: props.set.id,
+    })
+    setStartTime(newTime)
   }, [puzzleFinished])
 
   // Last check to ensure we have a user

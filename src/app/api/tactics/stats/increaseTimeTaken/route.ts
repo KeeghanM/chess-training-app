@@ -1,7 +1,8 @@
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import { errorResponse, successResponse } from '~/app/api/responses'
 import { prisma } from '~/server/db'
 import { getPostHogServer } from '~/server/posthog-server'
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { errorResponse, successResponse } from '~/app/api/responses'
+
 const posthog = getPostHogServer()
 
 export async function POST(request: Request) {
@@ -17,6 +18,8 @@ export async function POST(request: Request) {
     setId: string
   }
   if (!roundId || !timeTaken) return errorResponse('Missing fields', 400)
+
+  console.log({ roundId, timeTaken, userId: user.id })
 
   try {
     await prisma.tacticsSetRound.update({
