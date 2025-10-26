@@ -39,6 +39,12 @@ export const metadata = {
   ],
 }
 
+/**
+ * Render the application's root HTML layout, including consent and analytics, third‑party scripts, global providers, header, footer, and page content.
+ *
+ * @param children - Page-specific React nodes to render as the main content of the layout
+ * @returns The root JSX structure representing the HTML document with consent/analytics initialization, Stripe and Brevo scripts, Providers wrapper, Header, the provided `children`, and Footer
+ */
 export default async function RootLayout({
   children,
 }: {

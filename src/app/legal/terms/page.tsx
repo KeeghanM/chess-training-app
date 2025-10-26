@@ -2,6 +2,15 @@ import Container from '~/components/_elements/container'
 import Heading from '~/components/_elements/heading'
 import './styles.css'
 
+/**
+ * Render the static Terms of Service page for ChessTraining.app.
+ *
+ * The page includes a header with last-updated metadata and links to privacy/cookie
+ * policies, and a two-column main content area containing 11 policy sections with
+ * accompanying asides summarizing each section.
+ *
+ * @returns The Terms of Service page as a JSX element
+ */
 export default function TermsPage() {
   return (
     <section className="space-y-6">
