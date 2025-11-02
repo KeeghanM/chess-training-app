@@ -1,83 +1,81 @@
 # -----------------------------
 # Color helpers
 # -----------------------------
-RED="\033[0;31m"
-GREEN="\033[0;32m"
-YELLOW="\033[1;33m"
-BLUE="\033[0;34m"
-NC="\033[0m" # No Color
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
 
 echo "${BLUE}🚀 Running pre-commit checks...${NC}"
 
 # -----------------------------
-# Define commands per app
+# Apps and commands
 # -----------------------------
-# Format: NAME|COMMAND
-APPS="
-chess-training-app|yarn workspace chess-training-app run qa:types
-puzzles-api|yarn workspace puzzles-api run build
-tactics-finder|./apps/tactics-finder/venv/bin/python -m mypy --explicit-package-bases ./apps/tactics-finder
-"
+APPS="chess-training-app puzzles-api tactics-finder"
+COMMANDS="yarn workspace chess-training-app run qa:types \
+yarn workspace puzzles-api run build \
+./apps/tactics-finder/venv/bin/python -m mypy --explicit-package-bases ./apps/tactics-finder"
+
+# Convert commands into an array for indexing
+set -- $COMMANDS
+COMMAND_ARR="$@"
 
 FAILURES=0
 PIDS=""
 
 # -----------------------------
-# Run each app check in parallel
+# Run checks in parallel
 # -----------------------------
-echo "$APPS" | while IFS="|" read APP CMD; do
-  (
-    PREFIX="[$APP]"
+i=1
+for APP in $APPS; do
+    CMD=$(echo $COMMAND_ARR | cut -d ' ' -f $i)
+    
+    (
+        PREFIX="[$APP]"
 
-    # For Python, ensure venv exists
-    if [ "$APP" = "tactics-finder" ]; then
-      VENV_BIN="./apps/tactics-finder/venv/bin/python"
-      if [ ! -x "$VENV_BIN" ]; then
-        echo "${RED}${PREFIX} ⚠️ Python venv not found! Run: 'python -m venv venv && ./venv/bin/pip install -r requirements.txt'${NC}"
-        exit 1
-      fi
-    fi
+        # Special check for Python venv
+        if [ "$APP" = "tactics-finder" ]; then
+            PYTHON_VENV="./apps/tactics-finder/venv"
+            PYTHON_BIN="$PYTHON_VENV/bin/python"
+            if [ ! -f "$PYTHON_BIN" ]; then
+                echo "${RED}${PREFIX} ⚠️ Python venv not found. Run: 'python -m venv venv && ./venv/bin/pip install -r requirements.txt'${NC}"
+                exit 1
+            fi
+        fi
 
-    # Run the command and prefix output
-    # Use tee to capture exit code safely
-    TMPFILE=$(mktemp)
-    sh -c "$CMD" 2>&1 | tee "$TMPFILE" | while IFS= read -r line; do
-      echo "${YELLOW}${PREFIX}${NC} $line"
-    done
+        # Run the command and prefix output
+        $CMD 2>&1 | while IFS= read -r line; do
+            echo "${YELLOW}${PREFIX}${NC} $line"
+        done
 
-    EXIT_CODE=$(tail -n1 "$TMPFILE" | sed 's/.*//') # just placeholder to not lose exit code
-    EXIT_CODE=${PIPESTATUS:-0} # fallback if PIPESTATUS not available
-
-    # Actually, capture proper exit code
-    sh -c "$CMD"
-    EXIT_CODE=$?
-
-    if [ "$EXIT_CODE" -ne 0 ]; then
-      echo "${RED}${PREFIX} ❌ FAILED${NC}"
-      exit 1
-    else
-      echo "${GREEN}${PREFIX} ✅ PASSED${NC}"
-      exit 0
-    fi
-  ) &
-  PIDS="$PIDS $!"
+        if [ "${PIPESTATUS:-0}" -ne 0 ]; then
+            echo "${RED}${PREFIX} ❌ FAILED${NC}"
+            exit 1
+        else
+            echo "${GREEN}${PREFIX} ✅ PASSED${NC}"
+            exit 0
+        fi
+    ) &
+    PIDS="$PIDS $!"
+    i=$((i + 1))
 done
 
 # -----------------------------
 # Wait for all jobs
 # -----------------------------
 for PID in $PIDS; do
-  wait $PID || FAILURES=$((FAILURES+1))
+    wait $PID || FAILURES=$((FAILURES+1))
 done
 
 # -----------------------------
 # Final status
 # -----------------------------
-if [ "$FAILURES" -ne 0 ]; then
-  echo ""
-  echo "${RED}❌ Pre-commit checks failed for $FAILURES app(s). Commit aborted.${NC}"
-  exit 1
+if [ $FAILURES -ne 0 ]; then
+    echo ""
+    echo "${RED}❌ Pre-commit checks failed for $FAILURES app(s). Commit aborted.${NC}"
+    exit 1
 else
-  echo ""
-  echo "${GREEN}✅ All pre-commit checks passed. Ready to commit!${NC}"
+    echo ""
+    echo "${GREEN}✅ All pre-commit checks passed. Ready to commit!${NC}"
 fi
