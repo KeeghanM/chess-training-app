@@ -2,6 +2,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ResponseJson } from '~/app/api/responses'
 import type { TrainingPuzzle } from './use-puzzle-queries'
 
+enum TacticsSetStatus {
+  PENDING = 'PENDING',
+  ACTIVE = 'ACTIVE',
+  ARCHIVED = 'ARCHIVED',
+}
+
 // Types based on the TacticsTrainer component
 export interface TacticsRound {
   id: string
@@ -24,7 +30,7 @@ export interface TacticsSet {
   updatedAt: Date
   lastTrained: Date | null
   curatedSetId: string | null
-  active: boolean
+  status: TacticsSetStatus
   rounds: TacticsRound[]
   puzzles: Array<{ puzzleid: string }>
   // Add other set fields as needed
@@ -197,15 +203,26 @@ export function useTacticsQueries() {
   const createTacticsSet = useMutation({
     mutationFn: async (data: {
       name: string
-      puzzleIds: { puzzleid: string }[]
+      puzzleIds?: { puzzleid: string }[]
       rating: number
+      pgn?: string
+      isPGN: boolean
     }): Promise<TacticsSet> => {
-      const response = await fetch('/api/tactics/create', {
+      const url = data.isPGN
+        ? '/api/tactics/createFromPgn'
+        : '/api/tactics/create'
+      const body = data.isPGN
+        ? { name: data.name, pgn: data.pgn, rating: data.rating }
+        : { name: data.name, puzzleIds: data.puzzleIds, rating: data.rating }
+
+      console.log({ url })
+
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(body),
       })
 
       const json = (await response.json()) as ResponseJson
@@ -219,7 +236,7 @@ export function useTacticsQueries() {
 
   const archiveTactic = useMutation({
     mutationFn: async ({ setId }: { setId: string }) => {
-      await fetch('/api/tactics/archive', {
+      await fetch('/api/tactics/archiveSet', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -279,8 +296,12 @@ export function useTacticsQueries() {
 
   const restoreTactic = useMutation({
     mutationFn: async ({ setId }: { setId: string }) => {
-      await fetch(`/api/tactics/user/${setId}/restore`, {
+      await fetch('/api/tactics/restoreSet', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ setId }),
       })
     },
     onSuccess: () => {

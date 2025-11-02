@@ -31,14 +31,14 @@ export async function POST(request: Request) {
     })
 
     if (existingSet) {
-      if (!existingSet.active) {
+      if (existingSet.status === 'ARCHIVED') {
         // Check if it was archived, in which case we can just unarchive it
         await prisma.tacticsSet.update({
           where: {
             id: existingSet.id,
           },
           data: {
-            active: true,
+            status: 'ACTIVE',
           },
         })
       }
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
     const ownedSets = await prisma.tacticsSet.count({
       where: {
         userId: user.id,
-        active: true,
+        status: 'ACTIVE',
       },
     })
 

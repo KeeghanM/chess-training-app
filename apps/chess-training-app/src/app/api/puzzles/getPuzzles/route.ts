@@ -44,24 +44,22 @@ export async function POST(request: Request) {
 
   try {
     const paramsString = new URLSearchParams(params).toString()
-
-    const resp = await fetch(
-      'https://chess-puzzles.p.rapidapi.com/?' + paramsString,
-      {
-        method: 'GET',
-        headers: {
-          'x-rapidapi-host': 'chess-puzzles.p.rapidapi.com',
-          'x-rapidapi-key': process.env.RAPIDAPI_KEY!,
-        },
+    const resp = await fetch(`${process.env.PUZZLE_API_URL}/?${paramsString}`, {
+      method: 'GET',
+      headers: {
+        'x-rapidapi-host': 'chess-puzzles.p.rapidapi.com',
+        'x-rapidapi-key': process.env.RAPIDAPI_KEY!,
       },
-    )
+    })
     const json = (await resp.json()) as { puzzles: TrainingPuzzle[] }
+    console.log({ json })
     const puzzles = json.puzzles
 
     if (!puzzles) return errorResponse('Puzzles not found', 404)
 
     return successResponse('Puzzles found', { puzzles }, 200)
   } catch (e) {
+    console.error(e)
     posthog.captureException(e)
     return errorResponse('Internal Server Error', 500)
   }

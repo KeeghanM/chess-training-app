@@ -35,7 +35,7 @@ export async function POST(request: Request) {
         userId: user.id,
       },
       data: {
-        active: false,
+        status: 'ARCHIVED',
       },
     })
 

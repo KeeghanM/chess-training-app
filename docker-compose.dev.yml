@@ -3,16 +3,19 @@ services:
     build:
       context: .
       dockerfile: ./apps/chess-training-app/Dockerfile.dev
-    working_dir: /app
+    working_dir: /app/apps/chess-training-app
     volumes:
-      - ./apps/chess-training-app:/app
+      - ./:/app
       - /app/node_modules
     ports:
       - '3000:3000'
-    environment:
-      - NEXT_PUBLIC_API_URL=http://puzzles-api:4000
     depends_on:
+      - redis
       - puzzles-api
+    environment:
+      - NODE_ENV=development
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     networks:
       - chess-app-net
 
@@ -20,17 +23,18 @@ services:
     build:
       context: .
       dockerfile: ./apps/puzzles-api/Dockerfile.dev
-    working_dir: /app
+    working_dir: /app/apps/puzzles-api
     volumes:
-      - ./apps/puzzles-api:/app
+      - ./:/app
       - /app/node_modules
     ports:
       - '4000:4000'
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
     depends_on:
       - redis
+    environment:
+      - NODE_ENV=development
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     networks:
       - chess-app-net
 
@@ -38,18 +42,19 @@ services:
     build:
       context: ./apps/tactics-finder
       dockerfile: Dockerfile.dev
+    working_dir: /app
     volumes:
       - ./apps/tactics-finder:/app
+    depends_on:
+      - redis
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-    depends_on:
-      - redis
     networks:
       - chess-app-net
 
   redis:
-    image: 'redis:alpine'
+    image: redis:alpine
     ports:
       - '6379:6379'
     networks:

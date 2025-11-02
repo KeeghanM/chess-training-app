@@ -38,6 +38,7 @@ export async function POST(request: Request) {
         name: name,
         size: puzzleIds.length,
         rating: rating,
+        status: 'ACTIVE',
         puzzles: {
           createMany: {
             data: puzzleIds,

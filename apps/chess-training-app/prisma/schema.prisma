@@ -129,6 +129,12 @@ model UserFen {
 }
 
 // Tactics Trainer
+enum TacticsSetStatus {
+  PENDING
+  ACTIVE
+  ARCHIVED
+}
+
 model TacticsSet {
     id           String            @id @default(cuid())
     name         String
@@ -141,7 +147,7 @@ model TacticsSet {
     puzzles      Puzzle[]
     rounds       TacticsSetRound[]
     curatedSetId String?
-    active       Boolean           @default(true)
+    status       TacticsSetStatus  @default(ACTIVE)
 
     @@index([userId])
 }

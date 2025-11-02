@@ -37,4 +37,4 @@ __pycache__/
 *.pkl
 *.cp4
 **/import/
-.mypy_cache/
+.mypy_cache

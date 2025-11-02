@@ -1,7 +1,8 @@
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import { errorResponse, successResponse } from '~/app/api/responses'
 import { prisma } from '~/server/db'
 import { getPostHogServer } from '~/server/posthog-server'
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { errorResponse, successResponse } from '~/app/api/responses'
+
 const posthog = getPostHogServer()
 
 export async function GET() {
@@ -18,7 +19,7 @@ export async function GET() {
       },
       where: {
         userId: user.id,
-        active: true,
+        status: 'ACTIVE',
       },
     })
 

@@ -2,12 +2,11 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-COPY apps/puzzles-api/package.json ./
-COPY apps/puzzles-api/yarn.lock ./
-COPY apps/puzzles-api ./
+# Copy only package info for install
+COPY package.json yarn.lock ./
 
-RUN yarn install
+# Install dependencies (hoisted via workspaces)
+RUN yarn install --frozen-lockfile
 
-ENV PATH="/app/node_modules/.bin:$PATH"
-
+# Mount code later (volume in compose) to allow live reload
 CMD ["yarn", "dev"]

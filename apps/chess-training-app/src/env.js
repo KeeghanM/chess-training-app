@@ -37,6 +37,9 @@ export const env = createEnv({
     KILLBILL_PASSWORD: z.string(),
     KILLBILL_API_KEY: z.string(),
     KILLBILL_API_SECRET: z.string(),
+    PUZZLE_API_URL: z.url(),
+    REDIS_HOST: z.string(),
+    REDIS_PORT: z.coerce.number().default(6379),
   },
 
   /**
@@ -90,6 +93,10 @@ export const env = createEnv({
     KILLBILL_PASSWORD: process.env.KILLBILL_PASSWORD,
     KILLBILL_API_KEY: process.env.KILLBILL_API_KEY,
     KILLBILL_API_SECRET: process.env.KILLBILL_API_SECRET,
+    REDIS_HOST: process.env.REDIS_HOST,
+    REDIS_PORT: process.env.REDIS_PORT,
+    PUZZLE_API_URL: process.env.PUZZLE_API_URL,
+
     // CLIENT
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,

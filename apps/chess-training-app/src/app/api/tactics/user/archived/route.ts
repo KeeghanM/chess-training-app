@@ -1,7 +1,8 @@
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import { errorResponse, successResponse } from '~/app/api/responses'
 import { prisma } from '~/server/db'
 import { getPostHogServer } from '~/server/posthog-server'
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { errorResponse, successResponse } from '~/app/api/responses'
+
 const posthog = getPostHogServer()
 
 export async function GET() {
@@ -20,8 +21,11 @@ export async function GET() {
     return successResponse(
       'Sets found',
       {
-        sets: sets.filter((set) => set.active == false),
-        activeCount: sets.reduce((acc, set) => (set.active ? acc + 1 : acc), 0),
+        sets: sets.filter((set) => set.status === 'ARCHIVED'),
+        activeCount: sets.reduce(
+          (acc, set) => (set.status === 'ACTIVE' ? acc + 1 : acc),
+          0,
+        ),
       },
       200,
     )

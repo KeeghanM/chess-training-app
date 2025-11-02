@@ -9,11 +9,12 @@ RUN apt-get update && apt-get install -y \
     curl \
  && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
+# Install Python dependencies
+COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install optional dev-only packages (auto reload)
+# Install optional dev-only packages for hot reload
 RUN pip install --no-cache-dir watchdog
 
-# Mount code at runtime, so only copy what's needed
-CMD ["watchmedo", "auto-restart", "--directory=.", "--pattern=*.py", "--", "python", "worker.py"]
+# Run the worker with auto-reload on Python file changes
+CMD ["watchmedo", "auto-restart", "--directory=.", "--pattern=*.py","--recursive", "--", "python", "-u", "worker.py"]
