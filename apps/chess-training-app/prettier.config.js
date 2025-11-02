@@ -8,10 +8,14 @@ const config = {
   importOrder: [
     '^(next/(.*)$)|^(next$)', // Imports by "next"
     '^(react/(.*)$)|^(react$)', // Imports by "react"
-    '^~/server/(.*)$', // Imports by "~/server"
     '<THIRD_PARTY_MODULES>', // Imports by third-party modules
-    '^(.*)components/(.*)$', // Imports by "components"
-    '^(.*)utils/(.*)$', // Imports by "utils"
+    '^~/server/(.*)$', // Imports by "~/server"
+    '^~/db/(.*)$', // Imports by "~/db"
+    '^~/auth/(.*)$', // Imports by "~/auth"
+    '^~/components/(.*)$', // Imports by "~/components"
+    '^~/hooks/(.*)$', // Imports by "~/hooks"
+    '^~/stores/(.*)$', // Imports by "~/stores"
+    '^~/utils/(.*)$', // Imports by "~/utils"
     '^[./]', // Other imports
     '<TYPE>',
   ],

@@ -20,7 +20,7 @@ git-diff.txt
 venv/
 .ipynb_checkpoints/
 __pycache__/
-*.idea/
+.idea/
 */.ipynb_checkpoints/*
 *.pgn
 *.tactic
