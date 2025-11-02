@@ -11,20 +11,16 @@ configuration: Dict = load_configuration()
 INPUT_DIRECTORY: str = configuration["paths"]["processed"]
 STOCKFISH_DEPTH: int = configuration["stockfish"]["depth"]
 
-def analyze_pgn(pgn_path: str, stockfish_depth: int = STOCKFISH_DEPTH, user_id: Optional[int] = None) -> None:
+def analyze_pgn(pgn_content: str, stockfish_depth: int = STOCKFISH_DEPTH, user_id: Optional[int] = None) -> None:
     name: str
-    filenames: list[str]
-    name, filenames = convert(pgn_path)
+    game_pgn_strings: list[str]
+    name, game_pgn_strings = convert(pgn_content)
 
-    with tqdm(filenames) as bar:
-        for filename in bar:
-            analyzer = Analyzer(
-                filename=filename,
-                user_id=user_id
-            )
-
+    with tqdm(game_pgn_strings) as bar:
+        for game_pgn_string in bar:
+            analyzer = Analyzer(user_id=user_id)
             try:
-                analyzer()
+                analyzer(game_pgn_string)
             except KeyboardInterrupt:
                 print("Interrupted.")
                 break
@@ -42,5 +38,10 @@ if __name__ == "__main__":
     parser.add_argument("--depth", "-d", type=int, help="Stockfish depth", default=STOCKFISH_DEPTH)
     parser.add_argument("--user_id", "-u", type=int, help="User ID", default=None)
     args = parser.parse_args()
-    
-    analyze_pgn(args.pgn, args.depth, args.user_id)
+
+    pgn_content = ""
+    if args.pgn:
+        with open(args.pgn, "r") as file:
+            pgn_content = file.read()
+
+    analyze_pgn(pgn_content, args.depth, args.user_id)

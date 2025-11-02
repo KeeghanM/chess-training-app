@@ -2,6 +2,8 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
+ENV PATH="/usr/games:${PATH}"
+
 # Install runtime dependencies and developer tools
 RUN apt-get update && apt-get install -y \
     stockfish \

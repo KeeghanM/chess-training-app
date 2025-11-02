@@ -21,6 +21,7 @@ configuration = load_configuration()
 INPUT_DIRECTORY = configuration["paths"]["processed"]
 OUTPUT_DIRECTORY = configuration["paths"]["tactics"]
 STOCKFISH_PATH = configuration["paths"]["stockfish"]
+print(f"Using Stockfish binary at: {STOCKFISH_PATH}")
 
 STOCKFISH_DEPTH = configuration["stockfish"]["depth"]
 STOCKFISH_PARAMETERS = configuration["stockfish"]["parameters"]
@@ -31,6 +32,9 @@ SAVE_LAST_OPPONENT_MOVE = configuration["export"]["save_last_opponent_move"]
 
 
 class Analyzer(Processor):
+    def __init__(self, user_id: Optional[int] = None):
+        super().__init__()
+        self.user_id = user_id
     def find_variations(
         self,
         moves: list[str],
@@ -39,7 +43,11 @@ class Analyzer(Processor):
         output_filename: str,
         stockfish_depth: int = STOCKFISH_DEPTH,
     ) -> tuple[list[Variations], list[Tactic]]:
-        stockfish = Stockfish(path=STOCKFISH_PATH, depth=stockfish_depth, parameters=STOCKFISH_PARAMETERS)
+        stockfish = Stockfish(
+            path=STOCKFISH_PATH,
+            depth=stockfish_depth,
+            parameters=STOCKFISH_PARAMETERS
+        )
 
         if starting_position:
             board = Board(starting_position)
@@ -115,9 +123,11 @@ class Analyzer(Processor):
             except requests.exceptions.RequestException as e:
                 print(f"Error sending puzzle {index} to API: {e}")
 
-    def __call__(self) -> None:
-        game_path = os.path.join(INPUT_DIRECTORY, self.filename)
-        data = self.preprocess(game_path, OUTPUT_DIRECTORY)
+    def __call__(self, pgn_content: str) -> None:
+        """
+        Analyze PGN content string directly (no files).
+        """
+        data = self.preprocess_from_string(pgn_content, OUTPUT_DIRECTORY)
 
         if data is None:
             return
@@ -153,4 +163,3 @@ class Analyzer(Processor):
         if variations_list and tactic_list:
             self.save_variations(variations_list, tactic_list, directory)
 
-        os.remove(in_progress_file)

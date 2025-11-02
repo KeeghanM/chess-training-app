@@ -8,38 +8,28 @@ from modules.converter import get_moves
 
 
 class Processor:
-    def __init__(self, filename: str, user_id: Optional[int] = None):
-        self.filename = filename
+    def __init__(self, pgn_content: str, user_id: Optional[int] = None):
+        self.pgn_content = pgn_content
         self.user_id = user_id
 
     @staticmethod
-    def preprocess(game_path: str, output_directory: str) -> Optional[Tuple[list[str], chess.pgn.Headers, Optional[str], str, str, str]]:
-        moves: list[str] = get_moves(game_path)
-        game = chess.pgn.read_game(open(game_path))
+    def preprocess_from_string(self, pgn_content: str, output_directory: str):
+        """
+        Preprocess PGN string to extract moves, headers, etc.
+        Returns the same tuple as `preprocess()`.
+        """
+        from chess import pgn
+        import io
+        pgn_io = io.StringIO(pgn_content)
+        game = pgn.read_game(pgn_io)
         if game is None:
+            print("No game found in PGN content.")
             return None
-        game_hash: str = hashlib.md5(str(game).encode()).hexdigest()
-        headers: chess.pgn.Headers = game.headers
-        starting_position: Optional[str] = headers.get("FEN")
 
-        output_filename: str = (
-            f"{headers.get('White', '_')} vs {headers.get('Black', '_')} ({headers.get('Date', '___')}) [{game_hash}]"
-        )
-        directory: str = os.path.join(output_directory, output_filename)
-        in_progress_file: str = os.path.join(directory, ".progress")
-        if os.path.isdir(directory):
-            if not os.path.exists(in_progress_file):
-                print(f"Analysis for {output_filename} are already found.")
-                return None
-        else:
-            os.mkdir(directory)
-
-        open(in_progress_file, "a").close()
-        return (
-            moves,
-            headers,
-            starting_position,
-            output_filename,
-            directory,
-            in_progress_file,
-        )
+        moves = [move.uci() for move in game.mainline_moves()]
+        headers = game.headers
+        starting_position = headers.get("FEN", "")
+        output_filename = f"{headers.get('White','?')} vs {headers.get('Black','?')} ({headers.get('Date','????.??.??')})"
+        directory = output_directory
+        in_progress_file = os.path.join(directory, f".{output_filename}.inprogress")
+        return moves, headers, starting_position, output_filename, directory, in_progress_file

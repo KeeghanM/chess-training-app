@@ -20,8 +20,6 @@ if not isinstance(configuration, dict):
 
 INPUT_DIRECTORY: str = configuration["paths"]["processed"]
 PGN_EXTRACT_PATH: str = configuration["paths"]["pgn_extract"]
-TEMP_FILE: str = configuration["paths"]["temp_file"]
-
 
 def create_game_from_board(headers: chess.pgn.Headers, board: chess.Board) -> chess.pgn.Game:
     game = chess.pgn.Game.from_board(board)
@@ -32,28 +30,22 @@ def create_game_from_board(headers: chess.pgn.Headers, board: chess.Board) -> ch
     return game
 
 
-def extract_games(pgn: str, output_path: str, temp_file: str = TEMP_FILE) -> None:
-    absolute_path: str = os.path.abspath(temp_file)
-    with open(absolute_path, "w") as file:
-        file.write(pgn)
-
-    filenames: list[str] = [
-        filename
-        for filename in os.listdir(output_path)
-        if re.findall(FILENAME_PATTERN, filename) and filename != ".gitkeep"
-    ]
-
-    for filename in filenames:
-        os.remove(os.path.join(output_path, filename))
-
+def extract_games(pgn: str) -> str:
     try:
-        subprocess.run(
-            [PGN_EXTRACT_PATH, "-#1,0", "-Wuci", absolute_path],
-            stdout=subprocess.PIPE,
-            cwd=output_path,
+        result = subprocess.run(
+            [PGN_EXTRACT_PATH, "-#1,0", "-Wuci"],
+            input=pgn,
+            capture_output=True,
+            text=True,
+            check=True
         )
+        return result.stdout
     except FileNotFoundError:
         print(f"pgn-extract not found in: {PGN_EXTRACT_PATH}. Please set the path in configuration.json")
+        exit(1)
+    except subprocess.CalledProcessError as e:
+        print(f"Error running pgn-extract: {e}")
+        print(f"Stderr: {e.stderr}")
         exit(1)
 
 
@@ -67,21 +59,19 @@ def get_moves(path: str) -> list[str]:
     return moves[0].lower().split()[:-1]
 
 
-def convert(pgn_path: str) -> Tuple[str, list[str]]:
+def convert(pgn_content: str) -> Tuple[str, list[str]]:
     name: str = ""
-    if pgn_path:
-        with open(pgn_path, "r") as file:
-            pgn: str = file.read()
-            name = f"[{hashlib.md5(pgn.encode('utf-8')).hexdigest()[:6]}]"
+    game_pgn_strings: list[str] = []
+    if pgn_content:
+        name = f"[{hashlib.md5(pgn_content.encode('utf-8')).hexdigest()[:6]}]"
+        raw_pgn_output = extract_games(pgn_content)
 
-        extract_games(pgn, INPUT_DIRECTORY)
+        # Split the raw output into individual games. pgn-extract typically separates games with blank lines.
+        # Each game starts with '[Event'.
+        split_games = re.split(r'\n\n(?=\[Event)', raw_pgn_output.strip())
+        game_pgn_strings = [game.strip() for game in split_games if game.strip()]
 
-    filenames: list[str] = sorted(
-        [filename for filename in os.listdir(INPUT_DIRECTORY) if filename != ".gitkeep"],
-        key=lambda x: int(x.split(".")[0]),
-    )
-
-    return name, filenames
+    return name, game_pgn_strings
 
 
 def uci_to_san(board: chess.Board, move: str) -> str:
