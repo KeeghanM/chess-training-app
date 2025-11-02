@@ -1,5 +1,6 @@
 import { prisma } from '~/server/db'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { TacticsSetStatus } from '@prisma/client'
 import { errorResponse, successResponse } from '../../responses'
 
 export async function POST(req: Request) {
@@ -22,7 +23,7 @@ export async function POST(req: Request) {
         userId: user.id,
       },
       data: {
-        status: 'ACTIVE',
+        status: TacticsSetStatus.ACTIVE,
       },
     })
 

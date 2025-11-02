@@ -25,7 +25,7 @@ See the [full product roadmap](https://www.chesstraining.app/product-roadmap) he
 
 ### A Simple API to access over 2 Million Chess Puzzles
 
-The Chess Training App utilizes this API to fetch chess puzzles. This API is also publicly available and provides access to over 2 million chess puzzles, sourced from LiChess (though it is a 3rd party solution not affiliated with LiChess).
+The Chess Training App utilizes this API to fetch chess puzzles. This API is also publicly available and provides access to over 2 million chess puzzles, sourced from LiChess (though it is a 3rd-party solution not affiliated with LiChess).
 
 If you wish to access the LiChess puzzle collection yourself you can [do so here](https://database.lichess.org/#puzzles)
 

@@ -4,8 +4,8 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 COPY . .
 
-RUN yarn install --frozen-lockfile
-RUN yarn build
+RUN yarn install --frozen-lockfile && \
+    yarn build
 
 # Production image
 FROM node:22-alpine

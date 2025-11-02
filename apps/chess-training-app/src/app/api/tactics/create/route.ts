@@ -1,6 +1,7 @@
 import { prisma } from '~/server/db'
 import { getPostHogServer } from '~/server/posthog-server'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { TacticsSetStatus } from '@prisma/client'
 import { errorResponse, successResponse } from '~/app/api/responses'
 
 const posthog = getPostHogServer()
@@ -38,7 +39,7 @@ export async function POST(request: Request) {
         name: name,
         size: puzzleIds.length,
         rating: rating,
-        status: 'ACTIVE',
+        status: TacticsSetStatus.ACTIVE,
         puzzles: {
           createMany: {
             data: puzzleIds,

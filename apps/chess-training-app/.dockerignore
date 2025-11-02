@@ -16,8 +16,6 @@ yarn.lock
 .flake8
 tables/
 doc/
-node_modules
-.git
 .cache
 .next
 dist

@@ -1,6 +1,10 @@
 import { prisma } from '~/server/db'
+import { getPostHogServer } from '~/server/posthog-server'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { TacticsSetStatus } from '@prisma/client'
 import { errorResponse, successResponse } from '../../responses'
+
+const posthog = getPostHogServer()
 
 export async function POST(req: Request) {
   const session = getKindeServerSession()
@@ -22,13 +26,13 @@ export async function POST(req: Request) {
         userId: user.id,
       },
       data: {
-        status: 'ARCHIVED',
+        status: TacticsSetStatus.ARCHIVED,
       },
     })
 
     return successResponse('Set Archived', { setId }, 200)
   } catch (error) {
-    console.error('[ARCHIVE_SET_ERROR]', error)
+    posthog.captureException(error)
     return errorResponse('Internal Error', 500)
   }
 }

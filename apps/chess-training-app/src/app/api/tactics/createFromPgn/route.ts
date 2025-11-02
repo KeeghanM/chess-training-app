@@ -1,7 +1,10 @@
 import { prisma } from '~/server/db'
+import { getPostHogServer } from '~/server/posthog-server'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import { publishPgnToRedis } from '~/utils/redis'
 import { errorResponse, successResponse } from '../../responses'
+
+const posthog = getPostHogServer()
 
 export async function POST(req: Request) {
   const session = getKindeServerSession()
@@ -15,6 +18,11 @@ export async function POST(req: Request) {
 
     if (!name || !pgn) {
       return errorResponse('Missing name or PGN', 400)
+    }
+
+    const regex = /[@?#%^\*]/g
+    if (name.length < 5 || name.length > 150 || regex.test(name)) {
+      return errorResponse('Invalid name', 400)
     }
 
     // Create a new TacticsSet with PENDING status
@@ -37,7 +45,7 @@ export async function POST(req: Request) {
 
     return successResponse('Set Created', { set: newTacticsSet }, 200)
   } catch (error) {
-    console.error('[CREATE_FROM_PGN_ERROR]', error)
+    posthog.captureException(error)
     return errorResponse('Internal Error', 500)
   }
 }

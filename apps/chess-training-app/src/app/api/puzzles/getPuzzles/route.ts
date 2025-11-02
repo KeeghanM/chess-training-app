@@ -52,14 +52,13 @@ export async function POST(request: Request) {
       },
     })
     const json = (await resp.json()) as { puzzles: TrainingPuzzle[] }
-    console.log({ json })
+
     const puzzles = json.puzzles
 
     if (!puzzles) return errorResponse('Puzzles not found', 404)
 
     return successResponse('Puzzles found', { puzzles }, 200)
   } catch (e) {
-    console.error(e)
     posthog.captureException(e)
     return errorResponse('Internal Server Error', 500)
   }

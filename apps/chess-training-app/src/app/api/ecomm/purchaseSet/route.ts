@@ -1,5 +1,6 @@
 import { prisma } from '~/server/db'
 import { getPostHogServer } from '~/server/posthog-server'
+import { TacticsSetStatus } from '@prisma/client'
 import { env } from '~/env'
 import { getUserServer } from '@utils/getUserServer'
 import { errorResponse, successResponse } from '../../responses'
@@ -31,14 +32,14 @@ export async function POST(request: Request) {
     })
 
     if (existingSet) {
-      if (existingSet.status === 'ARCHIVED') {
+      if (existingSet.status === TacticsSetStatus.ARCHIVED) {
         // Check if it was archived, in which case we can just unarchive it
         await prisma.tacticsSet.update({
           where: {
             id: existingSet.id,
           },
           data: {
-            status: 'ACTIVE',
+            status: TacticsSetStatus.ACTIVE,
           },
         })
       }
@@ -54,7 +55,7 @@ export async function POST(request: Request) {
     const ownedSets = await prisma.tacticsSet.count({
       where: {
         userId: user.id,
-        status: 'ACTIVE',
+        status: TacticsSetStatus.ACTIVE,
       },
     })
 

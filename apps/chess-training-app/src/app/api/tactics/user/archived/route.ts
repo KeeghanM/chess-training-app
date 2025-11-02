@@ -1,6 +1,7 @@
 import { prisma } from '~/server/db'
 import { getPostHogServer } from '~/server/posthog-server'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { TacticsSetStatus } from '@prisma/client'
 import { errorResponse, successResponse } from '~/app/api/responses'
 
 const posthog = getPostHogServer()
@@ -21,9 +22,10 @@ export async function GET() {
     return successResponse(
       'Sets found',
       {
-        sets: sets.filter((set) => set.status === 'ARCHIVED'),
+        sets: sets.filter((set) => set.status === TacticsSetStatus.ARCHIVED),
         activeCount: sets.reduce(
-          (acc, set) => (set.status === 'ACTIVE' ? acc + 1 : acc),
+          (acc, set) =>
+            set.status === TacticsSetStatus.ACTIVE ? acc + 1 : acc,
           0,
         ),
       },

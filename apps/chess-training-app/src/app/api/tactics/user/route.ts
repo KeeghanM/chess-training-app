@@ -1,6 +1,7 @@
 import { prisma } from '~/server/db'
 import { getPostHogServer } from '~/server/posthog-server'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { TacticsSetStatus } from '@prisma/client'
 import { errorResponse, successResponse } from '~/app/api/responses'
 
 const posthog = getPostHogServer()
@@ -20,7 +21,7 @@ export async function GET() {
       where: {
         userId: user.id,
         status: {
-          not: 'ARCHIVED',
+          not: TacticsSetStatus.ARCHIVED,
         },
       },
     })

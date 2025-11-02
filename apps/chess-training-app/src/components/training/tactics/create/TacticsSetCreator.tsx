@@ -241,6 +241,7 @@ export default function TacticsSetCreator({
       } else {
         const puzzles = await GetPuzzlesForSet(rating, size, themesList)
         if (!puzzles || puzzles.length == 0) {
+          setMessage('Failed to fetch puzzles. Please try different criteria.')
           return
         }
 

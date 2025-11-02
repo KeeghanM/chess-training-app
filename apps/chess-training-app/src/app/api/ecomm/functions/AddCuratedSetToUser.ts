@@ -58,7 +58,7 @@ export async function AddCuratedSetToUser(setId: string, userId: string) {
             id: userTacticsSet.id,
           },
           data: {
-            status: 'ACTIVE',
+            status: TacticsSetStatus.ACTIVE,
           },
         })
       }

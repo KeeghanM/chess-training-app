@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { prisma } from '~/server/db'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { TacticsSetStatus } from '@prisma/client'
 import Button from '@components/_elements/button'
 import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
@@ -26,7 +27,7 @@ export default async function CuratedSetsPage() {
     ? await prisma.tacticsSet.findMany({
         where: {
           userId: user.id,
-          status: 'ACTIVE',
+          status: TacticsSetStatus.ACTIVE,
           NOT: {
             curatedSetId: null,
           },

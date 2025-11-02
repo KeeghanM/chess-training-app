@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { prisma } from '~/server/db'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { TacticsSetStatus } from '@prisma/client'
 import posthog from 'posthog-js'
 import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
@@ -31,7 +32,7 @@ export default async function CuratedSetPage(props: {
         where: {
           curatedSetId: set.id,
           userId: user?.id,
-          status: 'ACTIVE',
+          status: TacticsSetStatus.ACTIVE,
         },
       })
 

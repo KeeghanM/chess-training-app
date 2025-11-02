@@ -1,6 +1,7 @@
 import { prisma } from '~/server/db'
 import { getPostHogServer } from '~/server/posthog-server'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { TacticsSetStatus } from '@prisma/client'
 import { errorResponse, successResponse } from '~/app/api/responses'
 
 const posthog = getPostHogServer()
@@ -36,7 +37,7 @@ export async function POST(
           id: setId,
         },
         data: {
-          status: 'ACTIVE',
+          status: TacticsSetStatus.ACTIVE,
           rounds: {
             create: {
               roundNumber: 1,

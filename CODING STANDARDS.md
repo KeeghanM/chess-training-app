@@ -85,7 +85,7 @@ Use the following aliases for clean imports:
 
 Ensure the following strict mode options are enabled in `tsconfig.json`:
 
-```json
+```jsonc
 // tsconfig.json
 {
   "compilerOptions": {
@@ -99,8 +99,8 @@ Ensure the following strict mode options are enabled in `tsconfig.json`:
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true
-  }
+    "noFallthroughCasesInSwitch": true,
+  },
 }
 ```
 
@@ -115,7 +115,7 @@ Ensure the following strict mode options are enabled in `tsconfig.json`:
 
 Prefer type over interface. Use type for data structures and shapes. Reserve interface ONLY for behavior contracts (ports, adapters, dependency injection):
 
-```javascript
+```typescript
 // ✅ CORRECT - type for data structures
 type User = {
   readonly id: string;
@@ -159,7 +159,7 @@ Why this distinction?
 - Create domain-specific types (e.g., UserId, PaymentId) for type safety.
 - Use Zod or any other Standard Schema compliant schema library to create types, by creating - schemas first.
 
-```javascript
+```typescript
 // Good - Branded types for type safety
 type UserId = string & { readonly brand: unique symbol };
 type PaymentAmount = number & { readonly brand: unique symbol };
@@ -172,7 +172,7 @@ type PaymentAmount = number;
 Schema-First Development with Zod
 Always define your schemas first, then derive types from them:
 
-```javascript
+```typescript
 import { z } from 'zod'
 
 // Define schemas first - these provide runtime validation
@@ -252,7 +252,7 @@ Ask these questions in order:
 
 #### ✅ Schema REQUIRED Examples
 
-```javascript
+```typescript
 // API responses (trust boundary)
 const UserSchema = z.object({
   id: z.string().uuid(),
@@ -287,7 +287,7 @@ const getMockUser = (): User => {
 
 #### ❌ Schema OPTIONAL Examples
 
-```javascript
+```typescript
 // Pure internal types (no external data, no validation)
 type Point = { readonly x: number; readonly y: number }
 type CartTotal = { subtotal: number; tax: number; total: number }
@@ -333,7 +333,7 @@ type ButtonProps = {
 
 **CRITICAL:** Tests must use real schemas and types from the main project, not redefine their own.
 
-```javascript
+```typescript
 // ❌ WRONG - Defining schemas in test files
 const ProjectSchema = z.object({
 id: z.string(),
@@ -366,7 +366,7 @@ import { ProjectSchema, type Project } from "@your-org/schemas";
 - If a schema isn't exported yet, add it to the exports rather than duplicating it.
 - Mock data factories should use the real types derived from real schemas.
 
-```javascript
+```typescript
 // ✅ CORRECT - Test factories using real schemas
 import { type Project, ProjectSchema } from '@your-org/schemas'
 
@@ -417,7 +417,7 @@ src/
 
 Use factory functions with optional overrides for test data:
 
-```javascript
+```typescript
 const getMockPaymentPostPaymentRequest = (
   overrides?: Partial<PostPaymentsRequestV3>,
 ): PostPaymentsRequestV3 => {
@@ -466,7 +466,7 @@ Key principles:
 
 When schemas exist, validate factory output to catch test data issues early:
 
-```javascript
+```typescript
 import { type Payment, PaymentSchema } from '../schemas/payment.schema'
 
 const getMockPayment = (overrides?: Partial<Payment>): Payment => {
@@ -500,7 +500,7 @@ const payment = getMockPayment({
 
 Avoid these test smells:
 
-```javascript
+```typescript
 // ❌ BAD - Implementation-focused test
 it('should call validateAmount', () => {
   const spy = jest.spyOn(validator, 'validateAmount')
@@ -536,7 +536,7 @@ it('should process payment', () => {
 
 Example showing how validation code gets 100% coverage without testing it directly:
 
-```javascript
+```typescript
 // payment-validator.ts (implementation detail)
 export const validatePaymentAmount = (amount: number): boolean => {
   return amount > 0 && amount <= 10000
@@ -609,7 +609,7 @@ describe('Payment processing', () => {
 
 ### React Component Testing
 
-```javascript
+```typescript
 // Good - testing user-visible behavior
 describe('PaymentForm', () => {
   it('should show error when submitting invalid amount', async () => {
@@ -632,7 +632,7 @@ describe('PaymentForm', () => {
 
 Use Result types or early returns:
 
-```javascript
+```typescript
 // Good - Result type pattern
 type Result<T, E = Error> =
 | { success: true; data: T }
@@ -668,7 +668,7 @@ return executePayment(payment);
 
 ### Testing Behavior
 
-```javascript
+```typescript
 // Good - tests behavior through public API
 describe('PaymentProcessor', () => {
   it('should decline payment when insufficient funds', () => {
@@ -702,7 +702,7 @@ describe('PaymentProcessor', () => {
 
 ## 🚫 Common Patterns to Avoid (Anti-Patterns)
 
-```javascript
+```typescript
 // Avoid: Mutation
 const addItem = (items: Item[], newItem: Item) => {
 items.push(newItem); // Mutates array

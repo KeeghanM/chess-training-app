@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useTacticsQueries } from '@hooks/use-tactics-queries'
+import { TacticsSetStatus } from '@prisma/client'
 import { env } from '~/env'
 import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
@@ -11,6 +12,8 @@ import SetListItem from './SetListItem'
 export default function TacticsList(props: { hasUnlimitedSets: boolean }) {
   const { hasUnlimitedSets } = props
   const { tacticsSetsQuery } = useTacticsQueries()
+
+  if (tacticsSetsQuery.data) console.log(tacticsSetsQuery.data)
 
   return (
     <div className="space-y-2 md:space-y-6">
@@ -50,27 +53,33 @@ export default function TacticsList(props: { hasUnlimitedSets: boolean }) {
             </div>
           </>
         ) : (
-          tacticsSetsQuery.data
-            ?.filter((set) => set.status === 'ACTIVE')
-            ?.sort((a, b) => {
-              // add non-trained sets to the top, sorted by created date
-              // then sort, in descending order, by the last trained date
-              if (a.lastTrained === null) return -1
-              if (b.lastTrained === null) return 1
-              if (a.lastTrained === b.lastTrained)
+          <>
+            {tacticsSetsQuery.data
+              ?.filter((set) => set.status === TacticsSetStatus.ACTIVE)
+              ?.sort((a, b) => {
+                // add non-trained sets to the top, sorted by created date
+                // then sort, in descending order, by the last trained date
+                if (a.lastTrained === null) return -1
+                if (b.lastTrained === null) return 1
+                if (a.lastTrained === b.lastTrained)
+                  return (
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime()
+                  )
                 return (
-                  new Date(b.createdAt).getTime() -
-                  new Date(a.createdAt).getTime()
+                  new Date(b.lastTrained).getTime() -
+                  new Date(a.lastTrained).getTime()
                 )
-              return (
-                new Date(b.lastTrained).getTime() -
-                new Date(a.lastTrained).getTime()
-              )
-            })
-            .map((set) => <SetListItem key={set.id} set={set} />) &&
-          tacticsSetsQuery.data
-            ?.filter((set) => set.status === 'PENDING')
-            .map((set) => <SetListItem key={set.id} set={set} pending={true} />)
+              })
+              .map((set) => (
+                <SetListItem key={set.id} set={set} />
+              ))}
+            {tacticsSetsQuery.data
+              ?.filter((set) => set.status === 'PENDING')
+              .map((set) => (
+                <SetListItem key={set.id} set={set} pending={true} />
+              ))}
+          </>
         )}
       </div>
     </div>
