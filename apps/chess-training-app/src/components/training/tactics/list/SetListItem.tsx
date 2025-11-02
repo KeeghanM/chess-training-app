@@ -14,7 +14,13 @@ import trackEventOnClient from '@utils/trackEventOnClient'
 import SetListEdit from './SetListEdit'
 import SetListStats from './SetListStats'
 
-export default function SetListItem({ set }: { set: PrismaTacticsSet }) {
+export default function SetListItem({
+  set,
+  pending = false,
+}: {
+  set: PrismaTacticsSet
+  pending?: boolean
+}) {
   const { user } = useKindeBrowserClient()
   const currentRound = set.rounds
     ? set.rounds[set.rounds.length - 1]
@@ -45,7 +51,9 @@ export default function SetListItem({ set }: { set: PrismaTacticsSet }) {
   }, [])
 
   return (
-    <div className="space-y-4 rounded-lg p-4 bg-card shadow" key={set.id}>
+    <div
+      className={`space-y-4 rounded-lg p-4 bg-card shadow ${pending && 'pointer-events-none'}`}
+    >
       <div className="space-y-2 p-4 bg-card-light rounded-lg shadow ">
         <h3 className="font-bold text-xl flex items-center gap-2">
           <Puzzle />
@@ -73,8 +81,10 @@ export default function SetListItem({ set }: { set: PrismaTacticsSet }) {
           <strong>Puzzles Completed:</strong>{' '}
           <ProgressBar percentage={(completedCount / set.size) * 100}>
             <span>
-              {completedCount}/{set.size} -{' '}
-              {Math.round((completedCount / set.size) * 100)}%
+              {completedCount}/{set.size}
+              {set.size > 0 && (
+                <> - {Math.round((completedCount / set.size) * 100)}%</>
+              )}
             </span>
           </ProgressBar>
         </div>
@@ -98,21 +108,30 @@ export default function SetListItem({ set }: { set: PrismaTacticsSet }) {
       <div className="flex gap-2 flex-row justify-center">
         <Button
           disabled={
-            (set.rounds?.length >= 8 && completedCount >= set.size) || opening
+            (set.rounds?.length >= 8 && completedCount >= set.size) ||
+            opening ||
+            pending
           }
           onClick={trainSet}
           variant="primary"
+          className={pending ? '!bg-black' : ''}
         >
           {opening ? (
             <>
               Opening... <Spinner />
             </>
+          ) : pending ? (
+            'Building...'
           ) : (
             'Train'
           )}
         </Button>
-        <SetListEdit set={set} user={user} />
-        <SetListStats set={set} />
+        {!pending && (
+          <>
+            <SetListEdit set={set} user={user} />
+            <SetListStats set={set} />
+          </>
+        )}
       </div>
     </div>
   )

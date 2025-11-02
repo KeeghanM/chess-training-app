@@ -44,7 +44,6 @@ export default function TacticsList(props: { hasUnlimitedSets: boolean }) {
               </p>
             </div>
             <div className="flex flex-col h-24 gap-0 border border-gray-300   shadow-md  bg-[rgba(0,0,0,0.03)]  hover:shadow-lg transition-shadow duration-300  opacity-50">
-              {' '}
               <p className="w-fit m-auto flex gap-1">
                 Loading... <Spinner />
               </p>
@@ -52,6 +51,7 @@ export default function TacticsList(props: { hasUnlimitedSets: boolean }) {
           </>
         ) : (
           tacticsSetsQuery.data
+            ?.filter((set) => set.status === 'ACTIVE')
             ?.sort((a, b) => {
               // add non-trained sets to the top, sorted by created date
               // then sort, in descending order, by the last trained date
@@ -67,7 +67,10 @@ export default function TacticsList(props: { hasUnlimitedSets: boolean }) {
                 new Date(a.lastTrained).getTime()
               )
             })
-            .map((set) => <SetListItem key={set.id} set={set} />)
+            .map((set) => <SetListItem key={set.id} set={set} />) &&
+          tacticsSetsQuery.data
+            ?.filter((set) => set.status === 'PENDING')
+            .map((set) => <SetListItem key={set.id} set={set} pending={true} />)
         )}
       </div>
     </div>

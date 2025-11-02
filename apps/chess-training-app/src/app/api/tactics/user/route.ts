@@ -19,7 +19,9 @@ export async function GET() {
       },
       where: {
         userId: user.id,
-        status: 'ACTIVE',
+        status: {
+          not: 'ARCHIVED',
+        },
       },
     })
 

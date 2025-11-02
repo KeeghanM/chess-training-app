@@ -5,6 +5,8 @@ export async function POST(req: Request) {
   try {
     const { puzzle, userId, setId, last_puzzle } = await req.json()
 
+    console.log({ puzzle, userId, setId, last_puzzle })
+
     if (!puzzle || !userId || !setId) {
       return errorResponse('Missing puzzle, userId, or setId', 400)
     }
@@ -12,12 +14,11 @@ export async function POST(req: Request) {
     // Create a CustomPuzzle
     const newCustomPuzzle = await prisma.customPuzzle.create({
       data: {
-        id: puzzle.id, // Assuming puzzle.id is unique and comes from the worker
+        id: puzzle.id,
         fen: puzzle.fen,
-        rating: puzzle.rating,
-        moves: JSON.stringify(puzzle.moves), // Store moves as JSON string
-        comment: puzzle.comment,
-        directStart: puzzle.directStart,
+        rating: parseInt(puzzle.rating),
+        moves: puzzle.moves,
+        directStart: puzzle.directStart === 'true',
       },
     })
 

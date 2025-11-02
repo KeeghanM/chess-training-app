@@ -1,5 +1,4 @@
 import hashlib
-import os
 import re
 import subprocess
 from typing import Dict, Tuple, Any, Union, List
@@ -10,18 +9,16 @@ import chess.pgn
 from modules.configuration import load_configuration
 
 UCI_MOVE_PATTERN = re.compile(r"[a-h][1-8][a-h][1-8]")
-FILENAME_PATTERN = re.compile(r"\d+\.pgn")
-SPLIT = True
 
 configuration: Union[Dict[str, Any], List[Any]] = load_configuration()
 
 if not isinstance(configuration, dict):
     raise TypeError("Configuration must be a dictionary.")
 
-INPUT_DIRECTORY: str = configuration["paths"]["processed"]
 PGN_EXTRACT_PATH: str = configuration["paths"]["pgn_extract"]
 
 def create_game_from_board(headers: chess.pgn.Headers, board: chess.Board) -> chess.pgn.Game:
+    """Create a chess.pgn.Game from a board position and headers."""
     game = chess.pgn.Game.from_board(board)
     for key, value in headers.items():
         if key != "FEN":
@@ -31,6 +28,10 @@ def create_game_from_board(headers: chess.pgn.Headers, board: chess.Board) -> ch
 
 
 def extract_games(pgn: str) -> str:
+    """
+    Extract games from PGN string using pgn-extract tool.
+    Converts to UCI format for processing.
+    """
     try:
         result = subprocess.run(
             [PGN_EXTRACT_PATH, "-#1,0", "-Wuci"],
@@ -49,25 +50,24 @@ def extract_games(pgn: str) -> str:
         exit(1)
 
 
-def get_moves(path: str) -> list[str]:
-    with open(path, "r") as file:
-        result: list[str] = file.read().splitlines()
-
-    moves: list[str] = [line for line in result if line and "[" not in line and re.findall(UCI_MOVE_PATTERN, line)]
-
-    assert len(moves), "No moves in the PGN file"
-    return moves[0].lower().split()[:-1]
-
-
 def convert(pgn_content: str) -> Tuple[str, list[str]]:
+    """
+    Convert PGN content string into individual game PGN strings.
+    Returns tuple of (name, list of game PGN strings).
+    """
     name: str = ""
     game_pgn_strings: list[str] = []
+    
     if pgn_content:
+        # Create a hash-based name for tracking
         name = f"[{hashlib.md5(pgn_content.encode('utf-8')).hexdigest()[:6]}]"
+        
+        # Extract games using pgn-extract
         raw_pgn_output = extract_games(pgn_content)
 
-        # Split the raw output into individual games. pgn-extract typically separates games with blank lines.
-        # Each game starts with '[Event'.
+        # Split the raw output into individual games
+        # pgn-extract typically separates games with blank lines
+        # Each game starts with '[Event'
         split_games = re.split(r'\n\n(?=\[Event)', raw_pgn_output.strip())
         game_pgn_strings = [game.strip() for game in split_games if game.strip()]
 
@@ -75,4 +75,5 @@ def convert(pgn_content: str) -> Tuple[str, list[str]]:
 
 
 def uci_to_san(board: chess.Board, move: str) -> str:
+    """Convert UCI move notation to SAN notation."""
     return board.san(chess.Move.from_uci(move))
