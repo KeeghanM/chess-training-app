@@ -38,7 +38,7 @@
     "chess.js": "^1.4.0",
     "install": "^0.13.0",
     "killbill": "^0.24.0",
-    "lucide-react": "^0.544.0",
+    "lucide-react": "^0.545.0",
     "next": "15.5.4",
     "nodemailer": "^7.0.7",
     "posthog-js": "^1.270.1",
