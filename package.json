@@ -7,7 +7,10 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "docker-compose up --build",
+    "dev": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build",
+    "dev:down": "docker compose -f docker-compose.yml -f docker-compose.dev.yml down",
+    "prod": "docker compose up --build -d",
+    "prod:down": "docker compose down",
     "prepare": "husky"
   },
   "devDependencies": {
