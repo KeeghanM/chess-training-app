@@ -1,0 +1,17 @@
+echo "Running pre-commit checks..."
+
+# Type checking for Next.js app
+yarn workspace chess-training-app run qa:types
+
+# Type checking for Express API
+yarn workspace puzzles-api run build
+
+# Python type checking for tactics-finder
+cd apps/tactics-finder && mypy --explicit-package-bases .
+
+if [ $? -ne 0 ]; then
+  echo "Pre-commit checks failed!"
+  exit 1
+fi
+
+echo "Pre-commit checks passed."

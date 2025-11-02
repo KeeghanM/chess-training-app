@@ -1,47 +1,67 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Consolidated .gitignore for chess-training-monorepo
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
-package-lock.json
-
-# testing
-/coverage
-
-# database
-/prisma/db.sqlite
-/prisma/db.sqlite-journal
-
-# next.js
-/.next/
-/out/
-next-env.d.ts
-
-# production
-/build
-
-# misc
+# Global ignores
 .DS_Store
 *.pem
-/.VSCodeCounter/*
-
-# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# local env files
-# do not commit any .env files to git, except for the .env.example file. https://create.t3.gg/en/usage/env-variables#using-environment-variables
+# Dependencies
+node_modules
+/.pnp
+.pnp.js
+package-lock.json
+
+# Environment variables
 .env
 .env*.local
 
-# vercel
+# Build artifacts
+/build
+/dist
+
+# Next.js specific (from apps/chess-training-app)
+/.next/
+/out/
+next-env.d.ts
 .vercel
 
-# typescript
+# TypeScript specific
 *.tsbuildinfo
 
+# Testing
+/coverage
 
+# Database
+/prisma/db.sqlite
+/prisma/db.sqlite-journal
+
+# VSCode Counter (from apps/chess-training-app)
+/.VSCodeCounter/*
+
+# Git diff output (from apps/chess-training-app)
 git-diff.txt
+
+# Python specific (from apps/tactics-finder)
+venv/
+.ipynb_checkpoints/
+__pycache__/
+*.idea/
+*/.ipynb_checkpoints/*
+*.pgn
+*.tactic
+*.vars
+*.rev
+*.progress
+*.temp
+*.log
+*.error
+*.exe
+*.db
+*.rtbw
+*.rtbz
+*.pkl
+*.cp4
+**/import/

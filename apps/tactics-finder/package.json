@@ -1,0 +1,9 @@
+{
+  "name": "chess-tactics-finder",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "./dev.sh"
+  },
+  "packageManager": "yarn@4.10.3"
+}

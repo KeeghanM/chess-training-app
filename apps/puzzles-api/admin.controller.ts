@@ -1,0 +1,127 @@
+import type { Request, Response } from 'express'
+import oracledb, { Connection, OUT_FORMAT_OBJECT } from 'oracledb'
+import { ErrorResponse, PuzzleResult } from './puzzle.controller'
+
+const AdminController = async (req: Request, res: Response) => {
+  if (
+    process.env.NODE_ENV === 'production' &&
+    (req.headers['x-admin-secret'] === undefined ||
+      req.headers['x-admin-secret'] !== process.env.ADMIN_SECRET)
+  ) {
+    res
+      .status(400)
+      .send(ErrorResponse('Request must be sent via RapidAPI', 400))
+    return
+  }
+
+  const count = parseInt(req.query.count as string) || 1
+  const results = []
+
+  let connection: Connection | undefined
+
+  try {
+    connection = await oracledb.getConnection({
+      user: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      connectionString: process.env.DB_CONNECTION_STRING,
+      externalAuth: false,
+    })
+
+    for (let i = 0; i < count; i++) {
+      // Get the oldest unchecked puzzle (or never checked)
+      // NULLS FIRST ensures puzzles that have never been checked are prioritised
+      const result = await connection.execute<PuzzleResult>(
+        `SELECT puzzleid, fen, rating, ratingdeviation, moves, themes 
+       FROM PUZZLES 
+       ORDER BY last_checked NULLS FIRST, last_checked ASC 
+       FETCH FIRST 1 ROW ONLY`,
+        {},
+        { outFormat: OUT_FORMAT_OBJECT },
+      )
+
+      if (result.rows === undefined || result.rows.length === 0) {
+        res.status(404).send(ErrorResponse('No Matching Puzzles', 404))
+        return
+      }
+
+      const puzzle = {
+        puzzleid: result.rows[0].PUZZLEID,
+        rating: result.rows[0].RATING,
+        ratingdeviation: result.rows[0].RATINGDEVIATION,
+      }
+
+      const lichessPuzzleResponse = await fetch(
+        `https://lichess.org/api/puzzle/${puzzle.puzzleid}`,
+      )
+
+      if (!lichessPuzzleResponse.ok) {
+        throw new Error('Error fetching from Lichess')
+      }
+
+      const lichessData = (await lichessPuzzleResponse.json()) as {
+        puzzle: { rating: number }
+      }
+
+      if (!lichessData || !lichessData.puzzle || !lichessData.puzzle.rating) {
+        throw new Error('Error parsing puzzle from Lichess')
+      }
+
+      // Update the puzzle if rating has changed, and always update last_checked
+      if (lichessData.puzzle.rating !== parseInt(puzzle.rating)) {
+        await connection.execute(
+          `UPDATE PUZZLES 
+         SET RATING = :rating, last_checked = SYSTIMESTAMP 
+         WHERE PUZZLEID = :puzzleid`,
+          {
+            rating: lichessData.puzzle.rating,
+            puzzleid: puzzle.puzzleid,
+          },
+          { autoCommit: true },
+        )
+      } else {
+        // Even if rating hasn't changed, update last_checked so we move on to the next puzzle
+        await connection.execute(
+          `UPDATE PUZZLES 
+         SET last_checked = SYSTIMESTAMP 
+         WHERE PUZZLEID = :puzzleid`,
+          {
+            puzzleid: puzzle.puzzleid,
+          },
+          { autoCommit: true },
+        )
+      }
+
+      results.push({
+        checked: puzzle.puzzleid,
+        ratingChanged: lichessData.puzzle.rating !== parseInt(puzzle.rating),
+      })
+      // Wait 3 seconds between each puzzle (except the last one)
+      if (i < count - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 3000))
+      }
+    }
+  } catch (err) {
+    console.error(err)
+    res
+      .status(500)
+      .send(
+        ErrorResponse('Error fetching puzzles. Please contact the admin.', 500),
+      )
+    return
+  }
+
+  if (connection) {
+    try {
+      await connection.close()
+    } catch (err) {
+      console.error('Error closing connection:', err)
+    }
+  }
+
+  res.status(200).send({
+    processed: results.length,
+    results,
+  })
+}
+
+export { AdminController }

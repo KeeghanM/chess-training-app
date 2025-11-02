@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  # Next.js Frontend App
+  chess-training-app:
+    build:
+      context: ./apps/chess-training-app
+      dockerfile: Dockerfile.dev # Use a separate Dockerfile for dev for hot-reloading
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./apps/chess-training-app:/app # Mount code for hot-reloading
+      - /app/node_modules
+      - /app/.next
+    environment:
+      # Point the frontend to the API container
+      - NEXT_PUBLIC_API_URL=http://puzzles-api:4000 
+    depends_on:
+      - puzzles-api
+    networks:
+      - chess-app-net
+
+  # Express Backend API
+  puzzles-api:
+    build:
+      context: ./apps/puzzles-api
+      dockerfile: Dockerfile.dev
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./apps/puzzles-api:/app
+      - /app/node_modules
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+    networks:
+      - chess-app-net
+
+  # Python Tactics Finder
+  tactics-finder:
+    build:
+      context: ./apps/tactics-finder
+    volumes:
+      - ./apps/tactics-finder:/app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+    networks:
+      - chess-app-net
+
+  # Redis Server
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    networks:
+      - chess-app-net
+
+networks:
+  chess-app-net:
+    driver: bridge
