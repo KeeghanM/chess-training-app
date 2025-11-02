@@ -1,6 +1,3 @@
-#!/bin/sh
-PATH="$PWD/node_modules/.bin:$PATH"
-
 # -----------------------------
 # Color helpers
 # -----------------------------
@@ -13,41 +10,49 @@ NC="\033[0m" # No Color
 echo "${BLUE}🚀 Running pre-commit checks...${NC}"
 
 # -----------------------------
-# Apps + commands (POSIX-safe)
+# Define commands per app
 # -----------------------------
-APPS_COMMANDS="
+# Format: NAME|COMMAND
+APPS="
 chess-training-app|yarn workspace chess-training-app run qa:types
 puzzles-api|yarn workspace puzzles-api run build
 tactics-finder|./apps/tactics-finder/venv/bin/python -m mypy --explicit-package-bases ./apps/tactics-finder
 "
 
 FAILURES=0
-PIDS=
+PIDS=""
 
 # -----------------------------
-# Run checks in parallel
+# Run each app check in parallel
 # -----------------------------
-echo "$APPS_COMMANDS" | while IFS='|' read APP CMD; do
+echo "$APPS" | while IFS="|" read APP CMD; do
   (
     PREFIX="[$APP]"
 
-    # Python venv check
+    # For Python, ensure venv exists
     if [ "$APP" = "tactics-finder" ]; then
-      PYTHON_VENV="./apps/tactics-finder/venv"
-      PYTHON_BIN="$PYTHON_VENV/bin/python"
-
-      if [ ! -f "$PYTHON_BIN" ]; then
-        echo "${RED}${PREFIX} ⚠️ Python venv not found. Run: 'python -m venv venv && ./venv/bin/pip install -r requirements.txt'${NC}"
+      VENV_BIN="./apps/tactics-finder/venv/bin/python"
+      if [ ! -x "$VENV_BIN" ]; then
+        echo "${RED}${PREFIX} ⚠️ Python venv not found! Run: 'python -m venv venv && ./venv/bin/pip install -r requirements.txt'${NC}"
         exit 1
       fi
     fi
 
-    # Run command, prefix output
-    sh -c "$CMD" 2>&1 | while IFS= read -r line; do
+    # Run the command and prefix output
+    # Use tee to capture exit code safely
+    TMPFILE=$(mktemp)
+    sh -c "$CMD" 2>&1 | tee "$TMPFILE" | while IFS= read -r line; do
       echo "${YELLOW}${PREFIX}${NC} $line"
     done
 
-    if [ "${PIPESTATUS:-0}" -ne 0 ]; then
+    EXIT_CODE=$(tail -n1 "$TMPFILE" | sed 's/.*//') # just placeholder to not lose exit code
+    EXIT_CODE=${PIPESTATUS:-0} # fallback if PIPESTATUS not available
+
+    # Actually, capture proper exit code
+    sh -c "$CMD"
+    EXIT_CODE=$?
+
+    if [ "$EXIT_CODE" -ne 0 ]; then
       echo "${RED}${PREFIX} ❌ FAILED${NC}"
       exit 1
     else
@@ -59,7 +64,7 @@ echo "$APPS_COMMANDS" | while IFS='|' read APP CMD; do
 done
 
 # -----------------------------
-# Wait for all jobs and collect failures
+# Wait for all jobs
 # -----------------------------
 for PID in $PIDS; do
   wait $PID || FAILURES=$((FAILURES+1))
