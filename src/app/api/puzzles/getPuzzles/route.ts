@@ -1,6 +1,7 @@
 import { getPostHogServer } from '~/server/posthog-server'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import { errorResponse, successResponse } from '~/app/api/responses'
+import { env } from '~/env'
 import type { TrainingPuzzle } from '@components/training/tactics/TacticsTrainer'
 
 const posthog = getPostHogServer()
@@ -45,20 +46,17 @@ export async function POST(request: Request) {
   try {
     const paramsString = new URLSearchParams(params).toString()
 
-    const resp = await fetch(
-      'https://chess-puzzles.p.rapidapi.com/?' + paramsString,
-      {
-        method: 'GET',
-        headers: {
-          'x-rapidapi-host': 'chess-puzzles.p.rapidapi.com',
-          'x-rapidapi-key': process.env.RAPIDAPI_KEY!,
-        },
+    const resp = await fetch(`${env.PUZZLE_API}/?${paramsString}`, {
+      method: 'GET',
+      headers: {
+        'x-rapidapi-host': 'chess-puzzles.p.rapidapi.com',
+        'x-rapidapi-key': process.env.RAPIDAPI_KEY!,
       },
-    )
+    })
     const json = (await resp.json()) as { puzzles: TrainingPuzzle[] }
     const puzzles = json.puzzles
 
-    if (!puzzles) return errorResponse('Puzzles not found', 404)
+    if (!puzzles) return errorResponse('Puzzles not found', 400)
 
     return successResponse('Puzzles found', { puzzles }, 200)
   } catch (e) {
