@@ -31,7 +31,7 @@ export async function POST(request: Request) {
   let params: {
     rating: string
     count: string
-    themesType?: 'ALL'
+    themesType?: 'OR'
     themes?: string
     playerMoves?: string
   } = {
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     count: count.toString(),
   }
 
-  if (themes) params = { ...params, themesType: 'ALL', themes }
+  if (themes) params = { ...params, themesType: 'OR', themes }
   if (playerMoves) params = { ...params, playerMoves: playerMoves.toString() }
 
   try {
