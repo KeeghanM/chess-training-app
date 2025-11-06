@@ -5,6 +5,7 @@ import time
 import json
 from dotenv import load_dotenv
 from typing import Optional, Tuple, List
+from multiprocessing import Pool, cpu_count
 import uuid
 import io
 
@@ -114,49 +115,69 @@ def generate_and_send_puzzles(
     except Exception as e:
         print(f"ERROR generating or sending puzzles for a game: {e}")
 
+def process_job(job):
+    pgn_content = clean_pgn(job.get("pgn", ""))
+    user_id = job.get("userId")
+    set_id = job.get("setId")
 
-def main() -> None:
-    """Main worker loop."""
-    print(f"Worker listening for jobs on queue: {REDIS_QUEUE}")
+    if not pgn_content or not user_id or not set_id:
+        print("Job missing pgn/userId/setId.")
+        return
+
+    print(f"[Pool Worker] Processing job for setId {set_id}")
+
+    game_list = parse_pgn(pgn_content)
+    print(f"Found {len(game_list)} games")
+
+    for i, game_object in enumerate(game_list):
+        is_last = (i == len(game_list) - 1)
+        generate_and_send_puzzles(game_object, user_id, set_id, is_last)
+
+    print(f"[Pool Worker] Completed setId {set_id}")
+
+def choose_pool_config(queue_len):
+    if queue_len <= 1:
+        return 1, 6  # 1 worker, Stockfish 6 threads
+    elif queue_len <= 3:
+        return 2, 4
+    elif queue_len <= 6:
+        return 4, 2
+    else:
+        return 6, 1  # heavy queue = many workers, low threads
+
+def main():
+    print(f"Worker listening on queue: {REDIS_QUEUE}")
+
+    pool = None
+    active_workers = 0
 
     while True:
         try:
-            # Wait for a job on the queue
-            result: Optional[Tuple[bytes, bytes]] = redis_client.blpop([REDIS_QUEUE])  # type: ignore
-            if result:
-                _, job_data = result
-            job = json.loads(job_data.decode("utf-8"))
-            
-            pgn_content = clean_pgn(job.get("pgn", ""))
-            user_id = job.get("userId")
-            set_id = job.get("setId")
+            queue_len = redis_client.llen(REDIS_QUEUE)
+            desired_workers, sf_threads = choose_pool_config(queue_len)
 
-            if not pgn_content or not user_id or not set_id:
-                print("Job does not contain pgn, userId, or setId.")
+            # if pool config changed, restart pool
+            if desired_workers != active_workers:
+                if pool:
+                    pool.terminate()
+                    pool.join()
+                print(f"Scaling pool -> {desired_workers} workers, {sf_threads} SF threads each")
+                os.environ["STOCKFISH_THREADS"] = str(sf_threads)
+                pool = Pool(desired_workers)
+                active_workers = desired_workers
+
+            # non-blocking pop
+            job_data = redis_client.lpop(REDIS_QUEUE)
+            if not job_data:
+                time.sleep(0.2)
                 continue
 
-            print(f"Processing job for setId: {set_id}")
-            
-            # 1. Parse the PGN into individual games (in memory)
-            game_list = parse_pgn(pgn_content)
-            print(f"Found {len(game_list)} games to process")
-            
-            # 2. Process each game and send puzzles to the API
-            for i, game_object in enumerate(game_list):
-                is_last_game_in_list = (i == len(game_list) - 1)
-                generate_and_send_puzzles(game_object, user_id, set_id, is_last_game_in_list)
-            
-            print(f"Finished processing job for setId: {set_id}")
+            job = json.loads(job_data.decode("utf-8"))
+            pool.apply_async(process_job, (job,))
 
-        except redis.exceptions.ConnectionError as e:
-            print(f"Redis connection error: {e}")
-            # Wait for a bit before trying to reconnect
-            time.sleep(5)
-        except json.JSONDecodeError as e:
-            print(f"Error decoding job data: {e}")
         except Exception as e:
-            print(f"An error occurred: {e}")
-
+            print(f"Supervisor error: {e}")
+            time.sleep(1)
 
 if __name__ == "__main__":
     main()

@@ -23,6 +23,9 @@ print(f"Using Stockfish binary at: {STOCKFISH_PATH}")
 
 STOCKFISH_DEPTH = configuration["stockfish"]["depth"]
 STOCKFISH_PARAMETERS = configuration["stockfish"]["parameters"]
+sf_threads = int(os.getenv("STOCKFISH_THREADS", STOCKFISH_PARAMETERS.get("Threads", 2)))
+STOCKFISH_PARAMETERS["Threads"] = sf_threads
+
 STOCKFISH_TOP_MOVES = configuration["stockfish"]["top_moves"]
 
 IGNORE_FIRST_MOVE = configuration["export"]["ignore_first_move"]
