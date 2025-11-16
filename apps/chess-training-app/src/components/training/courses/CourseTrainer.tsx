@@ -86,7 +86,7 @@ export default function CourseTrainer(props: {
 
   // Training State
   const [mode, setMode] = useState<'normal' | 'recap'>('normal')
-  const [teaching, setTeaching] = useState(false)
+  const [isTeaching, setIsTeaching] = useState(false)
   const [currentMove, setCurrentMove] = useState<PrismaMove>()
   const [currentWrongMove, setCurrentWrongMove] = useState(0)
   const [hadTeachingMove, setHadTeachingMove] = useState(false)
@@ -108,8 +108,8 @@ export default function CourseTrainer(props: {
 
   // General/Settings State
   const windowSize = useWindowSize() as { width: number; height: number }
-  const [loading, setLoading] = useState(false)
-  const [interactive, setInteractive] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isInteractive, setIsInteractive] = useState(true)
   const [xpCounter, setXpCounter] = useState(0)
   const [showComment, setShowComment] = useState(false)
   const [error, setError] = useState('')
@@ -210,8 +210,8 @@ export default function CourseTrainer(props: {
       })
       if (opponentsMove.comment && previouslySeenComment == undefined) {
         setShowComment(true)
-        setInteractive(false)
-        setTeaching(true)
+        setIsInteractive(false)
+        setIsTeaching(true)
         setHadTeachingMove(true)
       }
       // No opponent comment, but check if we need to show a teaching move
@@ -234,16 +234,16 @@ export default function CourseTrainer(props: {
     setHadTeachingMove(true)
 
     const timeoutId = setTimeout(() => {
-      setTeaching(true)
-      setInteractive(false)
+      setIsTeaching(true)
+      setIsInteractive(false)
       makeMove(currentMove)
     }, delay)
     return timeoutId
   }
 
   const resetTeachingMove = () => {
-    setTeaching(false)
-    setInteractive(true)
+    setIsTeaching(false)
+    setIsInteractive(true)
     setShowComment(false)
     const lineColour = currentLine!.line.colour.toLowerCase().charAt(0)
 
@@ -291,7 +291,7 @@ export default function CourseTrainer(props: {
       // All the moves have now been gotten right and we've reviewed the line if needed
       // Now we want to log all the stats
       setXpCounter(xpCounter + 1)
-      setLoading(true)
+      setIsLoading(true)
       processNewFens()
       const updatedLines = processStats()
       if (soundEnabled) correctSound()
@@ -332,19 +332,19 @@ export default function CourseTrainer(props: {
       // Setup for the next line
       setNextLine(nextLine)
       setLineCorrect(true)
-      setInteractive(false)
+      setIsInteractive(false)
     } catch (e) {
       posthog.captureException(e)
       if (e instanceof Error) setError(e.message)
       else setError('An unknown error occurred')
     } finally {
-      setLoading(false)
+      setIsLoading(false)
     }
   }
 
   const startNextLine = async () => {
     if (!nextLine) return
-    setLoading(true)
+    setIsLoading(true)
     try {
       trackEventOnClient('course_next_line', {
         courseName: props.userCourse.course.courseName,
@@ -358,17 +358,17 @@ export default function CourseTrainer(props: {
       setWrongFens([])
       setHadTeachingMove(false)
       setLineCorrect(true)
-      setInteractive(true)
-      setTeaching(false)
+      setIsInteractive(true)
+      setIsTeaching(false)
       game.reset()
-      setInteractive(true)
+      setIsInteractive(true)
       setPosition(game.fen())
     } catch (e) {
       posthog.captureException(e)
       if (e instanceof Error) setError(e.message)
       else setError('An unknown error occurred')
     } finally {
-      setLoading(false)
+      setIsLoading(false)
     }
   }
 
@@ -655,10 +655,10 @@ export default function CourseTrainer(props: {
 
   useEffect(() => {
     if (!currentMove) return
-    if ((teaching || nextLine) && currentMove?.comment) setShowComment(true)
+    if ((isTeaching || nextLine) && currentMove?.comment) setShowComment(true)
     else setShowComment(false)
 
-    if (currentMove.arrows && teaching) {
+    if (currentMove.arrows && isTeaching) {
       setArrows(getArrows(currentMove.arrows))
     } else {
       setArrows([])
@@ -681,14 +681,14 @@ export default function CourseTrainer(props: {
         e.preventDefault()
         if (nextLine && !autoNext)
           startNextLine().catch((e) => posthog.captureException(e))
-        if (teaching) resetTeachingMove()
+        if (isTeaching) resetTeachingMove()
       }
     }
     window.addEventListener('keydown', handleKeyPress)
     return () => {
       window.removeEventListener('keydown', handleKeyPress)
     }
-  }, [nextLine, autoNext, teaching])
+  }, [nextLine, autoNext, isTeaching])
 
   // Last check to ensure we have a user
   if (!user) return null
@@ -733,7 +733,7 @@ export default function CourseTrainer(props: {
       <div className="flex flex-col lg:flex-row gap-4">
         <div className="relative">
           <BoardContainer>
-            {loading && (
+            {isLoading && (
               <div className="absolute inset-0 z-50 grid place-items-center bg-[rgba(0,0,0,0.3)]">
                 <Spinner />
               </div>
@@ -742,7 +742,7 @@ export default function CourseTrainer(props: {
               game={game}
               position={position}
               orientation={orientation}
-              readyForInput={interactive}
+              readyForInput={isInteractive}
               soundEnabled={soundEnabled}
               additionalSquares={highlightSquares}
               moveMade={handleMove}
@@ -762,7 +762,7 @@ export default function CourseTrainer(props: {
                     Math.min(windowSize.height / 1.75, windowSize.width - 50) *
                     0.5,
                 }}
-                className="p-2 bg-purple-900 overflow-y-auto text-sm"
+                className="p-2 bg-card-light rounded-lg shadow overflow-y-auto text-sm"
               >
                 {currentMove?.comment?.comment}
               </p>
@@ -771,7 +771,7 @@ export default function CourseTrainer(props: {
               {PgnDisplay.map((item) => item)}
             </div>
             <div className="flex justify-between gap-2">
-              {teaching && (
+              {isTeaching && (
                 <Button variant="primary" onClick={resetTeachingMove}>
                   Got it!
                 </Button>
@@ -779,12 +779,12 @@ export default function CourseTrainer(props: {
               {nextLine && !autoNext && (
                 <Button
                   variant="primary"
-                  disabled={status == 'loading'}
+                  disabled={isLoading}
                   onClick={async () => {
                     await startNextLine()
                   }}
                 >
-                  Next {status == 'loading' && <Spinner />}
+                  Next {isLoading && <Spinner />}
                 </Button>
               )}
               <label className="ml-auto flex items-center gap-2 text-xs text-black">

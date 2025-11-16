@@ -17,11 +17,16 @@ venv/
 env/
 ENV/
 
-# Build outputs
-.next
-dist
-build
-out
+# Build outputs (but allow them to be created during build)
+.next/
+**/.next/
+apps/**/.next/
+dist/
+**/dist/
+build/
+**/build/
+out/
+**/out/
 
 # Development files
 *.dev.*
@@ -68,8 +73,6 @@ lerna-debug.log*
 .prettierignore
 .eslintrc
 .eslintignore
-tsconfig.json
-!apps/*/tsconfig.json
 
 # Documentation
 docs/

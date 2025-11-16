@@ -86,8 +86,11 @@ ENV STRIPE_WEBHOOK_SECRET=$STRIPE_WEBHOOK_SECRET
 
 COPY --from=deps /app/node_modules ./node_modules
 
-# Copy all source files
-COPY . .
+# Copy workspace configuration files
+COPY package.json yarn.lock ./
+
+# Copy the entire app directory with all Next.js files
+COPY apps/chess-training-app ./apps/chess-training-app
 
 # Generate Prisma client
 RUN yarn workspace chess-training-app prisma generate

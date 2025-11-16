@@ -1,10 +1,24 @@
 import Redis from 'ioredis'
 import { env } from '~/env'
 
-const redis = new Redis({
-  host: env.REDIS_HOST || 'redis',
-  port: env.REDIS_PORT || parseInt('6379', 10),
-})
+let redis: Redis | null = null
+
+function getRedis(): Redis {
+  if (!redis) {
+    redis = new Redis({
+      host: env.REDIS_HOST || 'redis',
+      port: env.REDIS_PORT || 6379,
+      lazyConnect: true, // Important: prevents immediate connection
+      retryStrategy: (times) => {
+        // Reconnect after a delay
+        const delay = Math.min(times * 50, 2000)
+        return delay
+      },
+      maxRetriesPerRequest: 3,
+    })
+  }
+  return redis
+}
 
 interface PgnPayload {
   pgn: string
@@ -13,7 +27,8 @@ interface PgnPayload {
 }
 
 export async function publishPgnToRedis(payload: PgnPayload) {
-  await redis.lpush('pgn_queue', JSON.stringify(payload))
+  const redisClient = getRedis()
+  await redisClient.lpush('pgn_queue', JSON.stringify(payload))
 }
 
-export default redis
+export default getRedis()
