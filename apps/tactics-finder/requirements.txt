@@ -1,0 +1,9 @@
+tqdm
+python-chess
+stockfish
+anytree
+redis
+requests
+python-dotenv
+watchdog
+mypy

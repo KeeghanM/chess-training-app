@@ -1,0 +1,58 @@
+services:
+  chess-training-app:
+    build:
+      context: .
+      dockerfile: ./apps/chess-training-app/Dockerfile.dev
+    working_dir: /app/apps/chess-training-app
+    volumes:
+      - ./:/app:delegated
+    ports:
+      - '3000:3000'
+    env_file:
+      - ./apps/chess-training-app/.env
+    depends_on:
+      - redis
+      - puzzles-api
+    networks:
+      - chess-app-net
+
+  puzzles-api:
+    build:
+      context: .
+      dockerfile: ./apps/puzzles-api/Dockerfile.dev
+    working_dir: /app/apps/puzzles-api
+    volumes:
+      - ./:/app:delegated
+    ports:
+      - '4000:4000'
+    env_file:
+      - ./apps/puzzles-api/.env
+    depends_on:
+      - redis
+    networks:
+      - chess-app-net
+
+  tactics-finder:
+    build:
+      context: ./apps/tactics-finder
+      dockerfile: Dockerfile.dev
+    working_dir: /app
+    volumes:
+      - ./apps/tactics-finder:/app
+    depends_on:
+      - redis
+    env_file:
+      - ./apps/tactics-finder/.env
+    networks:
+      - chess-app-net
+
+  redis:
+    image: redis:alpine
+    ports:
+      - '6379:6379'
+    networks:
+      - chess-app-net
+
+networks:
+  chess-app-net:
+    driver: bridge
