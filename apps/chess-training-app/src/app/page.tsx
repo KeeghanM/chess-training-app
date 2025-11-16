@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Script from 'next/script'
+
 import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
 import StyledLink from '@components/_elements/styledLink'

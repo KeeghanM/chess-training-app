@@ -1,5 +1,6 @@
 import { PostHog } from 'posthog-node'
 import { env } from '~/env'
+
 import getDistinctId from './getDistinctId'
 
 export function PostHogClient() {

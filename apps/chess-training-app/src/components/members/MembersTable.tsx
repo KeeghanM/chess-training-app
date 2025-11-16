@@ -1,9 +1,12 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
+
 import { useEffect, useRef } from 'react'
-import StyledLink from '~/components/_elements/styledLink'
-import CalculateXpRank from '~/utils/CalculateXpRank'
+
+import StyledLink from '@components/_elements/styledLink'
+
+import CalculateXpRank from '@utils/CalculateXpRank'
 
 // Adjust import path as needed
 

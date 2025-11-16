@@ -1,9 +1,15 @@
 import { headers } from 'next/headers'
+
 import Stripe from 'stripe'
 import { env } from '~/env'
-import { prisma } from '~/server/db'
-import { getPostHogServer } from '~/server/posthog-server'
-import { errorResponse, successResponse } from '../../responses'
+
+import { prisma } from '@server/db'
+import { getPostHogServer } from '@server/posthog-server'
+
+import {
+  errorResponse,
+  successResponse,
+} from '../../../../utils/server-responsses'
 import { AddCourseToUser } from '../functions/AddCourseToUser'
 import { AddCuratedSetToUser } from '../functions/AddCuratedSetToUser'
 import SubscribeUser from '../functions/SubscribeUser'

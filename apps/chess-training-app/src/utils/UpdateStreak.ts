@@ -1,6 +1,9 @@
-import { StreakBadges } from '@utils/RanksAndBadges'
 import posthog from 'posthog-js'
-import { prisma } from '~/server/db'
+
+import { prisma } from '@server/db'
+
+import { StreakBadges } from '@utils/RanksAndBadges'
+
 import { AddBadgeToUser } from './AddBadge'
 
 export async function UpdateStreak(userId: string) {

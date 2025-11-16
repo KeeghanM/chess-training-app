@@ -1,14 +1,19 @@
 import { useEffect, useState } from 'react'
-import Button from '@components/_elements/button'
-import Spinner from '@components/general/Spinner'
-import XpTracker from '@components/general/XpTracker'
-import type { TrainingPuzzle } from '@hooks/use-puzzle-queries'
-import { useSounds } from '@hooks/use-sound'
-import trackEventOnClient from '@utils/trackEventOnClient'
+
 import { Chess, type Square } from 'chess.js'
 import { Chessboard, SquareHandlerArgs } from 'react-chessboard'
 import Toggle from 'react-toggle'
 import 'react-toggle/style.css'
+
+import Button from '@components/_elements/button'
+import Spinner from '@components/general/Spinner'
+import XpTracker from '@components/general/XpTracker'
+
+import type { TrainingPuzzle } from '@hooks/use-puzzle-queries'
+import { useSounds } from '@hooks/use-sound'
+
+import trackEventOnClient from '@utils/trackEventOnClient'
+
 import BoardContainer from '../shared/BoardContainer'
 import PgnNavigator from '../shared/PgnNavigator'
 import StatusIndicator from '../shared/StatusIndicator'

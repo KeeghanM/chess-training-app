@@ -1,24 +1,31 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+
 import { useEffect, useState } from 'react'
-import Button from '@components/_elements/button'
-import Spinner from '@components/general/Spinner'
-import XpTracker from '@components/general/XpTracker'
-import { queryClient } from '@hooks/query-client'
-import { usePuzzleQueries } from '@hooks/use-puzzle-queries'
-import { useTacticsQueries } from '@hooks/use-tactics-queries'
+
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import type { Puzzle } from '@prisma/client'
-import { useAppStore } from '@stores/app-store'
-import trackEventOnClient from '@utils/trackEventOnClient'
 import type { Move } from 'chess.js'
 import { Chess } from 'chess.js'
 import posthog from 'posthog-js'
 import TimeAgo from 'react-timeago'
 import Toggle from 'react-toggle'
 import 'react-toggle/style.css'
-import { useSounds } from '~/hooks/use-sound'
+
+import Button from '@components/_elements/button'
+import Spinner from '@components/general/Spinner'
+import XpTracker from '@components/general/XpTracker'
+
+import { queryClient } from '@hooks/query-client'
+import { usePuzzleQueries } from '@hooks/use-puzzle-queries'
+import { useSounds } from '@hooks/use-sound'
+import { useTacticsQueries } from '@hooks/use-tactics-queries'
+
+import { useAppStore } from '@stores/app-store'
+
+import trackEventOnClient from '@utils/trackEventOnClient'
+
 import ChessBoard from '../ChessBoard'
 import BoardContainer from '../shared/BoardContainer'
 import PgnNavigator from '../shared/PgnNavigator'

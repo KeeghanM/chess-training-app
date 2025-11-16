@@ -1,11 +1,16 @@
 'use client'
 
 import { useState } from 'react'
+
+import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
+
 import { useProfileQueries } from '@hooks/use-profile-queries'
 import { useRecallQueries } from '@hooks/use-recall-queries'
-import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
+
 import { useAppStore } from '@stores/app-store'
+
 import trackEventOnClient from '@utils/trackEventOnClient'
+
 import RecallConfigure from './RecallConfigure'
 import RecallTrain from './RecallTrain'
 

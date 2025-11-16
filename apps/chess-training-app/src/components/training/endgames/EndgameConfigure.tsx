@@ -1,4 +1,5 @@
 import Button from '@components/_elements/button'
+
 import trackEventOnClient from '@utils/trackEventOnClient'
 
 interface EndgameConfigureProps {

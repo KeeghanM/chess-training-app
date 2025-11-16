@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Heading from '@components/_elements/heading'
+
 import type { DragEndEvent } from '@dnd-kit/core'
 import {
   DndContext,
@@ -17,7 +17,11 @@ import {
 } from '@dnd-kit/sortable'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import type { Group } from '@prisma/client'
+
+import Heading from '@components/_elements/heading'
+
 import SortableItem from '@utils/SortableItem'
+
 import type { LineWithMoves } from './GroupEditor'
 import GroupEditor from './GroupEditor'
 

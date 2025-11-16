@@ -1,16 +1,19 @@
 'use client'
 
 import { useState } from 'react'
+
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import posthog from 'posthog-js'
+
 import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+
 import {
   MiscBadges,
   StreakBadges,
   TacticStreakBadges,
 } from '@utils/RanksAndBadges'
-import posthog from 'posthog-js'
-import type { ResponseJson } from '~/app/api/responses'
+import type { ResponseJson } from '@utils/server-responsses'
 
 export default function BadgeCreator() {
   const [open, setOpen] = useState(false)

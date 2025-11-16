@@ -3,6 +3,7 @@
 import Button from '@components/_elements/button'
 import PrettyPrintLine from '@components/general/PrettyPrintLine'
 import type { Line } from '@components/training/courses/create/parse/ParsePGNtoLineData'
+
 import type { LineWithMoves } from './GroupEditor'
 
 export default function LineDisplay(props: {

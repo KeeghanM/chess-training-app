@@ -1,5 +1,7 @@
 import Link from 'next/link'
+
 import Heading from '@components/_elements/heading'
+
 import ConsentManager from './ConsentManager'
 
 /**

@@ -29,7 +29,7 @@
     "paths": {
       "~/*": ["./src/*"],
       "@components/*": ["./src/components/*"],
-      "@db/*": ["./src/server/*"],
+      "@server/*": ["./src/server/*"],
       "@auth/*": ["./src/app/auth/*"],
       "@hooks/*": ["./src/hooks/*"],
       "@stores/*": ["./src/stores/*"],

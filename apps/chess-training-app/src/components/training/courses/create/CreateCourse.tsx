@@ -1,14 +1,20 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+
 import { useState } from 'react'
+
+import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
+import posthog from 'posthog-js'
+
 import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
+
 import { useCourseQueries } from '@hooks/use-course-queries'
-import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
+
 import GenerateSlug from '@utils/GenerateSlug'
 import trackEventOnClient from '@utils/trackEventOnClient'
-import posthog from 'posthog-js'
+
 import DetailsForm from './DetailsForm'
 import GroupSelector from './GroupSelector'
 import PgnToLinesForm from './PgnToLinesForm'

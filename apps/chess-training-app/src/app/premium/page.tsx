@@ -1,9 +1,9 @@
+import Backdrop from '@components/_elements/backdrop'
+import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import { MultiCol, MultiColItem } from '@components/_layouts/multiCol'
 import { TextWall } from '@components/_layouts/textWall'
 import GetPremiumButton from '@components/ecomm/GetPremiumButton'
-import Backdrop from '~/components/_elements/backdrop'
-import Container from '~/components/_elements/container'
 
 export const metadata = {
   title: 'Go Premium and Unlock Unlimited Chess Training at ChessTraining.app',

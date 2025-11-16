@@ -1,15 +1,20 @@
 'use client'
 
 import Link from 'next/link'
+
 import { useState } from 'react'
-import Button from '@components/_elements/button'
-import Heading from '@components/_elements/heading'
-import Spinner from '@components/general/Spinner'
+
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import type { UserProfile } from '@prisma/client'
 import { Info } from 'lucide-react'
 import posthog from 'posthog-js'
-import type { ResponseJson } from '~/app/api/responses'
+
+import Button from '@components/_elements/button'
+import Heading from '@components/_elements/heading'
+import Spinner from '@components/general/Spinner'
+
+import type { ResponseJson } from '@utils/server-responsses'
+
 import { Tooltip, TooltipContent, TooltipTrigger } from '../_elements/tooltip'
 
 export default function AccountForm(props: { profile: UserProfile }) {
@@ -47,7 +52,7 @@ export default function AccountForm(props: { profile: UserProfile }) {
     setSuccess(false)
 
     if (!username) return setError('Username is required')
-    if (username.includes('@'))
+    if (username.includes('@components/'))
       return setError('Username cannot contain the "@" symbol')
     if (fullname.length > 0 && fullname.length > 150)
       return setError('Full name must be less than 150 characters')

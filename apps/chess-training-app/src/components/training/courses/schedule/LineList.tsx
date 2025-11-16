@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+
 import type { ScheduleLine } from './LineRow'
 import LineRow from './LineRow'
 

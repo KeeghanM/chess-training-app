@@ -1,5 +1,6 @@
-import { ProgressPercentage } from '~/components/_elements/progress'
-import { PrismaUserCourse } from '~/hooks/use-course-queries'
+import { ProgressPercentage } from '@components/_elements/progress'
+
+import { PrismaUserCourse } from '@hooks/use-course-queries'
 
 export const generateCoursePercentages = (
   userCourse: PrismaUserCourse | null,

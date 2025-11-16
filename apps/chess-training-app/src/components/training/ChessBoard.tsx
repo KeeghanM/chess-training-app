@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+
 import type { Chess, Move, Piece, Square } from 'chess.js'
 import type { Arrow } from 'react-chessboard'
 import { Chessboard, defaultPieces } from 'react-chessboard'

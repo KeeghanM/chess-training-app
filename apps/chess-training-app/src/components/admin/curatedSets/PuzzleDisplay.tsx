@@ -1,9 +1,12 @@
 'use client'
 
 import { useContext, useEffect, useState } from 'react'
+
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Chess } from 'chess.js'
-import type { ResponseJson } from '~/app/api/responses'
+
+import type { ResponseJson } from '@utils/server-responsses'
+
 import Button from '../../_elements/button'
 import {
   Tooltip,

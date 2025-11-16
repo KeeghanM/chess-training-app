@@ -1,11 +1,15 @@
 import { useState } from 'react'
+
+import posthog from 'posthog-js'
+
 import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
 import Spinner from '@components/general/Spinner'
 import TextEditor from '@components/general/TextEditor'
+
 import { useCourseQueries } from '@hooks/use-course-queries'
+
 import trackEventOnClient from '@utils/trackEventOnClient'
-import posthog from 'posthog-js'
 
 export default function DetailsForm(props: {
   finished: (name: string, description: string) => void

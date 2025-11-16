@@ -1,8 +1,10 @@
-import type { KindeUser } from '@utils/getUserServer'
 import Stripe from 'stripe'
 import { env } from '~/env'
-import { prisma } from '~/server/db'
-import { getPostHogServer } from '~/server/posthog-server'
+
+import { prisma } from '@server/db'
+import { getPostHogServer } from '@server/posthog-server'
+
+import type { KindeUser } from '@utils/getUserServer'
 
 const posthog = getPostHogServer()
 

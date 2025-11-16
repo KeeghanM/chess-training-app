@@ -1,8 +1,10 @@
 import { redirect } from 'next/navigation'
+
 import Backdrop from '@components/_elements/backdrop'
 import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import CourseList from '@components/training/courses/list/CoursesList'
+
 import { getUserServer } from '@utils/getUserServer'
 
 export const metadata = {

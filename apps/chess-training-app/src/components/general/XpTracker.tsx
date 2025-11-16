@@ -1,8 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useProfileQueries } from '@hooks/use-profile-queries'
+
 import posthog from 'posthog-js'
+
+import { useProfileQueries } from '@hooks/use-profile-queries'
 
 export type availableTypes = 'line' | 'tactic'
 

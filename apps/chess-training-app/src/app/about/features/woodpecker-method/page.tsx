@@ -1,4 +1,5 @@
 import Link from 'next/link'
+
 import Heading from '@components/_elements/heading'
 import BigText from '@components/_layouts/bigText'
 import CtaRow from '@components/_layouts/ctaRow'

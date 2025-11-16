@@ -1,8 +1,10 @@
 'use client'
 
 import Link from 'next/link'
+
 import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
+
 import { useCourseQueries } from '@hooks/use-course-queries'
 
 export default function ArchivedList() {

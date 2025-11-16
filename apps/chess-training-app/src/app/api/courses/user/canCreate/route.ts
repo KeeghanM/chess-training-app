@@ -1,8 +1,10 @@
-import { getUserServer } from '@utils/getUserServer'
-import { errorResponse, successResponse } from '~/app/api/responses'
 import { env } from '~/env'
-import { prisma } from '~/server/db'
-import { getPostHogServer } from '~/server/posthog-server'
+
+import { prisma } from '@server/db'
+import { getPostHogServer } from '@server/posthog-server'
+
+import { getUserServer } from '@utils/getUserServer'
+import { errorResponse, successResponse } from '@utils/server-responsses'
 
 const posthog = getPostHogServer()
 

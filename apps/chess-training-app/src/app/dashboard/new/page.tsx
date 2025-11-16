@@ -1,10 +1,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+
 import Button from '@components/_elements/button'
 import Container from '@components/_elements/container'
 import StyledLink from '@components/_elements/styledLink'
 import PageHeader from '@components/_layouts/pageHeader'
+
 import { createUserProfile, getUserServer } from '@utils/getUserServer'
 import { trackEventOnServer } from '@utils/trackEventOnServer'
 

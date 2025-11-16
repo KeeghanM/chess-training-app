@@ -2,7 +2,9 @@ import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import posthog from 'posthog-js'
 import { v4 as uuidv4 } from 'uuid'
 import { env } from '~/env'
-import { prisma } from '~/server/db'
+
+import { prisma } from '@server/db'
+
 import { killBillClient } from './KillBill'
 
 export type KindeUser = {

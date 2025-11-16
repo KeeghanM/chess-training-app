@@ -1,5 +1,7 @@
-import { prisma } from '~/server/db'
-import { getPostHogServer } from '~/server/posthog-server'
+import { TacticsSetStatus } from '@prisma/client'
+
+import { prisma } from '@server/db'
+import { getPostHogServer } from '@server/posthog-server'
 
 const posthog = getPostHogServer()
 

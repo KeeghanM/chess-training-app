@@ -1,6 +1,11 @@
 import { TacticsSetStatus } from '@prisma/client'
-import { prisma } from '~/server/db'
-import { errorResponse, successResponse } from '../../responses'
+
+import { prisma } from '@server/db'
+
+import {
+  errorResponse,
+  successResponse,
+} from '../../../../utils/server-responsses'
 
 export async function POST(req: Request) {
   try {

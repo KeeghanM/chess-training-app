@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import type { ResponseJson } from '~/app/api/responses'
+
+import type { ResponseJson } from '@utils/server-responsses'
+
 import type { TrainingPuzzle } from './use-puzzle-queries'
 
 enum TacticsSetStatus {

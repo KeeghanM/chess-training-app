@@ -2,7 +2,9 @@
 
 import { usePathname, useSearchParams } from 'next/navigation'
 import Script from 'next/script'
+
 import { useEffect } from 'react'
+
 import posthog from 'posthog-js'
 import { env } from '~/env'
 

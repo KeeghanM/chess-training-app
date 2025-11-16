@@ -1,14 +1,18 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+
+import posthog from 'posthog-js'
+
+import { prisma } from '@server/db'
+
+import Backdrop from '@components/_elements/backdrop'
 import Button from '@components/_elements/button'
 import Container from '@components/_elements/container'
 import Info from '@components/training/courses/schedule/Info'
 import LineList from '@components/training/courses/schedule/LineList'
 import ResetButtons from '@components/training/courses/schedule/ResetButtons'
+
 import { getUserServer } from '@utils/getUserServer'
-import posthog from 'posthog-js'
-import { prisma } from '~/server/db'
-import Backdrop from '~/components/_elements/backdrop'
 
 export default async function CourseSchedulePage(props: {
   params: Promise<{ userCourseId: string }>

@@ -1,4 +1,5 @@
 import { getUserServer } from '@utils/getUserServer'
+
 import Nav from './Nav'
 
 export default async function Header() {

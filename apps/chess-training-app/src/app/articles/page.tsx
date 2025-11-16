@@ -1,10 +1,13 @@
 import Link from 'next/link'
+
+import type { ContentRelationshipField } from '@prismicio/client'
+import { asHTML, asText } from '@prismicio/client'
+
 import Button from '@components/_elements/button'
 import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
-import type { ContentRelationshipField } from '@prismicio/client'
-import { asHTML, asText } from '@prismicio/client'
-import Prismic from '~/prismicio'
+
+import Prismic from '@utils/prismicio'
 
 export const metadata = {
   title: 'Read the latest Articles on Chess Improvement',

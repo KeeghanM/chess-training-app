@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
-import Prismic from '~/prismicio'
+
+import Prismic from '@utils/prismicio'
 
 export default async function sitemap() {
   const articles = await Prismic.getAllByType('article')

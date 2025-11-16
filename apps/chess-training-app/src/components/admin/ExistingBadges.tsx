@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Heading from '@components/_elements/heading'
+
 import type { DragEndEvent } from '@dnd-kit/core'
 import {
   DndContext,
@@ -19,8 +19,11 @@ import {
 } from '@dnd-kit/sortable'
 import type { Badge } from '@prisma/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import SortableItem from '@utils/SortableItem'
 import posthog from 'posthog-js'
+
+import Heading from '@components/_elements/heading'
+
+import SortableItem from '@utils/SortableItem'
 
 export default function ExistingBadges(props: { existingBadges: Badge[] }) {
   const queryClient = useQueryClient()

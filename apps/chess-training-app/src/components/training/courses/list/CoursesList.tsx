@@ -1,12 +1,16 @@
 'use client'
 
 import Link from 'next/link'
+
+import { PlusIcon } from 'lucide-react'
+
 import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
 import StyledLink from '@components/_elements/styledLink'
 import Spinner from '@components/general/Spinner'
+
 import { useCourseQueries } from '@hooks/use-course-queries'
-import { PlusIcon } from 'lucide-react'
+
 import PremiumSubscribe from '../../../ecomm/PremiumSubscribe'
 import CourseListItem from './CourseListItem'
 

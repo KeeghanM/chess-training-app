@@ -1,12 +1,14 @@
 import { Suspense, cache } from 'react'
+
+import { prisma } from '@server/db'
+
+import Pagination from '@components/_elements/Pagination'
+import Backdrop from '@components/_elements/backdrop'
 import Container from '@components/_elements/container'
+import Heading from '@components/_elements/heading'
+import MemberSearch from '@components/members/MembersSearch'
+import MembersTable from '@components/members/MembersTable'
 import TrophyTile from '@components/members/TrophyTile'
-import { prisma } from '~/server/db'
-import Pagination from '~/components/_elements/Pagination'
-import Backdrop from '~/components/_elements/backdrop'
-import Heading from '~/components/_elements/heading'
-import MemberSearch from '~/components/members/MembersSearch'
-import MembersTable from '~/components/members/MembersTable'
 
 export const revalidate = 3600
 const resultsPerPage = 25

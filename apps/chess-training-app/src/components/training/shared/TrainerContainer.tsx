@@ -1,4 +1,5 @@
 import { ReactNode } from 'react'
+
 import Spinner from '@components/general/Spinner'
 
 interface TrainerContainerProps {

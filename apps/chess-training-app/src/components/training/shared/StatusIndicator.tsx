@@ -1,4 +1,5 @@
 import Link from 'next/link'
+
 import { ExternalLink, ThumbsDown, ThumbsUp } from 'lucide-react'
 
 interface StatusIndicatorProps {

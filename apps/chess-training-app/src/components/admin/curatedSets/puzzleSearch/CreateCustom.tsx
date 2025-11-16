@@ -1,12 +1,14 @@
 'use client'
 
-import Button from '@components/_elements/button'
-import Spinner from '@components/general/Spinner'
 import type { ParseTree } from '@mliebelt/pgn-parser'
 import { parse } from '@mliebelt/pgn-parser'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { v4 as uuidv4 } from 'uuid'
-import type { ResponseJson } from '~/app/api/responses'
+
+import Button from '@components/_elements/button'
+import Spinner from '@components/general/Spinner'
+
+import type { ResponseJson } from '@utils/server-responsses'
 
 export default function CreateCustom() {
   const queryClient = useQueryClient()

@@ -1,6 +1,7 @@
 import type { Puzzle } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
-import type { ResponseJson } from '~/app/api/responses'
+
+import type { ResponseJson } from '@utils/server-responsses'
 
 // Additional puzzle types for training
 export interface TrainingPuzzle {

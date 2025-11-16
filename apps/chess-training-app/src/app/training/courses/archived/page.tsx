@@ -1,7 +1,9 @@
 import { redirect } from 'next/navigation'
+
 import Container from '@components/_elements/container'
 import PageHeader from '@components/_layouts/pageHeader'
 import ArchivedList from '@components/training/courses/list/ArhivedList'
+
 import { getUserServer } from '@utils/getUserServer'
 
 export const metadata = {

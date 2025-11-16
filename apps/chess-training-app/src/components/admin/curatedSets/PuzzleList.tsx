@@ -1,7 +1,9 @@
 'use client'
 
 import { useContext } from 'react'
+
 import { useAdminQueries } from '@hooks/use-admin-queries'
+
 import Spinner from '../../general/Spinner'
 import { CuratedSetBrowserContext } from './CuratedSetsBrowser'
 

@@ -1,11 +1,16 @@
 'use client'
 
 import { useState } from 'react'
+
+import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
+
 import { useEndgameQueries } from '@hooks/use-endgame-queries'
 import { useProfileQueries } from '@hooks/use-profile-queries'
-import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
+
 import { useAppStore } from '@stores/app-store'
+
 import trackEventOnClient from '@utils/trackEventOnClient'
+
 import EndgameConfigure from './EndgameConfigure'
 import EndgameTrain from './EndgameTrain'
 

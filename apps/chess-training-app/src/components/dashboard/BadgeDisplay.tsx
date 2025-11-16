@@ -1,7 +1,9 @@
 'use client'
 
 import Link from 'next/link'
+
 import CalculateBadgePercentage from '@utils/CalculateBadgePercentage'
+
 import { RoundProgress } from '../_elements/progress'
 
 interface BadgeDisplayProps {

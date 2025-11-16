@@ -1,13 +1,16 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import Button from '@components/_elements/button'
-import Heading from '@components/_elements/heading'
-import CourseBrowser from '@components/training/courses/browser/CourseBrowser'
+
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import posthog from 'posthog-js'
-import { prisma } from '~/server/db'
-import Backdrop from '~/components/_elements/backdrop'
-import Container from '~/components/_elements/container'
+
+import { prisma } from '@server/db'
+
+import Backdrop from '@components/_elements/backdrop'
+import Button from '@components/_elements/button'
+import Container from '@components/_elements/container'
+import Heading from '@components/_elements/heading'
+import CourseBrowser from '@components/training/courses/browser/CourseBrowser'
 
 export default async function CourseTrainPage(props: {
   params: Promise<{ userCourseId: string }>

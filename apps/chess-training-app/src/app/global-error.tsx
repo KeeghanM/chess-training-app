@@ -2,7 +2,9 @@
 
 // Error boundaries must be Client Components
 import NextError from 'next/error'
+
 import { useEffect } from 'react'
+
 import posthog from 'posthog-js'
 
 export default function GlobalError({

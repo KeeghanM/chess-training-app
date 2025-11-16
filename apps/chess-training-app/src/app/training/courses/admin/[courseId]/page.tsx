@@ -1,11 +1,14 @@
 import { redirect } from 'next/navigation'
-import Container from '@components/_elements/container'
-import CourseAdminPanel from '@components/training/courses/admin/AdminPanel'
+
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import posthog from 'posthog-js'
-import { prisma } from '~/server/db'
-import Backdrop from '~/components/_elements/backdrop'
-import Heading from '~/components/_elements/heading'
+
+import { prisma } from '@server/db'
+
+import Backdrop from '@components/_elements/backdrop'
+import Container from '@components/_elements/container'
+import Heading from '@components/_elements/heading'
+import CourseAdminPanel from '@components/training/courses/admin/AdminPanel'
 
 export default async function CourseAdminPage(props: {
   params: Promise<{ courseId: string }>

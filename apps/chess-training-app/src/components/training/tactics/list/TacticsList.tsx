@@ -1,12 +1,16 @@
 'use client'
 
 import Link from 'next/link'
+
+import { TacticsSetStatus } from '@prisma/client'
+import { env } from '~/env'
+
 import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
 import TacticsSetCreator from '@components/training/tactics/create/TacticsSetCreator'
+
 import { useTacticsQueries } from '@hooks/use-tactics-queries'
-import { TacticsSetStatus } from '@prisma/client'
-import { env } from '~/env'
+
 import SetListItem from './SetListItem'
 
 export default function TacticsList(props: { hasUnlimitedSets: boolean }) {

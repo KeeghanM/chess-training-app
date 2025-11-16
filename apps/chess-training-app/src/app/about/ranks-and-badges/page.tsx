@@ -1,6 +1,7 @@
 import Backdrop from '@components/_elements/backdrop'
 import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
+
 import {
   MiscBadges,
   StreakBadges,

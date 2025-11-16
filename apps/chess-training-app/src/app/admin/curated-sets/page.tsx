@@ -1,7 +1,10 @@
 import { redirect } from 'next/navigation'
+
+import { prisma } from '@server/db'
+
 import CuratedSetsBrowser from '@components/admin/curatedSets/CuratedSetsBrowser'
-import { prisma } from '~/server/db'
-import { getUserServer } from '~/utils/getUserServer'
+
+import { getUserServer } from '@utils/getUserServer'
 
 export default async function CuratedSetsPage() {
   const { user, isStaff } = await getUserServer()

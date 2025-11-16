@@ -1,12 +1,16 @@
 import { redirect } from 'next/navigation'
+
+import posthog from 'posthog-js'
+
+import { prisma } from '@server/db'
+
+import Backdrop from '@components/_elements/backdrop'
 import Container from '@components/_elements/container'
+import Heading from '@components/_elements/heading'
 import type { PrismaTacticsSetWithPuzzles } from '@components/training/tactics/TacticsTrainer'
 import TacticsTrainer from '@components/training/tactics/TacticsTrainer'
+
 import { getUserServer } from '@utils/getUserServer'
-import posthog from 'posthog-js'
-import { prisma } from '~/server/db'
-import Backdrop from '~/components/_elements/backdrop'
-import Heading from '~/components/_elements/heading'
 
 export default async function TacticsTrainPage(props: {
   params: Promise<{ setId: string }>

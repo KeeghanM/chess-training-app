@@ -1,10 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+
+import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
+
 import { useProfileQueries } from '@hooks/use-profile-queries'
 import { useVisualisationQueries } from '@hooks/use-visualisation-queries'
-import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
+
 import trackEventOnClient from '@utils/trackEventOnClient'
+
 import VisualisationConfigure from './VisualisationConfigure'
 import VisualisationTrain from './VisualisationTrain'
 

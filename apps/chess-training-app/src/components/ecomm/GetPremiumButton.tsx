@@ -1,10 +1,13 @@
 'use client'
 
 import { useState } from 'react'
+
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import posthog from 'posthog-js'
-import type { ResponseJson } from '~/app/api/responses'
 import { env } from '~/env'
+
+import type { ResponseJson } from '@utils/server-responsses'
+
 import Button from '../_elements/button'
 import Spinner from '../general/Spinner'
 

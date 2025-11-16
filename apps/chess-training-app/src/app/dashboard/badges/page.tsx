@@ -1,8 +1,10 @@
+import { prisma } from '@server/db'
+
 import Backdrop from '@components/_elements/backdrop'
 import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
+
 import { getUserServer } from '@utils/getUserServer'
-import { prisma } from '~/server/db'
 
 export default async function BadgesPage() {
   const { badges } = await getUserServer()

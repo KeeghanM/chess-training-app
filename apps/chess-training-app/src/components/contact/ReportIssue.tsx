@@ -1,10 +1,13 @@
 'use client'
 
 import { useState } from 'react'
+
+import posthog from 'posthog-js'
+
 import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
-import posthog from 'posthog-js'
-import type { ResponseJson } from '~/app/api/responses'
+
+import type { ResponseJson } from '@utils/server-responsses'
 
 export default function ReportIssueForm() {
   const [sendEmail, setSendEmail] = useState(false)
@@ -160,7 +163,9 @@ export default function ReportIssueForm() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder={player?.split(' ')[0] + '@chesstraining.app'}
+                    placeholder={
+                      player?.split(' ')[0] + '@components/chesstraining.app'
+                    }
                   />
                 </div>
               </div>

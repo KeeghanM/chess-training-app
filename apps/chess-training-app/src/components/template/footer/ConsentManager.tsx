@@ -1,6 +1,6 @@
 'use client'
 
-import Button from '~/components/_elements/button'
+import Button from '@components/_elements/button'
 
 /**
  * Render a link-styled button that opens the site's cookie consent manager.

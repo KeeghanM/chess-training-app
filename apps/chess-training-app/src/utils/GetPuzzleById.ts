@@ -1,7 +1,9 @@
-import type { TrainingPuzzle } from '@components/training/tactics/TacticsTrainer'
 import posthog from 'posthog-js'
 import { env } from '~/env'
-import { prisma } from '~/server/db'
+
+import { prisma } from '@server/db'
+
+import type { TrainingPuzzle } from '@components/training/tactics/TacticsTrainer'
 
 export default async function getPuzzleById(puzzleid: string) {
   let puzzle: TrainingPuzzle | undefined

@@ -1,23 +1,12 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+
 import { useEffect, useState } from 'react'
-import Button from '@components/_elements/button'
-import Heading from '@components/_elements/heading'
-import StyledLink from '@components/_elements/styledLink'
-import Spinner from '@components/general/Spinner'
-import XpTracker from '@components/general/XpTracker'
-import {
-  PrismaUserCourse,
-  type TrainingFen,
-  useCourseQueries,
-} from '@hooks/use-course-queries'
+
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import type { Comment, Move, UserFen } from '@prisma/client'
-import { useAppStore } from '@stores/app-store'
 import { useWindowSize } from '@uidotdev/usehooks'
-import getArrows from '@utils/StringToArrows'
-import trackEventOnClient from '@utils/trackEventOnClient'
 import type { Move as ChessMove } from 'chess.js'
 import { Chess } from 'chess.js'
 import { ThumbsDown, ThumbsUp } from 'lucide-react'
@@ -26,7 +15,25 @@ import type { Arrow } from 'react-chessboard'
 import Toggle from 'react-toggle'
 import 'react-toggle/style.css'
 import useSound from 'use-sound'
-import type { PrismaUserLine } from '~/app/training/courses/[userCourseId]/page'
+import { PrismaUserLine } from '~/app/training/courses/[userCourseId]/page'
+
+import Button from '@components/_elements/button'
+import Heading from '@components/_elements/heading'
+import StyledLink from '@components/_elements/styledLink'
+import Spinner from '@components/general/Spinner'
+import XpTracker from '@components/general/XpTracker'
+
+import {
+  PrismaUserCourse,
+  type TrainingFen,
+  useCourseQueries,
+} from '@hooks/use-course-queries'
+
+import { useAppStore } from '@stores/app-store'
+
+import getArrows from '@utils/StringToArrows'
+import trackEventOnClient from '@utils/trackEventOnClient'
+
 import ChessBoard from '../ChessBoard'
 import BoardContainer from '../shared/BoardContainer'
 

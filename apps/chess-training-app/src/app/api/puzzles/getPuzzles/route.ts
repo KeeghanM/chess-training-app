@@ -1,8 +1,11 @@
-import type { TrainingPuzzle } from '@components/training/tactics/TacticsTrainer'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import { errorResponse, successResponse } from '~/app/api/responses'
 import { env } from '~/env'
-import { getPostHogServer } from '~/server/posthog-server'
+
+import { getPostHogServer } from '@server/posthog-server'
+
+import type { TrainingPuzzle } from '@components/training/tactics/TacticsTrainer'
+
+import { errorResponse, successResponse } from '@utils/server-responsses'
 
 const posthog = getPostHogServer()
 

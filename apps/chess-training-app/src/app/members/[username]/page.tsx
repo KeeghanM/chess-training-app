@@ -1,11 +1,14 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+
+import { prisma } from '@server/db'
+
+import Backdrop from '@components/_elements/backdrop'
 import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import XpDisplay from '@components/dashboard/XpDisplay'
+
 import CalculateXpRank from '@utils/CalculateXpRank'
-import { prisma } from '~/server/db'
-import Backdrop from '~/components/_elements/backdrop'
 
 export default async function MemberPage(props: {
   params: Promise<{ username: string }>

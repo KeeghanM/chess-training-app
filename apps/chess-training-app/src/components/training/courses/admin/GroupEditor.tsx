@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+
 import {
   DndContext,
   type DragEndEvent,
@@ -16,7 +17,9 @@ import {
 } from '@dnd-kit/sortable'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import type { Group, Line, Move } from '@prisma/client'
+
 import SortableItem from '@utils/SortableItem'
+
 import LineDisplay from './LineDisplay'
 
 export type LineWithMoves = Line & { moves: Move[] }

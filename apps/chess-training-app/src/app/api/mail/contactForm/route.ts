@@ -1,7 +1,9 @@
 import nodemailer from 'nodemailer'
-import { errorResponse, successResponse } from '~/app/api/responses'
 import { env } from '~/env'
-import { getPostHogServer } from '~/server/posthog-server'
+
+import { getPostHogServer } from '@server/posthog-server'
+
+import { errorResponse, successResponse } from '@utils/server-responsses'
 
 const posthog = getPostHogServer()
 

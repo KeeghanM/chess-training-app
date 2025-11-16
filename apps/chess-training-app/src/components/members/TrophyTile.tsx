@@ -1,5 +1,7 @@
 import Link from 'next/link'
+
 import CalculateXpRank from '@utils/CalculateXpRank'
+
 import Heading from '../_elements/heading'
 
 export default function TrophyTile(props: {

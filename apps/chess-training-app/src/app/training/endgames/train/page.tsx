@@ -1,9 +1,11 @@
 import { redirect } from 'next/navigation'
+
+import Backdrop from '@components/_elements/backdrop'
 import Container from '@components/_elements/container'
+import Heading from '@components/_elements/heading'
 import EndgameTrainer from '@components/training/endgames/EndgameTrainer'
+
 import { getUserServer } from '@utils/getUserServer'
-import Backdrop from '~/components/_elements/backdrop'
-import Heading from '~/components/_elements/heading'
 
 export default async function EndgameTrainPage() {
   const { user } = await getUserServer()

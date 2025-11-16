@@ -1,13 +1,16 @@
 import Link from 'next/link'
+
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+
+import { prisma } from '@server/db'
+
+import Backdrop from '@components/_elements/backdrop'
 import Button from '@components/_elements/button'
 import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import StyledLink from '@components/_elements/styledLink'
 import BigText from '@components/_layouts/bigText'
 import GetCourse from '@components/ecomm/GetCourse'
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import { prisma } from '~/server/db'
-import Backdrop from '~/components/_elements/backdrop'
 
 export const metadata = {
   title:

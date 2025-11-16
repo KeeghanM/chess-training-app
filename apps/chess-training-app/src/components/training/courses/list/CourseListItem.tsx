@@ -2,8 +2,15 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+
 import { useEffect, useState } from 'react'
+
+import { Book } from 'lucide-react'
+import posthog from 'posthog-js'
+import TimeAgo from 'react-timeago'
+
 import Button from '@components/_elements/button'
+import { RoundProgress } from '@components/_elements/progress'
 import StyledLink from '@components/_elements/styledLink'
 import {
   Tooltip,
@@ -12,14 +19,13 @@ import {
 } from '@components/_elements/tooltip'
 import PremiumSubscribe from '@components/ecomm/PremiumSubscribe'
 import Spinner from '@components/general/Spinner'
+
+import { PrismaUserCourse } from '@hooks/use-course-queries'
+
+import { generateCoursePercentages } from '@utils/GenerateCoursePercentages'
+import type { ResponseJson } from '@utils/server-responsses'
 import trackEventOnClient from '@utils/trackEventOnClient'
-import { Book } from 'lucide-react'
-import posthog from 'posthog-js'
-import TimeAgo from 'react-timeago'
-import type { ResponseJson } from '~/app/api/responses'
-import { RoundProgress } from '~/components/_elements/progress'
-import { PrismaUserCourse } from '~/hooks/use-course-queries'
-import { generateCoursePercentages } from '~/utils/GenerateCoursePercentages'
+
 import CourseSettings from './CourseSettings'
 
 // TODO: Add revision schedule viewer

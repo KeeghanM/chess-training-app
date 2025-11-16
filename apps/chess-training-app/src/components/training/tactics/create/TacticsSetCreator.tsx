@@ -1,23 +1,27 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Button from '@components/_elements/button'
-import StyledLink from '@components/_elements/styledLink'
-import GetPremiumButton from '@components/ecomm/GetPremiumButton'
-import Spinner from '@components/general/Spinner'
-import { useTacticsQueries } from '@hooks/use-tactics-queries'
+
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import type { TacticsSet, TacticsSetRound } from '@prisma/client'
 import * as AlertDialog from '@radix-ui/react-alert-dialog'
-import trackEventOnClient from '@utils/trackEventOnClient'
 import { Plus } from 'lucide-react'
 import posthog from 'posthog-js'
 import Select from 'react-select'
+
+import Button from '@components/_elements/button'
+import StyledLink from '@components/_elements/styledLink'
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '~/components/_elements/tooltip'
+} from '@components/_elements/tooltip'
+import GetPremiumButton from '@components/ecomm/GetPremiumButton'
+import Spinner from '@components/general/Spinner'
+
+import { useTacticsQueries } from '@hooks/use-tactics-queries'
+
+import trackEventOnClient from '@utils/trackEventOnClient'
 
 export type PrismaTacticsSet = TacticsSet & { rounds: TacticsSetRound[] }
 interface TacticsSetCreatorProps {

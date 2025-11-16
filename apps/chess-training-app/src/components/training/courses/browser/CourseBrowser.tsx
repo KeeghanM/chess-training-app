@@ -1,7 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+
 import type { Comment, Group, Line, Move, UserLine } from '@prisma/client'
+
 import GroupBrowser from './GroupBrowser'
 import GroupListItem from './GroupListItem'
 

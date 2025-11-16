@@ -1,12 +1,15 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+
+import { prisma } from '@server/db'
+
 import Button from '@components/_elements/button'
 import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import StyledLink from '@components/_elements/styledLink'
 import PageHeader from '@components/_layouts/pageHeader'
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import { prisma } from '~/server/db'
 
 export default async function CheckoutSuccessPage() {
   const session = getKindeServerSession()

@@ -1,7 +1,9 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
+
 import { Suspense, useEffect, useState } from 'react'
+
 import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import StyledLink from '@components/_elements/styledLink'

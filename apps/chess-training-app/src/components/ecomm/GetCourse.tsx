@@ -1,10 +1,14 @@
 'use client'
 
 import Link from 'next/link'
+
 import { useState } from 'react'
+
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
-import type { ResponseJson } from '~/app/api/responses'
 import { env } from '~/env'
+
+import type { ResponseJson } from '@utils/server-responsses'
+
 import Button from '../_elements/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../_elements/tooltip'
 import Spinner from '../general/Spinner'

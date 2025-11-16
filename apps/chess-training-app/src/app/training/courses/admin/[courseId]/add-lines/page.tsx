@@ -1,10 +1,13 @@
 import { redirect } from 'next/navigation'
+
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import posthog from 'posthog-js'
+
+import { prisma } from '@server/db'
+
 import Container from '@components/_elements/container'
 import PageHeader from '@components/_layouts/pageHeader'
 import AddLines from '@components/training/courses/admin/AddLines'
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import posthog from 'posthog-js'
-import { prisma } from '~/server/db'
 
 export default async function AddLinesPage(props: {
   params: Promise<{ courseId: string }>

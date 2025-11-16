@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+
 import { Tooltip, TooltipContent, TooltipTrigger } from '../_elements/tooltip'
 
 export default function PremiumDisplay({ isPremium }: { isPremium: boolean }) {

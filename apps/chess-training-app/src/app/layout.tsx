@@ -1,9 +1,13 @@
 import Script from 'next/script'
+
 import { type ReactNode, Suspense } from 'react'
+
 import Footer from '@components/template/footer/Footer'
 import Header from '@components/template/header/Header'
+
+import { ConsentAndAnalytics } from '@utils/ConsentAndAnalytics'
 import Providers from '@utils/Providers'
-import { ConsentAndAnalytics } from '~/utils/ConsentAndAnalytics'
+
 import './globals.css'
 import './silktide-consent-manager.css'
 

@@ -1,7 +1,13 @@
 'use client'
 
 import Link from 'next/link'
+
 import { useState } from 'react'
+
+import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
+import * as AlertDialog from '@radix-ui/react-alert-dialog'
+import { Cog } from 'lucide-react'
+
 import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
 import StyledLink from '@components/_elements/styledLink'
@@ -11,14 +17,13 @@ import {
   TooltipTrigger,
 } from '@components/_elements/tooltip'
 import Spinner from '@components/general/Spinner'
+
 import {
   type PrismaUserCourse,
   useCourseQueries,
 } from '@hooks/use-course-queries'
-import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
-import * as AlertDialog from '@radix-ui/react-alert-dialog'
+
 import trackEventOnClient from '@utils/trackEventOnClient'
-import { Cog } from 'lucide-react'
 
 interface CourseSettingsProps {
   userCourse: PrismaUserCourse

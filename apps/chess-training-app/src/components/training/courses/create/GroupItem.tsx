@@ -1,9 +1,13 @@
 import { useState } from 'react'
+
+import * as AlertDialog from '@radix-ui/react-alert-dialog'
+
 import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
 import PrettyPrintLine from '@components/general/PrettyPrintLine'
-import * as AlertDialog from '@radix-ui/react-alert-dialog'
+
 import trackEventOnClient from '@utils/trackEventOnClient'
+
 import type { Line } from './parse/ParsePGNtoLineData'
 
 // TODO: Add informational lines
