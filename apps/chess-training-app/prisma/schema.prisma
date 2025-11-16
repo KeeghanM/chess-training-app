@@ -1,0 +1,295 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider     = "mysql"
+    url          = env("DATABASE_URL")
+    relationMode = "prisma"
+}
+
+// Courses
+model Course {
+    id                String       @id @default(cuid())
+    courseName        String
+    slug              String       @unique
+    shortDescription  String?      @db.Text
+    courseDescription String?      @db.Text
+    createdBy         String
+    price             Int          @default(0)
+    createdAt         DateTime     @default(now())
+    updatedAt         DateTime     @updatedAt
+    published         Boolean      @default(false)
+    createdByProfile  UserProfile  @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+    lines             Line[]
+    groups            Group[]
+    userCourses       UserCourse[]
+
+    @@index([slug])
+}
+
+model Group {
+    id        String   @id @default(cuid())
+    courseId  String
+    groupName String
+    sortOrder Int
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+    lines     Line[]
+
+    @@index([courseId])
+}
+
+model UserCourse {
+    id            String     @id @default(cuid())
+    courseId      String
+    userId        String
+    active        Boolean    @default(true)
+    lastTrained   DateTime?
+    linesLearned  Int        @default(0)
+    linesLearning Int        @default(0)
+    linesHard     Int        @default(0)
+    linesUnseen   Int
+    lines         UserLine[]
+    fens          UserFen[]
+    course        Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+}
+
+model Line {
+    id        Int        @id @default(autoincrement())
+    courseId  String
+    lineName  String?
+    colour    String
+    groupId   String
+    sortOrder Int
+    trainable Boolean    @default(true)
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
+    course    Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+    group     Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
+    userLines UserLine[]
+    moves     Move[]
+
+    @@index([courseId])
+}
+
+model Move {
+    id         Int      @id @default(autoincrement())
+    lineId     Int
+    move       String
+    moveNumber Int
+    colour     Boolean
+    comment    Comment?
+    arrows     String?
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+    line       Line     @relation(fields: [lineId], references: [id], onDelete: Cascade)
+
+    @@index([lineId])
+}
+
+model Comment {
+    id      Int    @id @default(autoincrement())
+    comment String @db.Text
+    moveId  Int    @unique
+    move    Move   @relation(fields: [moveId], references: [id], onDelete: Cascade)
+}
+
+model UserLine {
+    id            Int        @id @default(autoincrement())
+    userId        String
+    userCourseId  String
+    lineId        Int
+    revisionDate  DateTime?
+    lastTrained   DateTime?
+    timesTrained  Int        @default(0)
+    timesCorrect  Int        @default(0)
+    timesWrong    Int        @default(0)
+    currentStreak Int        @default(0)
+    course        UserCourse @relation(fields: [userCourseId], references: [id], onDelete: Cascade)
+    line          Line       @relation(fields: [lineId], references: [id], onDelete: Cascade)
+
+    @@index([userCourseId])
+}
+
+model UserFen {
+    id           Int        @id @default(autoincrement())
+    userCourseId String
+    fen          String
+    commentId    Int?
+    course       UserCourse @relation(fields: [userCourseId], references: [id], onDelete: Cascade)
+
+    @@index([userCourseId])
+}
+
+// Tactics Trainer
+enum TacticsSetStatus {
+  PENDING
+  ACTIVE
+  ARCHIVED
+}
+
+model TacticsSet {
+    id           String            @id @default(cuid())
+    name         String
+    userId       String
+    createdAt    DateTime          @default(now())
+    updatedAt    DateTime          @updatedAt
+    size         Int
+    lastTrained  DateTime?
+    rating       Int?
+    puzzles      Puzzle[]
+    rounds       TacticsSetRound[]
+    curatedSetId String?
+    status       TacticsSetStatus  @default(ACTIVE)
+
+    @@index([userId])
+}
+
+model TacticsSetRound {
+    id          String     @id @default(cuid())
+    roundNumber Int
+    timeSpent   Int        @default(0)
+    correct     Int        @default(0)
+    incorrect   Int        @default(0)
+    setId       String
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @updatedAt
+    set         TacticsSet @relation(fields: [setId], references: [id], onDelete: Cascade)
+
+    @@index([setId])
+}
+
+model Puzzle {
+    id        String     @id @default(cuid())
+    puzzleid  String
+    setId     String
+    sortOrder Int        @default(0)
+    set       TacticsSet @relation(fields: [setId], references: [id], onDelete: Cascade)
+
+    @@index([setId])
+}
+
+model CuratedSet {
+    id          String             @id @default(cuid())
+    name        String
+    slug        String             @unique
+    description String?            @db.Text
+    shortDesc   String?            @db.Text
+    minRating   Int                @default(500)
+    maxRating   Int                @default(2500)
+    size        Int
+    published   Boolean            @default(false)
+    price       Int                @default(0)
+    createdAt   DateTime           @default(now())
+    updatedAt   DateTime           @updatedAt
+    puzzles     CuratedSetPuzzle[]
+}
+
+model CuratedSetPuzzle {
+    id        Int        @id @default(autoincrement())
+    puzzleid  String
+    setId     String
+    sortOrder Int        @default(0)
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
+    set       CuratedSet @relation(fields: [setId], references: [id], onDelete: Cascade)
+
+    @@index([setId])
+}
+
+model CustomPuzzle {
+    id          String   @id
+    fen         String
+    rating      Int
+    moves       String   @db.Text
+    comment     String?  @db.Text
+    directStart Boolean
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+}
+
+// User data
+model UserProfile {
+    id                  String       @id
+    username            String       @unique
+    fullName            String?
+    description         String?      @db.Text
+    puzzleRating        Int          @default(1500)
+    difficulty          Int          @default(1)
+    experience          Int          @default(0)
+    currentStreak       Int          @default(0)
+    bestStreak          Int          @default(0)
+    lastTrained         DateTime?
+    lastIncrement       DateTime?
+    highestOnlineRating Int?
+    highestOTBRating    Int?
+    public              Boolean      @default(false)
+    stripeCustomerId    String?      @unique
+    hasPremium          Boolean      @default(false)
+    createdAt           DateTime     @default(now())
+    updatedAt           DateTime     @updatedAt
+    publishedCourses    Course[]
+    daysTrained         DayTrained[]
+    badges              UserBadge[]
+}
+
+model DayTrained {
+    id         String      @id @default(cuid())
+    userId     String
+    date       String
+    experience Int         @default(0)
+    user       UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+}
+
+model Badge {
+    name        String      @id
+    imageUrl    String?
+    sort        Int         @default(0)
+    description String      @db.Text
+    category    String
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+    users       UserBadge[]
+}
+
+model UserBadge {
+    id        Int         @id @default(autoincrement())
+    userId    String
+    badgeName String
+    createdAt DateTime    @default(now())
+    updatedAt DateTime    @updatedAt
+    user      UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+    badge     Badge       @relation(fields: [badgeName], references: [name], onDelete: Cascade)
+
+    @@index([userId])
+}
+
+// eCommerce and Subscriptions
+model checkoutSession {
+    id        Int           @id @default(autoincrement())
+    sessionId String        @unique
+    userId    String
+    processed Boolean       @default(false)
+    createdAt DateTime      @default(now())
+    updatedAt DateTime      @updatedAt
+    items     sessionItem[]
+}
+
+model sessionItem {
+    id          Int             @id @default(autoincrement())
+    sessionId   Int
+    productId   String
+    productType String
+    createdAt   DateTime        @default(now())
+    updatedAt   DateTime        @updatedAt
+    session     checkoutSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}

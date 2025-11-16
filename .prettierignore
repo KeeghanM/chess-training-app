@@ -1,6 +1,3 @@
-# Ignore artifacts:
 build 
 coverage
-
-# Ignore Node Modules
 node_modules

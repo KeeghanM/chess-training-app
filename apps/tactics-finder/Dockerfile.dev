@@ -1,0 +1,22 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+ENV PATH="/usr/games:${PATH}"
+
+# Install runtime dependencies and developer tools
+RUN apt-get update && apt-get install -y \
+    stockfish \
+    pgn-extract \
+    curl \
+ && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install optional dev-only packages for hot reload
+RUN pip install --no-cache-dir watchdog
+
+# Run the worker with auto-reload on Python file changes
+CMD ["watchmedo", "auto-restart", "--directory=.", "--pattern=*.py","--recursive", "--", "python", "-u", "worker.py"]

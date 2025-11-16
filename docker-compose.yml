@@ -1,0 +1,108 @@
+services:
+  chess-training-app:
+    build:
+      context: .
+      dockerfile: ./apps/chess-training-app/Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=production
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - PUZZLE_API_URL=http://puzzles-api:4000/api
+    env_file:
+      - ./apps/chess-training-app/.env
+    depends_on:
+      redis:
+        condition: service_healthy
+      puzzles-api:
+        condition: service_healthy
+    networks:
+      - chess-app-net
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "require('http').get('http://localhost:3000/api/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  puzzles-api:
+    build:
+      context: .
+      dockerfile: ./apps/puzzles-api/Dockerfile
+    ports:
+      - '4000:4000'
+    environment:
+      - NODE_ENV=production
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    env_file:
+      - ./apps/puzzles-api/.env
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - chess-app-net
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "require('http').get('http://localhost:4000/', (r) => process.exit(r.statusCode === 200 ? 0 : 1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  tactics-finder:
+    build:
+      context: ./apps/tactics-finder
+      dockerfile: Dockerfile
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_QUEUE=pgn_queue
+      - API_ENDPOINT=http://chess-training-app:3000/api/tactics/addPuzzleToSet
+      - STOCKFISH_THREADS=4
+    depends_on:
+      redis:
+        condition: service_healthy
+      chess-training-app:
+        condition: service_healthy
+    networks:
+      - chess-app-net
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+    networks:
+      - chess-app-net
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    command: redis-server --appendonly yes
+
+volumes:
+  redis-data:
+    driver: local
+
+networks:
+  chess-app-net:
+    driver: bridge
