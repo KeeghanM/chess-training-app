@@ -56,7 +56,7 @@ export async function POST(request: Request) {
 
     const puzzles = json.puzzles
 
-    if (!puzzles) return errorResponse('Puzzles not found', 404)
+    if (!puzzles) return errorResponse('Puzzles not found', 400)
 
     return successResponse('Puzzles found', { puzzles }, 200)
   } catch (e) {
