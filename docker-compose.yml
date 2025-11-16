@@ -3,15 +3,47 @@ services:
     build:
       context: .
       dockerfile: ./apps/chess-training-app/Dockerfile
+      args:
+        API_BASE_URL: ${API_BASE_URL}
+        BREVO_API_KEY: ${BREVO_API_KEY}
+        DATABASE_URL: ${DATABASE_URL}
+        DB_CONNECTION_STRING: ${DB_CONNECTION_STRING}
+        DB_PASSWORD: ${DB_PASSWORD}
+        DB_USERNAME: ${DB_USERNAME}
+        KILLBILL_API_KEY: ${KILLBILL_API_KEY}
+        KILLBILL_API_SECRET: ${KILLBILL_API_SECRET}
+        KILLBILL_PASSWORD: ${KILLBILL_PASSWORD}
+        KILLBILL_URL: ${KILLBILL_URL}
+        KILLBILL_USERNAME: ${KILLBILL_USERNAME}
+        KINDE_AUDIENCE: ${KINDE_AUDIENCE}
+        KINDE_CLIENT_ID: ${KINDE_CLIENT_ID}
+        KINDE_CLIENT_SECRET: ${KINDE_CLIENT_SECRET}
+        KINDE_ISSUER_URL: ${KINDE_ISSUER_URL}
+        KINDE_POST_LOGIN_REDIRECT_URL: ${KINDE_POST_LOGIN_REDIRECT_URL}
+        KINDE_POST_LOGOUT_REDIRECT_URL: ${KINDE_POST_LOGOUT_REDIRECT_URL}
+        KINDE_SITE_URL: ${KINDE_SITE_URL}
+        NEXT_PUBLIC_MAX_COURSES: ${NEXT_PUBLIC_MAX_COURSES}
+        NEXT_PUBLIC_MAX_SETS: ${NEXT_PUBLIC_MAX_SETS}
+        NEXT_PUBLIC_POSTHOG_HOST: ${NEXT_PUBLIC_POSTHOG_HOST}
+        NEXT_PUBLIC_POSTHOG_KEY: ${NEXT_PUBLIC_POSTHOG_KEY}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+        NEXT_PUBLIC_STRIPE_PUBLIC_KEY: ${NEXT_PUBLIC_STRIPE_PUBLIC_KEY}
+        NODE_ENV: ${NODE_ENV}
+        PUZZLE_API_URL: ${PUZZLE_API_URL}
+        RAPIDAPI_KEY: ${RAPIDAPI_KEY}
+        REDIS_HOST: ${REDIS_HOST}
+        REDIS_PORT: ${REDIS_PORT}
+        SMTP_HOST: ${SMTP_HOST}
+        SMTP_PASS: ${SMTP_PASS}
+        SMTP_PORT: ${SMTP_PORT}
+        SMTP_USER: ${SMTP_USER}
+        STRIPE_PUBLIC_KEY: ${STRIPE_PUBLIC_KEY}
+        STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+        STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
     ports:
       - '3000:3000'
-    environment:
-      - NODE_ENV=production
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - PUZZLE_API_URL=http://puzzles-api:4000/api
     env_file:
-      - ./apps/chess-training-app/.env
+      - ./.env
     depends_on:
       redis:
         condition: service_healthy
@@ -39,12 +71,10 @@ services:
       dockerfile: ./apps/puzzles-api/Dockerfile
     ports:
       - '4000:4000'
-    environment:
-      - NODE_ENV=production
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
     env_file:
-      - ./apps/puzzles-api/.env
+      - ./.env
+    environment:
+      - PORT=4000
     depends_on:
       redis:
         condition: service_healthy
@@ -68,11 +98,9 @@ services:
     build:
       context: ./apps/tactics-finder
       dockerfile: Dockerfile
+    env_file:
+      - ./.env
     environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_QUEUE=pgn_queue
-      - API_ENDPOINT=http://chess-training-app:3000/api/tactics/addPuzzleToSet
       - STOCKFISH_THREADS=4
     depends_on:
       redis:

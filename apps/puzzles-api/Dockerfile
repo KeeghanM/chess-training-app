@@ -5,13 +5,14 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 COPY apps/puzzles-api/package.json ./apps/puzzles-api/
 
+# install all deps including dev
+ENV NODE_ENV="development"
 RUN yarn install --frozen-lockfile
 
 FROM node:22-alpine AS builder
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/apps/puzzles-api/node_modules ./apps/puzzles-api/node_modules
 
 # Copy all source files
 COPY . .
@@ -22,7 +23,7 @@ RUN yarn workspace puzzles-api build
 FROM node:22-alpine AS runner
 WORKDIR /app
 
-ENV NODE_ENV=production
+ENV NODE_ENV="production"
 
 # Copy necessary files for production
 COPY --from=builder /app/node_modules ./node_modules

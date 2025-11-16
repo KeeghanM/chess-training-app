@@ -17,13 +17,5 @@ export default function GlobalError({
     posthog.captureException(error)
   }, [error])
 
-  return (
-    // global-error must include html and body tags
-    <html>
-      <body>
-        {/* `NextError` is the default Next.js error page component */}
-        <NextError statusCode={0} />
-      </body>
-    </html>
-  )
+  return <NextError statusCode={0} />
 }
