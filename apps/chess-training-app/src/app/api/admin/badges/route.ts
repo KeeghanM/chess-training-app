@@ -1,16 +1,12 @@
 import { prisma } from '@server/db'
 import { getPostHogServer } from '@server/posthog-server'
 
-import { getUserServer } from '@utils/getUserServer'
+import { withAdminAuth } from '@utils/admin-auth'
 import { errorResponse, successResponse } from '@utils/server-responsses'
 
 const posthog = getPostHogServer()
 
-export async function POST(request: Request) {
-  const { user, isStaff } = await getUserServer()
-  if (!user) return errorResponse('Unauthorized', 401)
-  if (!isStaff) return errorResponse('Unauthorized', 401)
-
+export const POST = withAdminAuth(async (request) => {
   const { name, description, category } = (await request.json()) as {
     name: string
     description: string
@@ -40,13 +36,9 @@ export async function POST(request: Request) {
     posthog.captureException(e)
     return errorResponse('Internal server error', 500)
   }
-}
+})
 
-export async function PATCH(request: Request) {
-  const { user, isStaff } = await getUserServer()
-  if (!user) return errorResponse('Unauthorized', 401)
-  if (!isStaff) return errorResponse('Unauthorized', 401)
-
+export const PATCH = withAdminAuth(async (request) => {
   const { name, sort } = (await request.json()) as {
     name: string
     sort: number
@@ -74,4 +66,4 @@ export async function PATCH(request: Request) {
     posthog.captureException(e)
     return errorResponse('Internal server error', 500)
   }
-}
+})

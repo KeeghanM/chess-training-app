@@ -3,16 +3,12 @@ import type { CustomPuzzle } from '@prisma/client'
 import { prisma } from '@server/db'
 import { getPostHogServer } from '@server/posthog-server'
 
-import { getUserServer } from '@utils/getUserServer'
+import { withAdminAuth } from '@utils/admin-auth'
 import { errorResponse, successResponse } from '@utils/server-responsses'
 
 const posthog = getPostHogServer()
 
-export async function POST(request: Request) {
-  const { user, isStaff } = await getUserServer()
-  if (!user) return errorResponse('Unauthorized', 401)
-  if (!isStaff) return errorResponse('Unauthorized', 401)
-
+export const POST = withAdminAuth(async (request) => {
   try {
     const { puzzles } = (await request.json()) as {
       puzzles: CustomPuzzle[]
@@ -27,13 +23,9 @@ export async function POST(request: Request) {
     posthog.captureException(e)
     return errorResponse('Internal Server Error', 500)
   }
-}
+})
 
-export async function GET() {
-  const { user, isStaff } = await getUserServer()
-  if (!user) return errorResponse('Unauthorized', 401)
-  if (!isStaff) return errorResponse('Unauthorized', 401)
-
+export const GET = withAdminAuth(async () => {
   try {
     const puzzles = await prisma.customPuzzle.findMany()
     const trainingPuzzles = puzzles.map((p) => {
@@ -44,4 +36,4 @@ export async function GET() {
     posthog.captureException(e)
     return errorResponse('Internal Server Error', 500)
   }
-}
+})

@@ -4,16 +4,12 @@ import { getPostHogServer } from '@server/posthog-server'
 import type { TrainingPuzzle } from '@components/training/tactics/TacticsTrainer'
 
 import getPuzzleById from '@utils/GetPuzzleById'
-import { getUserServer } from '@utils/getUserServer'
+import { withAdminAuth } from '@utils/admin-auth'
 import { errorResponse, successResponse } from '@utils/server-responsses'
 
 const posthog = getPostHogServer()
 
-export async function POST(request: Request) {
-  const { user, isStaff } = await getUserServer()
-  if (!user) return errorResponse('Unauthorized', 401)
-  if (!isStaff) return errorResponse('Unauthorized', 401)
-
+export const POST = withAdminAuth(async (request) => {
   const { setId } = (await request.json()) as {
     setId: string
   }
@@ -40,8 +36,6 @@ export async function POST(request: Request) {
       }),
     )
 
-    console.log(setPuzzles)
-
     if (puzzles.length == 0) return errorResponse('Puzzles not found', 404)
 
     return successResponse('Puzzles found', { puzzles: puzzles }, 200)
@@ -49,4 +43,4 @@ export async function POST(request: Request) {
     posthog.captureException(e)
     return errorResponse('Internal Server Error', 500)
   }
-}
+})

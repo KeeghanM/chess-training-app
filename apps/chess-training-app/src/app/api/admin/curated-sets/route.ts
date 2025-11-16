@@ -1,16 +1,12 @@
 import { prisma } from '@server/db'
 import { getPostHogServer } from '@server/posthog-server'
 
-import { getUserServer } from '@utils/getUserServer'
+import { withAdminAuth } from '@utils/admin-auth'
 import { errorResponse, successResponse } from '@utils/server-responsses'
 
 const posthog = getPostHogServer()
 
-export async function POST(request: Request) {
-  const { user, isStaff } = await getUserServer()
-  if (!user) return errorResponse('Unauthorized', 401)
-  if (!isStaff) return errorResponse('Unauthorized', 401)
-
+export const POST = withAdminAuth(async (request) => {
   const { name, slug } = (await request.json()) as {
     name: string
     slug: string
@@ -44,13 +40,9 @@ export async function POST(request: Request) {
     posthog.captureException(e)
     return errorResponse('An error occurred', 500)
   }
-}
+})
 
-export async function PATCH(request: Request) {
-  const { user, isStaff } = await getUserServer()
-  if (!user) return errorResponse('Unauthorized', 401)
-  if (!isStaff) return errorResponse('Unauthorized', 401)
-
+export const PATCH = withAdminAuth(async (request) => {
   const {
     id,
     name,
@@ -123,13 +115,9 @@ export async function PATCH(request: Request) {
     posthog.captureException(e)
     return errorResponse('An error occurred', 500)
   }
-}
+})
 
-export async function DELETE(request: Request) {
-  const { user, isStaff } = await getUserServer()
-  if (!user) return errorResponse('Unauthorized', 401)
-  if (!isStaff) return errorResponse('Unauthorized', 401)
-
+export const DELETE = withAdminAuth(async (request) => {
   const { id } = (await request.json()) as {
     id: string
   }
@@ -147,4 +135,4 @@ export async function DELETE(request: Request) {
     posthog.captureException(e)
     return errorResponse('An error occurred', 500)
   }
-}
+})

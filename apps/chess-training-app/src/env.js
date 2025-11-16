@@ -20,7 +20,7 @@ export const env = createEnv({
     KINDE_POST_LOGIN_REDIRECT_URL: z.url(),
     KINDE_AUDIENCE: z.url(),
     SMTP_HOST: z.string(),
-    SMTP_PORT: z.string(),
+    SMTP_PORT: z.coerce.number(),
     SMTP_USER: z.string(),
     SMTP_PASS: z.string(),
     BREVO_API_KEY: z.string(),

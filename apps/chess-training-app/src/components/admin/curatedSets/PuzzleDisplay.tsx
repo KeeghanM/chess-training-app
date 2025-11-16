@@ -46,6 +46,11 @@ export default function PuzzleDisplay() {
   const [rating, setRating] = useState(puzzle?.rating ?? 1500)
   const [comment, setComment] = useState(puzzle?.comment ?? '')
 
+  useEffect(() => {
+    if (!puzzle) return
+    setPosition(puzzle.fen)
+  }, [puzzle])
+
   const saveMutation = useMutation({
     mutationFn: async () => {
       if (!puzzle) throw new Error('No puzzle selected')
@@ -58,7 +63,6 @@ export default function PuzzleDisplay() {
           moves: puzzle.moves,
         }),
       })
-      queryClient.invalidateQueries({ queryKey: ['curated-set-puzzles'] })
       const json = (await resp.json()) as ResponseJson
       if (json.message != 'Puzzle updated') throw new Error(json.message)
       return json
@@ -72,10 +76,12 @@ export default function PuzzleDisplay() {
         method: 'DELETE',
         body: JSON.stringify({ id: puzzle.curatedPuzzleId }),
       })
-      queryClient.invalidateQueries({ queryKey: ['curated-set-puzzles'] })
       const json = (await resp.json()) as ResponseJson
       if (json?.message != 'Puzzle deleted') throw new Error(json.message)
       return json
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['curated-set-puzzles'] })
     },
   })
 
@@ -110,11 +116,6 @@ export default function PuzzleDisplay() {
       </button>
     )
   })
-
-  useEffect(() => {
-    if (!puzzle) return
-    setPosition(puzzle.fen)
-  }, [puzzle])
 
   return (
     <div className="flex">

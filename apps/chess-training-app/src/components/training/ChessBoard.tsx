@@ -20,8 +20,18 @@ interface ChessBoardProps {
   moveMade: null | ((move: Move) => void)
 }
 
-export default function ChessBoard(props: ChessBoardProps) {
-  const { game } = props
+export default function ChessBoard({
+  game,
+  position,
+  orientation,
+  readyForInput,
+  soundEnabled,
+  additionalSquares,
+  additionalArrows,
+  enableArrows,
+  enableHighlights,
+  moveMade,
+}: ChessBoardProps) {
   const [startSquare, setStartSquare] = useState<Square | undefined>()
   const [clickedPiece, setClickedPiece] = useState<Piece | undefined>()
   const [optionSquares, setOptionSquares] = useState<
@@ -39,7 +49,7 @@ export default function ChessBoard(props: ChessBoardProps) {
   const [moveSound] = useSound('/sfx/move.mp3')
 
   const playMoveSound = (move: string) => {
-    if (!props.soundEnabled) return
+    if (!soundEnabled) return
     if (move.includes('+')) checkSound()
     else if (move.includes('x')) captureSound()
     else if (move.includes('=')) promotionSound()
@@ -62,7 +72,7 @@ export default function ChessBoard(props: ChessBoardProps) {
 
       const result = game.move({ from: sourceSquare, to: targetSquare })
       if (result) {
-        if (props.moveMade) props.moveMade(result)
+        if (moveMade) moveMade(result)
       }
       return !!result
     } catch {
@@ -78,7 +88,7 @@ export default function ChessBoard(props: ChessBoardProps) {
         to: promotionMove.to,
         promotion: piece,
       })
-      if (move && props.moveMade) props.moveMade(move)
+      if (move && moveMade) moveMade(move)
       setPromotionMove(null)
     } catch {
       setPromotionMove(null)
@@ -86,7 +96,7 @@ export default function ChessBoard(props: ChessBoardProps) {
   }
 
   function handleSquareClick(clickedSquare: Square) {
-    if (!props.readyForInput || promotionMove) return
+    if (!readyForInput || promotionMove) return
 
     // deselect by clicking same square
     if (clickedSquare === startSquare) {
@@ -126,7 +136,7 @@ export default function ChessBoard(props: ChessBoardProps) {
 
   // --- highlights ---
   useEffect(() => {
-    if (!startSquare || !clickedPiece || !props.enableHighlights) {
+    if (!startSquare || !clickedPiece || !enableHighlights) {
       setOptionSquares({})
       return
     }
@@ -144,14 +154,14 @@ export default function ChessBoard(props: ChessBoardProps) {
       }
     })
     setOptionSquares(newOpts)
-  }, [startSquare, clickedPiece, props.enableHighlights])
+  }, [startSquare, clickedPiece, enableHighlights])
 
   // --- sound effect on move completion ---
   useEffect(() => {
-    if (!props.soundEnabled) return
+    if (!soundEnabled) return
     const lastMove = game.history({ verbose: true }).slice(-1)[0]
     if (lastMove) playMoveSound(lastMove.san)
-  }, [props.position])
+  }, [position])
 
   // --- promotion dialog placement ---
   const squareWidth =
@@ -162,9 +172,7 @@ export default function ChessBoard(props: ChessBoardProps) {
 
   const getPromotionLeft = (to: Square) => {
     const col = to.charCodeAt(0) - 'a'.charCodeAt(0)
-    return props.orientation === 'white'
-      ? col * squareWidth
-      : (7 - col) * squareWidth
+    return orientation === 'white' ? col * squareWidth : (7 - col) * squareWidth
   }
 
   return (
@@ -238,9 +246,9 @@ export default function ChessBoard(props: ChessBoardProps) {
 
       <Chessboard
         options={{
-          position: props.position,
-          boardOrientation: props.orientation,
-          allowDragging: props.readyForInput && !promotionMove,
+          position: position,
+          boardOrientation: orientation,
+          allowDragging: readyForInput && !promotionMove,
           onPieceDrop: ({ sourceSquare, targetSquare }) =>
             handleUserMove(sourceSquare as Square, targetSquare as Square),
           onSquareClick: ({ square }) => handleSquareClick(square as Square),
@@ -257,10 +265,10 @@ export default function ChessBoard(props: ChessBoardProps) {
             }
           },
           boardStyle: { marginInline: 'auto' },
-          squareStyles: props.enableHighlights
-            ? { ...optionSquares, ...props.additionalSquares }
+          squareStyles: enableHighlights
+            ? { ...optionSquares, ...additionalSquares }
             : {},
-          arrows: props.enableArrows ? props.additionalArrows : [],
+          arrows: enableArrows ? additionalArrows : [],
         }}
       />
     </>

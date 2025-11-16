@@ -21,7 +21,6 @@ export async function POST(request: Request) {
     }
 
     const transporter = nodemailer.createTransport({
-      // @ts-expect-error : types are wrong, host is required
       host: env.SMTP_HOST,
       port: env.SMTP_PORT,
       secure: false,

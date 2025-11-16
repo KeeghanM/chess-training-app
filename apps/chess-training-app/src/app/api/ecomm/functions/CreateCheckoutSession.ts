@@ -51,7 +51,7 @@ export async function CreateCheckoutSession(
       }),
     )
 
-    const stripe = new Stripe(env.STRIPE_SECRET_KEY!)
+    const stripe = new Stripe(env.STRIPE_SECRET_KEY)
 
     const hasSubscription = products.some(
       (product) => product.productType === 'subscription',
