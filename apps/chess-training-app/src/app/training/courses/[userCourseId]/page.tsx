@@ -1,12 +1,12 @@
 import { redirect } from 'next/navigation'
-import { prisma } from '~/server/db'
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import type { Comment, Group, Line, Move, UserLine } from '@prisma/client'
-import posthog from 'posthog-js'
 import Backdrop from '@components/_elements/backdrop'
 import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import CourseTrainer from '@components/training/courses/CourseTrainer'
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import type { Comment, Group, Line, Move, UserLine } from '@prisma/client'
+import posthog from 'posthog-js'
+import { prisma } from '~/server/db'
 
 export type PrismaUserLine = UserLine & {
   line: Line & {

@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { parse as PGNParse } from '@mliebelt/pgn-parser'
-import posthog from 'posthog-js'
 import Button from '@components/_elements/button'
+import { parse as PGNParse } from '@mliebelt/pgn-parser'
 import trackEventOnClient from '@utils/trackEventOnClient'
+import posthog from 'posthog-js'
 import type { Line } from './parse/ParsePGNtoLineData'
 import { ParsePGNtoLineData } from './parse/ParsePGNtoLineData'
 

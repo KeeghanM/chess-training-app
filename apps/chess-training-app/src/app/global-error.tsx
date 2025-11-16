@@ -7,7 +7,6 @@ import posthog from 'posthog-js'
 
 export default function GlobalError({
   error,
-  reset,
 }: {
   error: Error & { digest?: string }
   reset: () => void

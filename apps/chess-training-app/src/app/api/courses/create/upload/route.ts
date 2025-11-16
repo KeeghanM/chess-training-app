@@ -4,6 +4,7 @@ import type { Course, Group as PrismaGroup } from '@prisma/client'
 import { errorResponse, successResponse } from '~/app/api/responses'
 import { prisma } from '~/server/db'
 import { getPostHogServer } from '~/server/posthog-server'
+
 const posthog = getPostHogServer()
 
 export async function POST(request: Request) {

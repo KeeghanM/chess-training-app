@@ -1,6 +1,4 @@
 import { useContext, useState } from 'react'
-import posthog from 'posthog-js'
-import type { ResponseJson } from '~/app/api/responses'
 import Button from '@components/_elements/button'
 import {
   Tooltip,
@@ -8,6 +6,8 @@ import {
   TooltipTrigger,
 } from '@components/_elements/tooltip'
 import Spinner from '@components/general/Spinner'
+import posthog from 'posthog-js'
+import type { ResponseJson } from '~/app/api/responses'
 import {
   CuratedSetBrowserContext,
   type CuratedSetPuzzle,

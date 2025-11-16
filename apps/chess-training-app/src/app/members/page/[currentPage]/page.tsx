@@ -1,7 +1,7 @@
 import { Suspense, cache } from 'react'
-import { prisma } from '~/server/db'
 import Container from '@components/_elements/container'
 import TrophyTile from '@components/members/TrophyTile'
+import { prisma } from '~/server/db'
 import Pagination from '~/components/_elements/Pagination'
 import Backdrop from '~/components/_elements/backdrop'
 import Heading from '~/components/_elements/heading'

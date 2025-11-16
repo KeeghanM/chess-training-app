@@ -31,8 +31,6 @@ export default function ChessBoard(props: ChessBoardProps) {
     to: Square
   } | null>(null)
 
-  const [arrows] = useState<Arrow[]>([])
-
   const [checkSound] = useSound('/sfx/check.mp3')
   const [captureSound] = useSound('/sfx/capture.mp3')
   const [promotionSound] = useSound('/sfx/promote.mp3')
@@ -71,7 +69,7 @@ export default function ChessBoard(props: ChessBoardProps) {
     }
   }
 
-  function confirmPromotion(piece: string) {
+  function confirmPromotion(piece: 'q' | 'r' | 'b' | 'n') {
     if (!promotionMove) return
     try {
       const move = game.move({
@@ -174,7 +172,16 @@ export default function ChessBoard(props: ChessBoardProps) {
       {promotionMove && (
         <>
           <div
+            role="button"
+            aria-label="Cancel promotion"
+            tabIndex={0}
             onClick={() => setPromotionMove(null)}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                setPromotionMove(null)
+              }
+            }}
             onContextMenu={(e) => {
               e.preventDefault()
               setPromotionMove(null)
@@ -204,6 +211,7 @@ export default function ChessBoard(props: ChessBoardProps) {
             {(['q', 'r', 'b', 'n'] as const).map((p) => (
               <button
                 key={p}
+                type="button"
                 onClick={() => confirmPromotion(p)}
                 onContextMenu={(e) => e.preventDefault()}
                 style={{
@@ -251,9 +259,7 @@ export default function ChessBoard(props: ChessBoardProps) {
           squareStyles: props.enableHighlights
             ? { ...optionSquares, ...props.additionalSquares }
             : {},
-          arrows: props.enableArrows
-            ? [...props.additionalArrows, ...arrows]
-            : [],
+          arrows: props.enableArrows ? props.additionalArrows : [],
         }}
       />
     </>

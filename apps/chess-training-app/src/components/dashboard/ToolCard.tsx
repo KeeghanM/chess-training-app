@@ -1,9 +1,9 @@
 'use client'
 
 import Link from 'next/link'
+import Button from '@components/_elements/button'
 import { DynamicIcon } from 'lucide-react/dynamic'
 import type { Tool } from '~/app/dashboard/page'
-import Button from '@components/_elements/button'
 
 type ToolCardProps = {
   tool: Tool

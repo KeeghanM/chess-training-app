@@ -1,6 +1,7 @@
 import { prisma } from '~/server/db'
 import { getPostHogServer } from '~/server/posthog-server'
 import { errorResponse, successResponse } from '../../responses'
+
 const posthog = getPostHogServer()
 
 export async function GET() {

@@ -58,6 +58,7 @@ export default function Button({
 
   return (
     <button
+      id={id}
       type={type}
       className={`cursor-pointer flex-1 w-fit min-w-fit flex items-center justify-center gap-2 text-sm rounded-full py-2 px-4 shadow ${styles[variant]} ${disabled ? ' cursor-not-allowed opacity-50 pointer-events-none' : ''} ${className}`}
       onClick={onClick ? onClick : undefined}

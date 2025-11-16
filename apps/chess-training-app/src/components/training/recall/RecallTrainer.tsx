@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useProfileQueries } from '@hooks/use-profile-queries'
 import { useRecallQueries } from '@hooks/use-recall-queries'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
@@ -33,7 +33,6 @@ export default function RecallTrainer() {
     'none' | 'correct' | 'incorrect'
   >('none')
   const [mode, setMode] = useState<'training' | 'settings'>('settings')
-  const [error, setError] = useState('')
 
   const [xpCounter, setXpCounter] = useState(0)
   const [currentStreak, setCurrentStreak] = useState(0)

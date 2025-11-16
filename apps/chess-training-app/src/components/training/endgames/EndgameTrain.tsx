@@ -1,18 +1,17 @@
 import { useEffect, useState } from 'react'
-import type { TrainingPuzzle } from '@hooks/use-puzzle-queries'
-import { useSounds } from '@hooks/use-sound'
-import type { Chess as ChessType, Move } from 'chess.js'
-import { Chess } from 'chess.js'
-import Toggle from 'react-toggle'
-import 'react-toggle/style.css'
 import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
 import XpTracker from '@components/general/XpTracker'
+import type { TrainingPuzzle } from '@hooks/use-puzzle-queries'
+import { useSounds } from '@hooks/use-sound'
 import trackEventOnClient from '@utils/trackEventOnClient'
 import {
   showMoveSequence,
   makeMove as utilMakeMove,
 } from '@utils/trainer-helpers'
+import { Chess, type Move } from 'chess.js'
+import Toggle from 'react-toggle'
+import 'react-toggle/style.css'
 import ChessBoard from '../ChessBoard'
 import BoardContainer from '../shared/BoardContainer'
 import PgnNavigator from '../shared/PgnNavigator'

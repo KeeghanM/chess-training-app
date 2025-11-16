@@ -1,13 +1,13 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { type ContentRelationshipField, asText } from '@prismicio/client'
-import Prismic from '~/prismicio'
 import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import CtaRow from '@components/_layouts/ctaRow'
+import { type ContentRelationshipField, asText } from '@prismicio/client'
 import type { RichTextContent } from '@utils/PrismicRichToHtml'
 import { PrismicRichToHtml } from '@utils/PrismicRichToHtml'
+import Prismic from '~/prismicio'
 
 type Params = { uid: string }
 

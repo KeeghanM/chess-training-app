@@ -2,14 +2,14 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import Button from '@components/_elements/button'
+import Heading from '@components/_elements/heading'
+import Spinner from '@components/general/Spinner'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import type { UserProfile } from '@prisma/client'
 import { Info } from 'lucide-react'
 import posthog from 'posthog-js'
 import type { ResponseJson } from '~/app/api/responses'
-import Button from '@components/_elements/button'
-import Heading from '@components/_elements/heading'
-import Spinner from '@components/general/Spinner'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../_elements/tooltip'
 
 export default function AccountForm(props: { profile: UserProfile }) {

@@ -157,7 +157,7 @@ Why this distinction?
 - Use explicit typing where it aids clarity, but leverage inference where appropriate.
 - Utilize utility types effectively (Pick, Omit, Partial, Required, etc.).
 - Create domain-specific types (e.g., UserId, PaymentId) for type safety.
-- Use Zod or any other Standard Schema compliant schema library to create types, by creating - schemas first.
+- Use Zod or any other Standard Schema compliant schema library to create types, by defining schemas first.
 
 ```typescript
 // Good - Branded types for type safety

@@ -1,9 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { useCourseQueries } from '@hooks/use-course-queries'
 import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
+import { useCourseQueries } from '@hooks/use-course-queries'
 
 export default function ArchivedList() {
   // React Query hooks

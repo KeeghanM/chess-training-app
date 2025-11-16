@@ -1,9 +1,9 @@
 'use client'
 
 import { useContext, useEffect, useState } from 'react'
+import Spinner from '@components/general/Spinner'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ResponseJson } from '~/app/api/responses'
-import Spinner from '@components/general/Spinner'
 import {
   CuratedSetBrowserContext,
   type CuratedSetPuzzle,

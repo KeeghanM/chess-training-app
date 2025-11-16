@@ -1,12 +1,12 @@
 'use client'
 
-import { PrismaUserCourse } from '~/hooks/use-course-queries'
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@components/_elements/tooltip'
 import { RoundProgress } from '~/components/_elements/progress'
+import { PrismaUserCourse } from '~/hooks/use-course-queries'
 import { generateCoursePercentages } from '~/utils/GenerateCoursePercentages'
 import type { UserLineWithData } from './CourseBrowser'
 

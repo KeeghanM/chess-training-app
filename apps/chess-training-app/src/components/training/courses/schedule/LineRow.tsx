@@ -1,12 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { useCourseQueries } from '@hooks/use-course-queries'
-import type { Group, Line, Move, UserLine } from '@prisma/client'
 import Button from '@components/_elements/button'
 import PrettyPrintLine from '@components/general/PrettyPrintLine'
 import Spinner from '@components/general/Spinner'
 import type { Line as NiceLine } from '@components/training/courses/create/parse/ParsePGNtoLineData'
+import { useCourseQueries } from '@hooks/use-course-queries'
+import type { Group, Line, Move, UserLine } from '@prisma/client'
 
 export type ScheduleLine = UserLine & {
   line: Line & {

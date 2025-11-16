@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import posthog from 'posthog-js'
-import type { ResponseJson } from '~/app/api/responses'
 import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
+import posthog from 'posthog-js'
+import type { ResponseJson } from '~/app/api/responses'
 
 export default function ReportIssueForm() {
   const [sendEmail, setSendEmail] = useState(false)

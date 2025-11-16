@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 🚀 Trigger chess-training-app deploy
-        run: curl -X POST ${{ secrets.COOLIFY_WEBHOOK_APP }}
+        run: curl -f -X POST ${{ secrets.COOLIFY_WEBHOOK_APP }} > /dev/null 2>&1
 
   deploy-api:
     needs: check-paths
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 🚀 Trigger puzzles-api deploy
-        run: curl -X POST ${{ secrets.COOLIFY_WEBHOOK_API }}
+        run: curl -f -X POST ${{ secrets.COOLIFY_WEBHOOK_API }} > /dev/null 2>&1
 
   deploy-tactics:
     needs: check-paths
@@ -53,4 +53,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 🚀 Trigger tactics-finder deploy
-        run: curl -X POST ${{ secrets.COOLIFY_WEBHOOK_TACTICS }}
+        run: curl -f -X POST ${{ secrets.COOLIFY_WEBHOOK_tactics }} > /dev/null 2>&1

@@ -3,6 +3,7 @@ import { AddBadgeToUser } from '@utils/AddBadge'
 import { TacticStreakBadges } from '@utils/RanksAndBadges'
 import { errorResponse, successResponse } from '~/app/api/responses'
 import { getPostHogServer } from '~/server/posthog-server'
+
 const posthog = getPostHogServer()
 
 export async function POST(request: Request) {

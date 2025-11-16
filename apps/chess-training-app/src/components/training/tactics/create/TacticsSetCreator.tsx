@@ -41,7 +41,7 @@ export default function TacticsSetCreator({
   const [rating, setRating] = useState(1500)
   const [pgnInput, setPgnInput] = useState('')
   const [createFromPgn, setCreateFromPgn] = useState(false)
-  const [createFromAccount, setCreateFromAccount] = useState(false)
+  // TODO: const [createFromAccount, setCreateFromAccount] = useState(false)
   const options = [
     { value: 'pin', label: 'Pin' },
     { value: 'fork', label: 'Fork' },

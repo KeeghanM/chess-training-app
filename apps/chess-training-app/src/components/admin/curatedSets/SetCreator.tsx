@@ -1,14 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import type { CuratedSet } from '@prisma/client'
-import * as AlertDialog from '@radix-ui/react-alert-dialog'
-import { useMutation } from '@tanstack/react-query'
-import type { ResponseJson } from '~/app/api/responses'
 import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
 import Spinner from '@components/general/Spinner'
+import type { CuratedSet } from '@prisma/client'
+import * as AlertDialog from '@radix-ui/react-alert-dialog'
+import { useMutation } from '@tanstack/react-query'
 import GenerateSlug from '@utils/GenerateSlug'
+import type { ResponseJson } from '~/app/api/responses'
 
 export default function SetCreator(props: {
   onCreate: (set: CuratedSet) => void

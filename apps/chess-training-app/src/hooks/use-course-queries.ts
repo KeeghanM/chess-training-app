@@ -1,3 +1,4 @@
+import { CleanMove } from '@components/training/courses/create/parse/ParsePGNtoLineData'
 import type {
   Course as PrismaCourse,
   UserCourse,
@@ -5,7 +6,6 @@ import type {
 } from '@prisma/client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ResponseJson } from '~/app/api/responses'
-import { CleanMove } from '@components/training/courses/create/parse/ParsePGNtoLineData'
 
 // Types
 export type PrismaUserCourse = UserCourse & {

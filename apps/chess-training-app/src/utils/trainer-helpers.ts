@@ -7,7 +7,7 @@ export function makeMove(game: Chess, move: string): boolean {
   try {
     game.move(move)
     return true
-  } catch (e) {
+  } catch {
     // Suppress premove/chess.js errors that don't affect functionality
     return false
   }

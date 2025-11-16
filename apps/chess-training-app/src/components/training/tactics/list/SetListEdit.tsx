@@ -1,14 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useTacticsQueries } from '@hooks/use-tactics-queries'
-import * as AlertDialog from '@radix-ui/react-alert-dialog'
-import posthog from 'posthog-js'
 import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
 import type { PrismaTacticsSet } from '@components/training/tactics/create/TacticsSetCreator'
+import { useTacticsQueries } from '@hooks/use-tactics-queries'
+import * as AlertDialog from '@radix-ui/react-alert-dialog'
 import type { KindeUser } from '@utils/getUserServer'
 import trackEventOnClient from '@utils/trackEventOnClient'
+import posthog from 'posthog-js'
 
 export default function SetListEdit({
   set,

@@ -1,7 +1,7 @@
+import { getUserServer } from '@utils/getUserServer'
+import { env } from '~/env'
 import { prisma } from '~/server/db'
 import { getPostHogServer } from '~/server/posthog-server'
-import { env } from '~/env'
-import { getUserServer } from '@utils/getUserServer'
 import { errorResponse, successResponse } from '../../responses'
 import { AddCourseToUser } from '../functions/AddCourseToUser'
 import {

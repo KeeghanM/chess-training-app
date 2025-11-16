@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useEndgameQueries } from '@hooks/use-endgame-queries'
 import { useProfileQueries } from '@hooks/use-profile-queries'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'

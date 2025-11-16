@@ -2,6 +2,7 @@ import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import getPuzzleById from '@utils/GetPuzzleById'
 import { errorResponse, successResponse } from '~/app/api/responses'
 import { getPostHogServer } from '~/server/posthog-server'
+
 const posthog = getPostHogServer()
 
 export async function GET(

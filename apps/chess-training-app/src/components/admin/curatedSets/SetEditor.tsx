@@ -1,13 +1,13 @@
 'use client'
 
 import { useContext, useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
-import posthog from 'posthog-js'
-import type { ResponseJson } from '~/app/api/responses'
 import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
 import TextEditor from '@components/general/TextEditor'
+import { useMutation } from '@tanstack/react-query'
 import GenerateSlug from '@utils/GenerateSlug'
+import posthog from 'posthog-js'
+import type { ResponseJson } from '~/app/api/responses'
 import { CuratedSetBrowserContext } from './CuratedSetsBrowser'
 
 export default function SetEditor() {

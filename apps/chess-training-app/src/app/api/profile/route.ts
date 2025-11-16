@@ -1,8 +1,8 @@
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { AddBadgeToUser } from '@utils/AddBadge'
+import { errorResponse, successResponse } from '~/app/api/responses'
 import { prisma } from '~/server/db'
 import { getPostHogServer } from '~/server/posthog-server'
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import { errorResponse, successResponse } from '~/app/api/responses'
-import { AddBadgeToUser } from '@utils/AddBadge'
 
 const posthog = getPostHogServer()
 

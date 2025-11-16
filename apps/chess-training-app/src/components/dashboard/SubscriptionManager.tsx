@@ -1,12 +1,12 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import posthog from 'posthog-js'
 import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
 import GetPremiumButton from '@components/ecomm/GetPremiumButton'
 import Spinner from '@components/general/Spinner'
 import type { SubscriptionStatus } from '@utils/KillBill'
+import posthog from 'posthog-js'
 
 interface ApiResponse {
   success: boolean

@@ -1,5 +1,5 @@
-import { prisma } from '~/server/db'
 import posthog from 'posthog-js'
+import { prisma } from '~/server/db'
 
 export async function AddBadgeToUser(userId: string, name: string) {
   if (!name || !userId) return

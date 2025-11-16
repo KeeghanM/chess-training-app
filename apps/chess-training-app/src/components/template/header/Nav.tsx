@@ -4,9 +4,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 import { LogoutLink } from '@kinde-oss/kinde-auth-nextjs'
-import { UserCircle } from 'lucide-react'
 import CalculateXpRank from '@utils/CalculateXpRank'
 import type { KindeUser } from '@utils/getUserServer'
+import { UserCircle } from 'lucide-react'
 import Button from '../../_elements/button'
 import {
   Tooltip,

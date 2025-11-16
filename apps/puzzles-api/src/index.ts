@@ -8,15 +8,11 @@ import { env } from './env'
 const app = express()
 app.use(helmet())
 
-if (env.NODE_ENV !== 'production') {
-  require('dotenv').config()
-}
-
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 // ROUTES
-app.get('/', (req: Request, res: Response) => {
+app.get('/', (_req: Request, res: Response) => {
   res.json({ message: 'Welcome to the Chess Puzzle API.' })
 })
 app.get('/api', PuzzleController)

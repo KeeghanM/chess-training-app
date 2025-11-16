@@ -1,8 +1,8 @@
+import { TacticsSetStatus } from '@prisma/client'
+import { getUserServer } from '@utils/getUserServer'
+import { env } from '~/env'
 import { prisma } from '~/server/db'
 import { getPostHogServer } from '~/server/posthog-server'
-import { TacticsSetStatus } from '@prisma/client'
-import { env } from '~/env'
-import { getUserServer } from '@utils/getUserServer'
 import { errorResponse, successResponse } from '../../responses'
 import { AddCuratedSetToUser } from '../functions/AddCuratedSetToUser'
 import {

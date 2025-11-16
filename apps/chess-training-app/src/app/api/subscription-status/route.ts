@@ -1,6 +1,6 @@
-import { getPostHogServer } from '~/server/posthog-server'
 import { killBillClient } from '@utils/KillBill'
 import { getUserServer } from '@utils/getUserServer'
+import { getPostHogServer } from '~/server/posthog-server'
 import { errorResponse, successResponse } from '../responses'
 
 const posthog = getPostHogServer()

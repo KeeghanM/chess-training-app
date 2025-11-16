@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { useCourseQueries } from '@hooks/use-course-queries'
-import * as AlertDialog from '@radix-ui/react-alert-dialog'
 import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
+import { useCourseQueries } from '@hooks/use-course-queries'
+import * as AlertDialog from '@radix-ui/react-alert-dialog'
 
 type ResetButtonProps = {
   groups: {

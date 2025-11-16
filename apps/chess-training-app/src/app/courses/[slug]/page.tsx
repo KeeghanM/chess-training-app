@@ -1,6 +1,9 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { prisma } from '~/server/db'
+import Container from '@components/_elements/container'
+import Heading from '@components/_elements/heading'
+import StyledLink from '@components/_elements/styledLink'
+import GetCourse from '@components/ecomm/GetCourse'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import type {
   Course,
@@ -10,10 +13,7 @@ import type {
   UserProfile,
 } from '@prisma/client'
 import posthog from 'posthog-js'
-import Container from '@components/_elements/container'
-import Heading from '@components/_elements/heading'
-import StyledLink from '@components/_elements/styledLink'
-import GetCourse from '@components/ecomm/GetCourse'
+import { prisma } from '~/server/db'
 
 export default async function CoursePage(props: {
   params: Promise<{ slug: string }>

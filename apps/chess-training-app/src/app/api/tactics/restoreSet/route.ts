@@ -1,6 +1,6 @@
-import { prisma } from '~/server/db'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import { TacticsSetStatus } from '@prisma/client'
+import { prisma } from '~/server/db'
 import { errorResponse, successResponse } from '../../responses'
 
 export async function POST(req: Request) {

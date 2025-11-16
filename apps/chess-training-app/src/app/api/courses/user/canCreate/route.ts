@@ -3,6 +3,7 @@ import { errorResponse, successResponse } from '~/app/api/responses'
 import { env } from '~/env'
 import { prisma } from '~/server/db'
 import { getPostHogServer } from '~/server/posthog-server'
+
 const posthog = getPostHogServer()
 
 export async function GET() {

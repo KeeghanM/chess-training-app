@@ -1,11 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Chess } from 'chess.js'
-import type { Arrow } from 'react-chessboard'
 import type { Move } from '@utils/BuildPgn'
 import BuildPGN from '@utils/BuildPgn'
 import getArrows from '@utils/StringToArrows'
+import { Chess } from 'chess.js'
+import type { Arrow } from 'react-chessboard'
 import ChessBoard from '../../ChessBoard'
 import BoardContainer from '../../shared/BoardContainer'
 import type { UserLineWithData } from './CourseBrowser'

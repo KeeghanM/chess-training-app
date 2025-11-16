@@ -1,11 +1,11 @@
 'use client'
 
 import { createContext, useEffect, useState } from 'react'
-import type { CuratedSet } from '@prisma/client'
-import 'react-toggle/style.css'
 import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
 import type { TrainingPuzzle } from '@components/training/tactics/TacticsTrainer'
+import type { CuratedSet } from '@prisma/client'
+import 'react-toggle/style.css'
 import AddToSet from './AddToSet'
 import PuzzleDisplay from './PuzzleDisplay'
 import PuzzleList from './PuzzleList'

@@ -1,8 +1,8 @@
-import { prisma } from '~/server/db'
-import { getPostHogServer } from '~/server/posthog-server'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import { TacticsSetStatus } from '@prisma/client'
 import { errorResponse, successResponse } from '~/app/api/responses'
+import { prisma } from '~/server/db'
+import { getPostHogServer } from '~/server/posthog-server'
 
 const posthog = getPostHogServer()
 

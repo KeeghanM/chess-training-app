@@ -9,7 +9,7 @@ export default function TrophyTile(props: {
   published: boolean
 }) {
   const { placement, username, xp, published } = props
-  const { currentXp, rank, nextRank, percentage } = CalculateXpRank(xp)
+  const { currentXp, rank, nextRank } = CalculateXpRank(xp)
 
   const Trophy = (props: { placement: number }) => {
     switch (props.placement) {

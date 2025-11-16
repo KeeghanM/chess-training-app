@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation'
 import Container from '@components/_elements/container'
 import RecallTrainer from '@components/training/recall/RecallTrainer'
+import { getUserServer } from '@utils/getUserServer'
 import Backdrop from '~/components/_elements/backdrop'
 import Heading from '~/components/_elements/heading'
-import { getUserServer } from '@utils/getUserServer'
 
 export default async function RecallTrainPage() {
   const { user } = await getUserServer()

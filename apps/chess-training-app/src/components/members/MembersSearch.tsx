@@ -39,7 +39,7 @@ export default function MemberSearch() {
       router.push(
         `/members/page/${data.page}?highlight=${encodeURIComponent(data.username)}`,
       )
-    } catch (err) {
+    } catch {
       setError('Failed to search. Please try again.')
       setLoading(false)
     }

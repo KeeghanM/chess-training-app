@@ -1,11 +1,11 @@
 'use client'
 
+import Button from '@components/_elements/button'
+import Spinner from '@components/general/Spinner'
 import { useTacticsQueries } from '@hooks/use-tactics-queries'
 import { Puzzle } from 'lucide-react'
 import TimeAgo from 'react-timeago'
 import { env } from '~/env'
-import Button from '@components/_elements/button'
-import Spinner from '@components/general/Spinner'
 
 export default function ArchivedSetList({
   hasUnlimitedSets,

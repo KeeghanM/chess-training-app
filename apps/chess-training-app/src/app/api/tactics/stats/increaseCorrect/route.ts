@@ -4,6 +4,7 @@ import { TacticStreakBadges } from '@utils/RanksAndBadges'
 import { errorResponse, successResponse } from '~/app/api/responses'
 import { prisma } from '~/server/db'
 import { getPostHogServer } from '~/server/posthog-server'
+
 const posthog = getPostHogServer()
 
 export async function POST(request: Request) {

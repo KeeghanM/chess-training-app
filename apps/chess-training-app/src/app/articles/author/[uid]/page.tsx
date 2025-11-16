@@ -1,12 +1,12 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import * as prismic from '@prismicio/client'
-import Prismic from '~/prismicio'
 import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import StyledLink from '@components/_elements/styledLink'
+import * as prismic from '@prismicio/client'
 import type { RichTextContent } from '@utils/PrismicRichToHtml'
 import { PrismicRichToHtml } from '@utils/PrismicRichToHtml'
+import Prismic from '~/prismicio'
 
 type Params = { uid: string }
 export default async function AuthorPage(props: { params: Promise<Params> }) {

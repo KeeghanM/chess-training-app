@@ -10,9 +10,21 @@
     "dev": "docker compose -f docker-compose.dev.yml restart && docker compose -f docker-compose.dev.yml up",
     "dev:build": "docker compose -f docker-compose.dev.yml up --build",
     "dev:down": "docker compose -f docker-compose.dev.yml down",
+    "qa": "npm run qa:format && npm run qa:check-types && npm run qa:lint && npm run qa:test",
+    "qa:format": "npx prettier . --write --cache --log-level warn",
+    "qa:check-types": "npm run qa:check-types --workspaces --if-present",
+    "qa:lint": "npx eslint .",
+    "qa:lint:fix": "npx eslint . --fix",
+    "qa:test": "npm run qa:test --workspaces --if-present",
     "prepare": "husky"
   },
+  "lint-staged": {
+    "**/*": [
+      "yarn qa"
+    ]
+  },
   "devDependencies": {
+    "eslint-config-prettier": "^10.1.8",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.4",
     "prettier": "^3.6.2",

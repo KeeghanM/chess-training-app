@@ -1,9 +1,9 @@
 // Add new lines to a course
-import { prisma } from '~/server/db'
-import { getPostHogServer } from '~/server/posthog-server'
+import type { CleanMove } from '@components/training/courses/create/parse/ParsePGNtoLineData'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import { errorResponse, successResponse } from '~/app/api/responses'
-import type { CleanMove } from '@components/training/courses/create/parse/ParsePGNtoLineData'
+import { prisma } from '~/server/db'
+import { getPostHogServer } from '~/server/posthog-server'
 
 const posthog = getPostHogServer()
 

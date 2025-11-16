@@ -142,7 +142,7 @@ export default function Pagination({
               </span>
             )}
 
-            {pageNumbers.map((page, index) => {
+            {pageNumbers.map((page) => {
               if (page === 'ellipsis-start' || page === 'ellipsis-end') {
                 return (
                   <span
