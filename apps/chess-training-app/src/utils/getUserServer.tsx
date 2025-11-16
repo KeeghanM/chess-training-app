@@ -39,7 +39,7 @@ export async function getUserServer() {
           userId: user.id,
         },
       })
-      const isStaff = true // permissions?.permissions.includes('staff-member') ?? false
+      const isStaff = permissions?.permissions.includes('staff-member') ?? false
       const isPremium = subscriptionStatus.features.hasPremium
 
       return { user, hasAuth, profile, isStaff, isPremium, badges }
