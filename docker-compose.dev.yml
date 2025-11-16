@@ -5,17 +5,14 @@ services:
       dockerfile: ./apps/chess-training-app/Dockerfile.dev
     working_dir: /app/apps/chess-training-app
     volumes:
-      - ./:/app
-      - /app/node_modules
+      - ./:/app:delegated
     ports:
       - '3000:3000'
+    env_file:
+      - ./apps/chess-training-app/.env
     depends_on:
       - redis
       - puzzles-api
-    environment:
-      - NODE_ENV=development
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
     networks:
       - chess-app-net
 
@@ -25,16 +22,13 @@ services:
       dockerfile: ./apps/puzzles-api/Dockerfile.dev
     working_dir: /app/apps/puzzles-api
     volumes:
-      - ./:/app
-      - /app/node_modules
+      - ./:/app:delegated
     ports:
       - '4000:4000'
+    env_file:
+      - ./apps/puzzles-api/.env
     depends_on:
       - redis
-    environment:
-      - NODE_ENV=development
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
     networks:
       - chess-app-net
 
@@ -47,9 +41,8 @@ services:
       - ./apps/tactics-finder:/app
     depends_on:
       - redis
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
+    env_file:
+      - ./apps/tactics-finder/.env
     networks:
       - chess-app-net
 

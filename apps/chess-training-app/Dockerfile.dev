@@ -1,12 +1,22 @@
 FROM node:22-alpine
 
+RUN apk add --no-cache bash git openssl
 WORKDIR /app
 
-# Copy only package info for install
+ENV NODE_ENV=development
+
+# 1. Copy ONLY the package.json files first
 COPY package.json yarn.lock ./
+COPY apps/chess-training-app/package.json ./apps/chess-training-app/
 
-# Install dependencies (hoisted via workspaces)
-RUN yarn install --frozen-lockfile
+# 2. Run install. This layer will now be cached
+RUN yarn install --frozen-lockfile && \
+    yarn cache clean
 
-# Mount code later (volume in compose) to allow live reload
-CMD ["yarn", "dev"]
+# 3. Copy the rest of the source code
+COPY . .
+
+# Set working directory to the specific app
+WORKDIR /app/apps/chess-training-app
+EXPOSE 3000
+CMD ["sh", "-c", "yarn dev"]

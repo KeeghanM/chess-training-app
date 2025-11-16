@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express'
 import oracledb, { Connection, OUT_FORMAT_OBJECT } from 'oracledb'
 import { z } from 'zod'
+import { env } from '../../env'
 
 export const ErrorResponse = (message: string, status: number) => {
   return {
@@ -85,9 +86,9 @@ const QuerySchema = z
 const PuzzleController = async (req: Request, res: Response) => {
   // RapidAPI authentication check
   if (
-    process.env.NODE_ENV === 'production' &&
+    env.NODE_ENV === 'production' &&
     (req.headers['x-mashape-proxy-secret'] === undefined ||
-      req.headers['x-mashape-proxy-secret'] !== process.env.RAPID_API_SECRET)
+      req.headers['x-mashape-proxy-secret'] !== env.RAPID_API_SECRET)
   ) {
     res
       .status(400)
@@ -163,9 +164,9 @@ const PuzzleController = async (req: Request, res: Response) => {
 
   try {
     connection = await oracledb.getConnection({
-      user: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      connectionString: process.env.DB_CONNECTION_STRING,
+      user: env.DB_USERNAME,
+      password: env.DB_PASSWORD,
+      connectionString: env.DB_CONNECTION_STRING,
       externalAuth: false,
     })
 

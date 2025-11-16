@@ -1,12 +1,13 @@
 import type { Request, Response } from 'express'
 import oracledb, { Connection, OUT_FORMAT_OBJECT } from 'oracledb'
+import { env } from '../../env'
 import { ErrorResponse, PuzzleResult } from './puzzle.controller'
 
 const AdminController = async (req: Request, res: Response) => {
   if (
-    process.env.NODE_ENV === 'production' &&
+    env.NODE_ENV === 'production' &&
     (req.headers['x-admin-secret'] === undefined ||
-      req.headers['x-admin-secret'] !== process.env.ADMIN_SECRET)
+      req.headers['x-admin-secret'] !== env.ADMIN_SECRET)
   ) {
     res
       .status(400)
@@ -21,9 +22,9 @@ const AdminController = async (req: Request, res: Response) => {
 
   try {
     connection = await oracledb.getConnection({
-      user: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      connectionString: process.env.DB_CONNECTION_STRING,
+      user: env.DB_USERNAME,
+      password: env.DB_PASSWORD,
+      connectionString: env.DB_CONNECTION_STRING,
       externalAuth: false,
     })
 

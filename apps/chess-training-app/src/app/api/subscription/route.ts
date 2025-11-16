@@ -1,6 +1,7 @@
-import { getPostHogServer } from '~/server/posthog-server'
 import { killBillClient } from '@utils/KillBill'
 import { getUserServer } from '@utils/getUserServer'
+import { env } from '~/env'
+import { getPostHogServer } from '~/server/posthog-server'
 import { errorResponse, successResponse } from '../responses'
 
 const posthog = getPostHogServer()
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
         return errorResponse('Failed to create KillBill account', 500)
       }
 
-      const successUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/subscription-success?kbAccountId=${kbAccount.accountId}&sessionId={CHECKOUT_SESSION_ID}`
+      const successUrl = `${env.NEXT_PUBLIC_SITE_URL}/checkout/subscription-success?kbAccountId=${kbAccount.accountId}&sessionId={CHECKOUT_SESSION_ID}`
 
       const sessionId = await killBillClient.createSession(
         kbAccount.accountId,

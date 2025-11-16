@@ -1,14 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Response } from '@dnd-kit/core/dist/sensors/types'
 import globalAxios from 'axios'
 import * as killbill from 'killbill'
+import { env } from '~/env'
 
 const axios = globalAxios.create()
 
-const KILLBILL_API_KEY = process.env.KILLBILL_API_KEY
-const KILLBILL_API_SECRET = process.env.KILLBILL_API_SECRET
-const KILLBILL_URL = process.env.KILLBILL_URL
-const KILLBILL_USERNAME = process.env.KILLBILL_USERNAME
-const KILLBILL_PASSWORD = process.env.KILLBILL_PASSWORD
+const KILLBILL_API_KEY = env.KILLBILL_API_KEY
+const KILLBILL_API_SECRET = env.KILLBILL_API_SECRET
+const KILLBILL_URL = env.KILLBILL_URL
+const KILLBILL_USERNAME = env.KILLBILL_USERNAME
+const KILLBILL_PASSWORD = env.KILLBILL_PASSWORD
 
 if (
   !KILLBILL_API_KEY ||
@@ -101,11 +103,6 @@ class KillBillClient {
       )
 
       if (!response.data || !response.data.accountId) {
-        console.error('Invalid response structure:', {
-          hasData: !!response.data,
-          dataKeys: response.data ? Object.keys(response.data) : 'no data',
-          fullResponse: response,
-        })
         throw new Error('Invalid response from KillBill account creation')
       }
 
@@ -170,7 +167,7 @@ class KillBillClient {
       const requestData = {
         kbAccountId: accountId,
         successUrl: successUrl,
-        cancelUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard/settings`,
+        cancelUrl: `${env.NEXT_PUBLIC_SITE_URL}/dashboard/settings`,
       }
 
       const response = await axios.post(pluginEndpoint, null, {

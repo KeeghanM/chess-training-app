@@ -1,0 +1,56 @@
+name: Coolify Selective Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  check-paths:
+    runs-on: ubuntu-latest
+    outputs:
+      deploy-app: ${{ steps.filter.outputs.app }}
+      deploy-api: ${{ steps.filter.outputs.api }}
+      deploy-tactics: ${{ steps.filter.outputs.tactics }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check file paths
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            # Note: Include shared packages in the apps that use them!
+            app:
+              - 'apps/chess-training-app/**'
+
+            api:
+              - 'apps/puzzles-api/**'
+
+            tactics:
+              - 'apps/tactics-finder/**'
+
+  deploy-app:
+    needs: check-paths
+    if: ${{ needs.check-paths.outputs.deploy-app == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚀 Trigger chess-training-app deploy
+        run: curl -X POST ${{ secrets.COOLIFY_WEBHOOK_APP }}
+
+  deploy-api:
+    needs: check-paths
+    if: ${{ needs.check-paths.outputs.deploy-api == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚀 Trigger puzzles-api deploy
+        run: curl -X POST ${{ secrets.COOLIFY_WEBHOOK_API }}
+
+  deploy-tactics:
+    needs: check-paths
+    if: ${{ needs.check-paths.outputs.deploy-tactics == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚀 Trigger tactics-finder deploy
+        run: curl -X POST ${{ secrets.COOLIFY_WEBHOOK_TACTICS }}

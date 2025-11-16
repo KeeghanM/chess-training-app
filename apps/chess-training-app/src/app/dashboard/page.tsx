@@ -1,7 +1,4 @@
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { prisma } from '~/server/db'
-import { IconName } from 'lucide-react/dynamic'
 import Backdrop from '@components/_elements/backdrop'
 import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
@@ -14,6 +11,8 @@ import CalculateStreakBadge from '@utils/CalculateStreakBadge'
 import CalculateXpRank from '@utils/CalculateXpRank'
 import { getUserServer } from '@utils/getUserServer'
 import { PostHogClient } from '@utils/trackEventOnServer'
+import { IconName } from 'lucide-react/dynamic'
+import { prisma } from '~/server/db'
 
 export type Tool = {
   name: string

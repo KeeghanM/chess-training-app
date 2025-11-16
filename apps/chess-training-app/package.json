@@ -5,9 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "next build",
-    "dev": "next dev --turbopack",
+    "dev": "prisma generate && next dev --turbopack",
     "start": "next start",
-    "postinstall": "prisma generate",
     "qa:lint": "npx eslint ./src/**/*",
     "qa:types": "tsc --noEmit",
     "qa:format": "prettier --write .",

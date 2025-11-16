@@ -1,20 +1,14 @@
+import { errorResponse, successResponse } from '~/app/api/responses'
 import { prisma } from '~/server/db'
 import { getPostHogServer } from '~/server/posthog-server'
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import { errorResponse, successResponse } from '~/app/api/responses'
+import { getUserServer } from '~/utils/getUserServer'
 
 const posthog = getPostHogServer()
 
 export async function POST(request: Request) {
-  const session = getKindeServerSession()
-  if (!session) return errorResponse('Unauthorized', 401)
-
-  const user = await session.getUser()
+  const { user, isStaff } = await getUserServer()
   if (!user) return errorResponse('Unauthorized', 401)
-
-  const permissions = await session.getPermissions()
-  if (!permissions?.permissions.includes('staff-member'))
-    return errorResponse('Unauthorized', 401)
+  if (!isStaff) return errorResponse('Unauthorized', 401)
 
   const { name, description, category } = (await request.json()) as {
     name: string
@@ -48,15 +42,9 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  const session = getKindeServerSession()
-  if (!session) return errorResponse('Unauthorized', 401)
-
-  const user = await session.getUser()
+  const { user, isStaff } = await getUserServer()
   if (!user) return errorResponse('Unauthorized', 401)
-
-  const permissions = await session.getPermissions()
-  if (!permissions?.permissions.includes('staff-member'))
-    return errorResponse('Unauthorized', 401)
+  if (!isStaff) return errorResponse('Unauthorized', 401)
 
   const { name, sort } = (await request.json()) as {
     name: string

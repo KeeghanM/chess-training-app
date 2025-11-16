@@ -1,4 +1,5 @@
 import posthog from 'posthog-js'
+import { env } from '~/env'
 import { getUserServer } from './getUserServer'
 
 export default async function getDistinctId() {
@@ -9,7 +10,7 @@ export default async function getDistinctId() {
   // If not, we can get the SessionID from the cookie
   // This API endpoint will set it if not already existing
   try {
-    const resp = await fetch(`${process.env.API_BASE_URL}/auth/cookies`)
+    const resp = await fetch(`${env.API_BASE_URL}/auth/cookies`)
     const json = (await resp.json()) as { sessionId: string }
     if (json.sessionId) return json.sessionId
   } catch (e) {

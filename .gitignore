@@ -21,7 +21,6 @@ venv/
 .ipynb_checkpoints/
 __pycache__/
 .idea/
-*/.ipynb_checkpoints/*
 *.pgn
 *.tactic
 *.vars

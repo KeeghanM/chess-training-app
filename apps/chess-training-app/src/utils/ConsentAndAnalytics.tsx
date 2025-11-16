@@ -4,6 +4,7 @@ import { usePathname, useSearchParams } from 'next/navigation'
 import Script from 'next/script'
 import { useEffect } from 'react'
 import posthog from 'posthog-js'
+import { env } from '~/env'
 
 /**
  * Integrates a Silktide consent banner and PostHog analytics, loading the consent manager script and configuring tracking and cookie preferences.
@@ -17,8 +18,8 @@ export function ConsentAndAnalytics() {
   const searchParams = useSearchParams()
 
   const configure = () => {
-    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST!,
+    posthog.init(env.NEXT_PUBLIC_POSTHOG_KEY!, {
+      api_host: env.NEXT_PUBLIC_POSTHOG_HOST!,
       capture_pageview: false, // Disable automatic pageview capture, as we capture manually
     })
     posthog.opt_out_capturing()

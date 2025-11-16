@@ -2,12 +2,13 @@ import express, { Request, Response } from 'express'
 import helmet from 'helmet'
 import { AdminController } from './app/controllers/admin.controller'
 import { PuzzleController } from './app/controllers/puzzle.controller'
+import { env } from './env'
 
 // CONFIG
 const app = express()
 app.use(helmet())
 
-if (process.env.NODE_ENV !== 'production') {
+if (env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
 
@@ -22,7 +23,7 @@ app.get('/api', PuzzleController)
 app.get('/admin', AdminController)
 
 // START THE SERVER
-const PORT = process.env.PORT || 3000
+const PORT = env.PORT || 3000
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`)
 })

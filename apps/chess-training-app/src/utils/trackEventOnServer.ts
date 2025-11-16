@@ -1,9 +1,10 @@
 import { PostHog } from 'posthog-node'
+import { env } from '~/env'
 import getDistinctId from './getDistinctId'
 
 export function PostHogClient() {
-  const posthogClient = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-    host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+  const posthogClient = new PostHog(env.NEXT_PUBLIC_POSTHOG_KEY, {
+    host: env.NEXT_PUBLIC_POSTHOG_HOST,
     flushAt: 1,
     flushInterval: 0,
   })
@@ -16,7 +17,7 @@ export async function trackEventOnServer(
   experimentName?: string,
 ) {
   const posthog = PostHogClient()
-  if (process.env.NODE_ENV === 'production') {
+  if (env.NODE_ENV === 'production') {
     const captureData: {
       distinctId: string
       event: string

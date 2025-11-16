@@ -7,12 +7,7 @@ export const env = createEnv({
    * isn't built with invalid env vars.
    */
   server: {
-    DATABASE_URL: z
-      .url()
-      .refine(
-        (str) => !str.includes('YOUR_MYSQL_URL_HERE'),
-        'You forgot to change the default URL',
-      ),
+    DATABASE_URL: z.url(),
     NODE_ENV: z
       .enum(['development', 'test', 'production'])
       .default('development'),

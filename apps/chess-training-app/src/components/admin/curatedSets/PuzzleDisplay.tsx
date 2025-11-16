@@ -1,7 +1,7 @@
 'use client'
 
-import { useContext, useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
+import { useContext, useEffect, useState } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Chess } from 'chess.js'
 import type { ResponseJson } from '~/app/api/responses'
 import Button from '../../_elements/button'
@@ -18,6 +18,7 @@ import {
 } from './CuratedSetsBrowser'
 
 export default function PuzzleDisplay() {
+  const queryClient = useQueryClient()
   const { puzzle, mode } = useContext(CuratedSetBrowserContext)
 
   const getOrientation = (
@@ -54,6 +55,7 @@ export default function PuzzleDisplay() {
           moves: puzzle.moves,
         }),
       })
+      queryClient.invalidateQueries({ queryKey: ['curated-set-puzzles'] })
       const json = (await resp.json()) as ResponseJson
       if (json.message != 'Puzzle updated') throw new Error(json.message)
       return json
@@ -67,6 +69,7 @@ export default function PuzzleDisplay() {
         method: 'DELETE',
         body: JSON.stringify({ id: puzzle.curatedPuzzleId }),
       })
+      queryClient.invalidateQueries({ queryKey: ['curated-set-puzzles'] })
       const json = (await resp.json()) as ResponseJson
       if (json?.message != 'Puzzle deleted') throw new Error(json.message)
       return json
@@ -104,6 +107,11 @@ export default function PuzzleDisplay() {
       </button>
     )
   })
+
+  useEffect(() => {
+    if (!puzzle) return
+    setPosition(puzzle.fen)
+  }, [puzzle])
 
   return (
     <div className="flex">

@@ -24,6 +24,15 @@ const nextConfig = {
       ],
     },
     {
+      source: '/api',
+      headers: [
+        {
+          key: 'Cache-Control',
+          value: 'no-store',
+        },
+      ],
+    },
+    {
       source: '/training/:slug',
       headers: [
         {

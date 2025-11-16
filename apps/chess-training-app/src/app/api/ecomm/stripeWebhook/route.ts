@@ -1,7 +1,8 @@
 import { headers } from 'next/headers'
+import Stripe from 'stripe'
+import { env } from '~/env'
 import { prisma } from '~/server/db'
 import { getPostHogServer } from '~/server/posthog-server'
-import Stripe from 'stripe'
 import { errorResponse, successResponse } from '../../responses'
 import { AddCourseToUser } from '../functions/AddCourseToUser'
 import { AddCuratedSetToUser } from '../functions/AddCuratedSetToUser'
@@ -9,12 +10,12 @@ import SubscribeUser from '../functions/SubscribeUser'
 
 const posthog = getPostHogServer()
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+const stripe = new Stripe(env.STRIPE_SECRET_KEY!)
 
 export async function POST(request: Request) {
   try {
     const payload = await request.text()
-    const webHookSecret = process.env.STRIPE_WEBHOOK_SECRET!
+    const webHookSecret = env.STRIPE_WEBHOOK_SECRET!
     const signature = (await headers()).get('stripe-signature')
 
     if (!signature) {

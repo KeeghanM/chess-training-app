@@ -1,7 +1,8 @@
+import type { KindeUser } from '@utils/getUserServer'
+import Stripe from 'stripe'
+import { env } from '~/env'
 import { prisma } from '~/server/db'
 import { getPostHogServer } from '~/server/posthog-server'
-import Stripe from 'stripe'
-import type { KindeUser } from '@utils/getUserServer'
 
 const posthog = getPostHogServer()
 
@@ -48,7 +49,7 @@ export async function CreateCheckoutSession(
       }),
     )
 
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+    const stripe = new Stripe(env.STRIPE_SECRET_KEY!)
 
     const hasSubscription = products.some(
       (product) => product.productType === 'subscription',
@@ -59,8 +60,8 @@ export async function CreateCheckoutSession(
       customer_email: user.email ?? undefined,
       line_items: lineItems,
       mode: hasSubscription ? 'subscription' : 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/success`,
-      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/${returnUrl ?? '/'}`,
+      success_url: `${env.NEXT_PUBLIC_SITE_URL}/checkout/success`,
+      cancel_url: `${env.NEXT_PUBLIC_SITE_URL}/${returnUrl ?? '/'}`,
       automatic_tax: { enabled: true },
     })
 

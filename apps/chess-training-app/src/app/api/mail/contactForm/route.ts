@@ -1,6 +1,7 @@
-import { getPostHogServer } from '~/server/posthog-server'
 import nodemailer from 'nodemailer'
 import { errorResponse, successResponse } from '~/app/api/responses'
+import { env } from '~/env'
+import { getPostHogServer } from '~/server/posthog-server'
 
 const posthog = getPostHogServer()
 
@@ -19,17 +20,17 @@ export async function POST(request: Request) {
 
     const transporter = nodemailer.createTransport({
       // @ts-expect-error : types are wrong, host is required
-      host: process.env.SMTP_HOST!,
-      port: process.env.SMTP_PORT!,
+      host: env.SMTP_HOST,
+      port: env.SMTP_PORT,
       secure: false,
       auth: {
-        user: process.env.SMTP_USER!,
-        pass: process.env.SMTP_PASS!,
+        user: env.SMTP_USER,
+        pass: env.SMTP_PASS,
       },
     })
     await transporter.sendMail({
       from: `${name} <${email}>`,
-      to: process.env.SMTP_USER,
+      to: env.SMTP_USER,
       subject: subject,
       text: `From: ${name} <${email}>
 Message:

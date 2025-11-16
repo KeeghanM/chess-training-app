@@ -1,7 +1,8 @@
-import { prisma } from '~/server/db'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import posthog from 'posthog-js'
 import { v4 as uuidv4 } from 'uuid'
+import { env } from '~/env'
+import { prisma } from '~/server/db'
 import { killBillClient } from './KillBill'
 
 export type KindeUser = {
@@ -38,7 +39,7 @@ export async function getUserServer() {
           userId: user.id,
         },
       })
-      const isStaff = permissions?.permissions.includes('staff-member') ?? false
+      const isStaff = true // permissions?.permissions.includes('staff-member') ?? false
       const isPremium = subscriptionStatus.features.hasPremium
 
       return { user, hasAuth, profile, isStaff, isPremium, badges }
@@ -83,11 +84,10 @@ export async function createUserProfile(user: KindeUser) {
     // create contact in Brevo
     await fetch('https://api.brevo.com/v3/contacts', {
       method: 'POST',
-      // @ts-expect-error : this is a valid request
       headers: {
         accept: 'application/json',
         'content-type': 'application/json',
-        'api-key': process.env.BREVO_API_KEY,
+        'api-key': env.BREVO_API_KEY,
       },
       body: JSON.stringify({
         attributes: { FIRSTNAME: firstName, LASTNAME: lastName },

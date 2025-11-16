@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import posthog from 'posthog-js'
 import type { ResponseJson } from '~/app/api/responses'
+import { env } from '~/env'
 import Button from '../_elements/button'
 import Spinner from '../general/Spinner'
 
@@ -19,7 +20,7 @@ declare global {
 }
 
 // Get the Stripe publishable key from environment variables
-const PUBLIC_STRIPE_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY
+const PUBLIC_STRIPE_PUBLISHABLE_KEY = env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY
 
 export default function GetPremiumButton() {
   const { user } = useKindeBrowserClient()

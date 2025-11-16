@@ -16,10 +16,10 @@ from analyze import analyze_pgn
 load_dotenv()
 
 # Get Redis connection details from environment variables
-REDIS_HOST = os.environ.get("REDIS_HOST", "localhost")
+REDIS_HOST = os.environ.get("REDIS_HOST", "redis")
 REDIS_PORT = int(os.environ.get("REDIS_PORT", 6379))
 REDIS_QUEUE = os.environ.get("REDIS_QUEUE", "pgn_queue")
-API_URL = os.environ.get("API_URL", "http://chess-training-app:3000/api/tactics/addPuzzleToSet")
+API_URL = os.environ.get("API_ENDPOINT", "http://chess-training-app:3000/api/tactics/addPuzzleToSet")
 
 redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0)
 
@@ -101,7 +101,7 @@ def generate_and_send_puzzles(
                     "fen": puzzle_data["fen"],
                     "moves": puzzle_data["moves"],
                     "rating": "1500",
-                    "directStart": "true"
+                    "directStart": "false"
                 },
                 "userId": user_id,
                 "setId": set_id,

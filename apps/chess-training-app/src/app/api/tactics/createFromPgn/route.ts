@@ -1,6 +1,7 @@
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { TacticsSetStatus } from '@prisma/client'
 import { prisma } from '~/server/db'
 import { getPostHogServer } from '~/server/posthog-server'
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import { publishPgnToRedis } from '~/utils/redis'
 import { errorResponse, successResponse } from '../../responses'
 
@@ -14,7 +15,11 @@ export async function POST(req: Request) {
   if (!user) return errorResponse('Unauthorized', 401)
 
   try {
-    const { name, pgn, rating } = await req.json()
+    const { name, pgn, rating } = (await req.json()) as {
+      name: string
+      pgn: string
+      rating?: number
+    }
 
     if (!name || !pgn) {
       return errorResponse('Missing name or PGN', 400)
@@ -32,7 +37,7 @@ export async function POST(req: Request) {
         userId: user.id,
         rating,
         size: 0, // Size will be updated by the worker
-        status: 'PENDING',
+        status: TacticsSetStatus.PENDING,
       },
     })
 

@@ -1,3 +1,4 @@
+import { TacticsSetStatus } from '@prisma/client'
 import { prisma } from '~/server/db'
 import { errorResponse, successResponse } from '../../responses'
 
@@ -37,7 +38,9 @@ export async function POST(req: Request) {
         size: {
           increment: 1,
         },
-        status: last_puzzle ? TacticsSetStatus.ACTIVE : 'PENDING', // Set to ACTIVE if it's the last puzzle
+        status: last_puzzle
+          ? TacticsSetStatus.ACTIVE
+          : TacticsSetStatus.PENDING, // Set to ACTIVE if it's the last puzzle
       },
     })
 

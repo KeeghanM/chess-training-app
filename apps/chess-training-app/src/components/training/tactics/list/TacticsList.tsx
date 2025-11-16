@@ -1,19 +1,17 @@
 'use client'
 
 import Link from 'next/link'
-import { useTacticsQueries } from '@hooks/use-tactics-queries'
-import { TacticsSetStatus } from '@prisma/client'
-import { env } from '~/env'
 import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
 import TacticsSetCreator from '@components/training/tactics/create/TacticsSetCreator'
+import { useTacticsQueries } from '@hooks/use-tactics-queries'
+import { TacticsSetStatus } from '@prisma/client'
+import { env } from '~/env'
 import SetListItem from './SetListItem'
 
 export default function TacticsList(props: { hasUnlimitedSets: boolean }) {
   const { hasUnlimitedSets } = props
   const { tacticsSetsQuery } = useTacticsQueries()
-
-  if (tacticsSetsQuery.data) console.log(tacticsSetsQuery.data)
 
   return (
     <div className="space-y-2 md:space-y-6">
@@ -75,7 +73,7 @@ export default function TacticsList(props: { hasUnlimitedSets: boolean }) {
                 <SetListItem key={set.id} set={set} />
               ))}
             {tacticsSetsQuery.data
-              ?.filter((set) => set.status === 'PENDING')
+              ?.filter((set) => set.status === TacticsSetStatus.PENDING)
               .map((set) => (
                 <SetListItem key={set.id} set={set} pending={true} />
               ))}

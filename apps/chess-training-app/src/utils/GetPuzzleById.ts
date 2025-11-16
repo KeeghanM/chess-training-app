@@ -1,12 +1,13 @@
-import { prisma } from '~/server/db'
-import posthog from 'posthog-js'
 import type { TrainingPuzzle } from '@components/training/tactics/TacticsTrainer'
+import posthog from 'posthog-js'
+import { env } from '~/env'
+import { prisma } from '~/server/db'
 
 export default async function getPuzzleById(puzzleid: string) {
   let puzzle: TrainingPuzzle | undefined
 
   try {
-    if (puzzleid.startsWith('cta_')) {
+    if (puzzleid.startsWith('cta_') || puzzleid.length > 10) {
       const customPuzzle = await prisma.customPuzzle.findFirst({
         where: { id: puzzleid },
       })
@@ -28,16 +29,13 @@ export default async function getPuzzleById(puzzleid: string) {
     } else {
       const params = { id: puzzleid }
       const paramsString = new URLSearchParams(params).toString()
-      const resp = await fetch(
-        'https://chess-puzzles.p.rapidapi.com/?' + paramsString,
-        {
-          method: 'GET',
-          headers: {
-            'x-rapidapi-host': 'chess-puzzles.p.rapidapi.com',
-            'x-rapidapi-key': process.env.RAPIDAPI_KEY!,
-          },
+      const resp = await fetch(`${env.PUZZLE_API_URL}/?${paramsString}`, {
+        method: 'GET',
+        headers: {
+          'x-rapidapi-host': 'chess-puzzles.p.rapidapi.com',
+          'x-rapidapi-key': env.RAPIDAPI_KEY,
         },
-      )
+      })
       const json = (await resp.json()) as { puzzles: TrainingPuzzle[] }
       puzzle = json.puzzles[0] as TrainingPuzzle | undefined
     }

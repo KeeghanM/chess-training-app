@@ -1,8 +1,9 @@
 import Redis from 'ioredis'
+import { env } from '~/env'
 
 const redis = new Redis({
-  host: process.env.REDIS_HOST || 'redis',
-  port: parseInt(process.env.REDIS_PORT || '6379', 10),
+  host: env.REDIS_HOST || 'redis',
+  port: env.REDIS_PORT || parseInt('6379', 10),
 })
 
 interface PgnPayload {
