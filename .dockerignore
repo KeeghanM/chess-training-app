@@ -1,0 +1,78 @@
+# Git
+.git
+.gitignore
+.github
+
+# Dependencies
+node_modules
+**/node_modules
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Build outputs
+.next
+dist
+build
+out
+
+# Development files
+*.dev.*
+docker-compose.dev.yml
+Dockerfile.dev
+
+# Testing
+coverage
+*.test.js
+*.spec.js
+*.test.ts
+*.spec.ts
+
+# Environment files (should be managed by Coolify)
+.env
+.env.local
+.env.*.local
+**/.env
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Misc
+*.md
+!README.md
+!COOLIFY_DEPLOYMENT.md
+.prettierrc
+.prettierignore
+.eslintrc
+.eslintignore
+tsconfig.json
+!apps/*/tsconfig.json
+
+# Documentation
+docs/
+
+# Examples
+*.example

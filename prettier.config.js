@@ -6,16 +6,20 @@ const config = {
   semi: false,
   singleQuote: true,
   importOrder: [
-    '^(next/(.*)$)|^(next$)', // Imports by "next"
-    '^(react/(.*)$)|^(react$)', // Imports by "react"
-    '^~/server/(.*)$', // Imports by "~/server"
-    '<THIRD_PARTY_MODULES>', // Imports by third-party modules
-    '^(.*)components/(.*)$', // Imports by "components"
-    '^(.*)utils/(.*)$', // Imports by "utils"
+    '^(next/(.*)$)|^(next$)',
+    '^(react/(.*)$)|^(react$)',
+    '<THIRD_PARTY_MODULES>',
+    '^@server/(.*)$',
+    '^@db/(.*)$',
+    '^@auth/(.*)$',
+    '^@components/(.*)$',
+    '^@hooks/(.*)$',
+    '^@stores/(.*)$',
+    '^@utils/(.*)$',
     '^[./]', // Other imports
     '<TYPE>',
   ],
-  importOrderSeparation: false,
+  importOrderSeparation: true,
   importOrderSortSpecifiers: true,
 }
 

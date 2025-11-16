@@ -7,6 +7,9 @@
     "dev": "nodemon src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
+    "qa:format": "prettier --write .",
+    "qa:check-types": "tsc --noEmit",
+    "qa:lint": "npx eslint ./src/**/*",
     "prepare": "husky"
   },
   "keywords": [],

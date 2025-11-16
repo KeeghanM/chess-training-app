@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express'
 import oracledb, { Connection, OUT_FORMAT_OBJECT } from 'oracledb'
+
 import { env } from '../../env'
 import { ErrorResponse, PuzzleResult } from './puzzle.controller'
 
