@@ -10,21 +10,9 @@ const bundleAnalyzer = withBundleAnalyzer({
  */
 const nextConfig = {
   reactStrictMode: true,
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   headers: async () => [
     {
       source: '/dashboard',
-      headers: [
-        {
-          key: 'Cache-Control',
-          value: 'no-store',
-        },
-      ],
-    },
-    {
-      source: '/api',
       headers: [
         {
           key: 'Cache-Control',

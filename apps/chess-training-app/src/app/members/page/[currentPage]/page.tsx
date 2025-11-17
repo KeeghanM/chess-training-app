@@ -10,7 +10,7 @@ import MemberSearch from '@components/members/MembersSearch'
 import MembersTable from '@components/members/MembersTable'
 import TrophyTile from '@components/members/TrophyTile'
 
-export const revalidate = 3600
+export const dynamic = 'force-dynamic'
 const resultsPerPage = 25
 
 const getTotalPages = cache(async () => {
@@ -18,19 +18,6 @@ const getTotalPages = cache(async () => {
   const totalPages = Math.ceil(totalMembers / resultsPerPage)
   return { totalMembers, totalPages }
 })
-
-export async function generateStaticParams() {
-  try {
-    const { totalPages } = await getTotalPages()
-
-    return Array.from({ length: totalPages }, (_, i) => ({
-      currentPage: String(i + 1),
-    }))
-  } catch (error) {
-    console.error('Error generating static params:', error)
-    return [{ currentPage: '1' }]
-  }
-}
 
 export default async function MembersPage({
   params,
