@@ -12,7 +12,7 @@ RUN yarn install --frozen-lockfile
 FROM node:22-alpine AS builder
 WORKDIR /app
 
-ENV NODE_ENV="development"
+ENV NODE_ENV="production"
 ARG API_BASE_URL
 ENV API_BASE_URL=$API_BASE_URL
 ARG BREVO_API_KEY
