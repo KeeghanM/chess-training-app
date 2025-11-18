@@ -1,5 +1,6 @@
 services:
   chess-training-app:
+    image: cta-dev
     build:
       context: .
       dockerfile: ./apps/chess-training-app/Dockerfile.dev
@@ -17,6 +18,7 @@ services:
       - chess-app-net
 
   puzzles-api:
+    image: api-dev
     build:
       context: .
       dockerfile: ./apps/puzzles-api/Dockerfile.dev
@@ -33,6 +35,7 @@ services:
       - chess-app-net
 
   tactics-finder:
+    image: tactics-dev
     build:
       context: ./apps/tactics-finder
       dockerfile: Dockerfile.dev
