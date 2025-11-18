@@ -88,8 +88,8 @@ const PuzzleController = async (req: Request, res: Response) => {
   // RapidAPI authentication check
   if (
     env.NODE_ENV === 'production' &&
-    (req.headers['x-mashape-proxy-secret'] === undefined ||
-      req.headers['x-mashape-proxy-secret'] !== env.RAPID_API_SECRET)
+    (req.headers['X-RapidAPI-Proxy-Secret'] === undefined ||
+      req.headers['X-RapidAPI-Proxy-Secret'] !== env.RAPID_API_SECRET)
   ) {
     res
       .status(400)
