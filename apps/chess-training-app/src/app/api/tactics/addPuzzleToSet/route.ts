@@ -11,24 +11,44 @@ export async function POST(req: Request) {
   try {
     const { puzzle, userId, setId, last_puzzle } = await req.json()
 
-    console.log({ puzzle, userId, setId, last_puzzle })
-
     if (!puzzle || !userId || !setId) {
       return errorResponse('Missing puzzle, userId, or setId', 400)
     }
 
-    // Create a CustomPuzzle
-    const newCustomPuzzle = await prisma.customPuzzle.create({
-      data: {
-        id: puzzle.id,
-        fen: puzzle.fen,
-        rating: parseInt(puzzle.rating),
-        moves: puzzle.moves,
-        directStart: puzzle.directStart === 'true',
-      },
+    const existingPuzzle = await prisma.customPuzzle.findUnique({
+      where: { id: puzzle.id },
     })
 
-    // Add the CustomPuzzle to the TacticsSet
+    let puzzleIdToUse = puzzle.id
+
+    if (!existingPuzzle) {
+      const newCustomPuzzle = await prisma.customPuzzle.create({
+        data: {
+          id: puzzle.id,
+          fen: puzzle.fen,
+          rating: parseInt(puzzle.rating),
+          moves: puzzle.moves,
+          directStart: puzzle.directStart === 'true',
+        },
+      })
+      puzzleIdToUse = newCustomPuzzle.id
+    }
+
+    const alreadyLinked = await prisma.puzzle.findFirst({
+      where: {
+        setId: setId,
+        puzzleid: puzzleIdToUse,
+      },
+      select: { id: true },
+    })
+
+    if (alreadyLinked) {
+      console.log(
+        `[Puzzle ${puzzleIdToUse}] already exists in set ${setId} — skipping`,
+      )
+      return successResponse('Puzzle already exists in this set', {}, 200)
+    }
+
     await prisma.tacticsSet.update({
       where: {
         id: setId,
@@ -37,7 +57,7 @@ export async function POST(req: Request) {
       data: {
         puzzles: {
           create: {
-            puzzleid: newCustomPuzzle.id,
+            puzzleid: puzzleIdToUse,
           },
         },
         size: {
@@ -45,11 +65,15 @@ export async function POST(req: Request) {
         },
         status: last_puzzle
           ? TacticsSetStatus.ACTIVE
-          : TacticsSetStatus.PENDING, // Set to ACTIVE if it's the last puzzle
+          : TacticsSetStatus.PENDING,
       },
     })
 
-    return successResponse('Puzzle added', {}, 200)
+    const message = existingPuzzle
+      ? 'Reused existing puzzle for new set'
+      : 'Created new puzzle and linked to set'
+
+    return successResponse(message, {}, 200)
   } catch (error) {
     console.error('[ADD_PUZZLE_TO_SET_ERROR]', error)
     return errorResponse('Internal Error', 500)
