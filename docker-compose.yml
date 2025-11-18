@@ -40,16 +40,26 @@ services:
         STRIPE_PUBLIC_KEY: ${STRIPE_PUBLIC_KEY}
         STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
         STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+    environment:
+      - PORT=3000
     ports:
       - '3000:3000'
     env_file:
       - ./.env
     depends_on:
-      - redis
-      - puzzles-api
+      redis:
+        condition: service_healthy
+      puzzles-api:
+        condition: service_healthy
     networks:
       - chess-app-net
     restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost:3000/api/health || exit 1']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
   puzzles-api:
     build:
@@ -62,10 +72,17 @@ services:
     environment:
       - PORT=4000
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
     networks:
       - chess-app-net
     restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost:4000/ || exit 1']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
   tactics-finder:
     build:
@@ -76,8 +93,10 @@ services:
     environment:
       - STOCKFISH_THREADS=4
     depends_on:
-      - redis
-      - chess-training-app
+      redis:
+        condition: service_healthy
+      chess-training-app:
+        condition: service_healthy
     networks:
       - chess-app-net
     restart: unless-stopped

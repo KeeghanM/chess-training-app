@@ -3,8 +3,7 @@
   "version": "3.0.0",
   "private": true,
   "workspaces": [
-    "apps/*",
-    "packages/*"
+    "apps/*"
   ],
   "scripts": {
     "dev": "docker compose -f docker-compose.dev.yml restart && docker compose -f docker-compose.dev.yml up",
