@@ -85,24 +85,23 @@ const QuerySchema = z
   )
 
 const PuzzleController = async (req: Request, res: Response) => {
-  // Validate query parameters with Zod
   const queryValidation = QuerySchema.safeParse(req.query)
 
   if (!queryValidation.success) {
     const errorMessage = queryValidation.error.issues
       .map((err) => err.message)
       .join(', ')
+    console.error(errorMessage)
     res.status(400).send(ErrorResponse(errorMessage, 400))
     return
   }
 
   const validatedQuery = queryValidation.data
 
-  // Build query string and bind parameters
   let queryString =
     'SELECT puzzleid,fen,rating,ratingdeviation,moves,themes FROM PUZZLES WHERE 1=1 '
   const bindParams: Record<string, number | string> = {}
-  let maxRows = 1 // Default to 1 row
+  let maxRows = 1
 
   if (Object.keys(validatedQuery).length === 0) {
     // No query parameters - return a single random puzzle
@@ -159,7 +158,6 @@ const PuzzleController = async (req: Request, res: Response) => {
       externalAuth: false,
     })
 
-    // Set maxRows as a safety net and primary row limiter
     const result = await connection.execute<PuzzleResult>(
       queryString,
       bindParams,
