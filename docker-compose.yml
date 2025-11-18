@@ -44,8 +44,9 @@ services:
       - '3000:3000'
     env_file:
       - ./.env
-    depends_on: redis
-      puzzles-api
+    depends_on:
+      - redis
+      - puzzles-api
     networks:
       - chess-app-net
     restart: unless-stopped
@@ -60,7 +61,8 @@ services:
       - ./.env
     environment:
       - PORT=4000
-    depends_on: redis
+    depends_on:
+      - redis
     networks:
       - chess-app-net
     restart: unless-stopped
@@ -73,8 +75,9 @@ services:
       - ./.env
     environment:
       - STOCKFISH_THREADS=4
-    depends_on: redis
-      chess-training-app
+    depends_on:
+      - redis
+      - chess-training-app
     networks:
       - chess-app-net
     restart: unless-stopped
