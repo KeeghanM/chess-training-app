@@ -73,6 +73,9 @@ export default function ChessBoard({
       const result = game.move({ from: sourceSquare, to: targetSquare })
       if (result) {
         if (moveMade) moveMade(result)
+        setStartSquare(undefined)
+        setClickedPiece(undefined)
+        setOptionSquares({})
       }
       return !!result
     } catch {
