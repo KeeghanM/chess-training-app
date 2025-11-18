@@ -85,18 +85,6 @@ const QuerySchema = z
   )
 
 const PuzzleController = async (req: Request, res: Response) => {
-  // RapidAPI authentication check
-  if (
-    env.NODE_ENV === 'production' &&
-    (req.headers['X-RapidAPI-Proxy-Secret'] === undefined ||
-      req.headers['X-RapidAPI-Proxy-Secret'] !== env.RAPID_API_SECRET)
-  ) {
-    res
-      .status(400)
-      .send(ErrorResponse('Request must be sent via RapidAPI', 400))
-    return
-  }
-
   // Validate query parameters with Zod
   const queryValidation = QuerySchema.safeParse(req.query)
 

@@ -16,7 +16,7 @@ const AdminController = async (req: Request, res: Response) => {
     return
   }
 
-  const count = parseInt(req.query.count as string) || 1
+  const count = parseInt(req.query.count as string) || 10
   const results = []
 
   let connection: Connection | undefined
@@ -57,6 +57,26 @@ const AdminController = async (req: Request, res: Response) => {
       )
 
       if (!lichessPuzzleResponse.ok) {
+        // if it's a 404 just update last_checked, if LiChess doesn't have it any more it will just permantly be whatever it's rating was.
+        if (lichessPuzzleResponse.status === 404) {
+          await connection.execute(
+            `UPDATE PUZZLES 
+           SET last_checked = SYSTIMESTAMP 
+           WHERE PUZZLEID = :puzzleid`,
+            {
+              puzzleid: puzzle.puzzleid,
+            },
+            { autoCommit: true },
+          )
+          results.push({
+            checked: puzzle.puzzleid,
+            ratingChanged: false,
+          })
+          continue
+        }
+
+        const resp = await lichessPuzzleResponse.json()
+        console.error('LICHESS ERROR:', resp)
         throw new Error('Error fetching from Lichess')
       }
 
@@ -65,7 +85,9 @@ const AdminController = async (req: Request, res: Response) => {
       }
 
       if (!lichessData || !lichessData.puzzle || !lichessData.puzzle.rating) {
-        throw new Error('Error parsing puzzle from Lichess')
+        throw new Error('Error parsing puzzle from Lichess', {
+          cause: lichessData,
+        })
       }
 
       // Update the puzzle if rating has changed, and always update last_checked
