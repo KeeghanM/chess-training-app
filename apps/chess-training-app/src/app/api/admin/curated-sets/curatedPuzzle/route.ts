@@ -1,27 +1,25 @@
 import { prisma } from '@server/db'
-import { getPostHogServer } from '@server/posthog-server'
 
-import getPuzzleById from '@utils/GetPuzzleById'
-import { withAdminAuth } from '@utils/admin-auth'
-import { errorResponse, successResponse } from '@utils/server-responsses'
+import { apiWrapper } from '@utils/api-wrapper'
+import { BadRequest, NotFound } from '@utils/errors'
+import getPuzzleById from '@utils/get-puzzle-by-id'
+import { successResponse } from '@utils/server-responses'
 
-const posthog = getPostHogServer()
+export const POST = apiWrapper(
+  async (request) => {
+    const { setId, puzzleid } = (await request.json()) as {
+      setId: string
+      puzzleid: string
+    }
+    if (!setId || !puzzleid) throw new BadRequest('Missing required fields')
 
-export const POST = withAdminAuth(async (request) => {
-  const { setId, puzzleid } = (await request.json()) as {
-    setId: string
-    puzzleid: string
-  }
-  if (!setId || !puzzleid) return errorResponse('Missing required fields', 400)
-
-  try {
     const set = await prisma.curatedSet.findFirst({
       where: {
         id: setId,
       },
     })
 
-    if (!set) return errorResponse('Set not found', 404)
+    if (!set) throw new NotFound('Set not found')
 
     const existingPuzzle = await prisma.curatedSetPuzzle.findFirst({
       where: {
@@ -30,7 +28,7 @@ export const POST = withAdminAuth(async (request) => {
       },
     })
 
-    if (existingPuzzle) return errorResponse('Puzzle already in set', 400)
+    if (existingPuzzle) throw new BadRequest('Puzzle already in set')
 
     await prisma.curatedSetPuzzle.create({
       data: {
@@ -50,30 +48,27 @@ export const POST = withAdminAuth(async (request) => {
       },
     })
 
-    return successResponse('Puzzle added to set', { set: updatedSet }, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    if (e instanceof Error) return errorResponse(e.message, 500)
-    else return errorResponse('Unknown error', 500)
-  }
-})
-export const PATCH = withAdminAuth(async (request) => {
-  const { id, rating, comment, moves } = (await request.json()) as {
-    id: number
-    rating: number
-    comment: string
-    moves: string[]
-  }
-  if (!id) return errorResponse('Missing required fields', 400)
+    return successResponse('Puzzle added to set', { set: updatedSet })
+  },
+  { needsAdmin: true },
+)
+export const PATCH = apiWrapper(
+  async (request) => {
+    const { id, rating, comment, moves } = (await request.json()) as {
+      id: number
+      rating: number
+      comment: string
+      moves: string[]
+    }
+    if (!id) throw new BadRequest('Missing required fields')
 
-  try {
     const curatedSetPuzzle = await prisma.curatedSetPuzzle.findFirstOrThrow({
       where: {
         id,
       },
     })
     const puzzleData = await getPuzzleById(curatedSetPuzzle.puzzleid)
-    if (!puzzleData) return errorResponse('Puzzle not found', 404)
+    if (!puzzleData) throw new NotFound('Puzzle not found')
 
     const isCustom = curatedSetPuzzle.puzzleid.startsWith('cta_')
     const hasChange =
@@ -118,29 +113,23 @@ export const PATCH = withAdminAuth(async (request) => {
       },
     })
 
-    return successResponse('Puzzle updated', {}, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    if (e instanceof Error) return errorResponse(e.message, 500)
-    else return errorResponse('Unknown error', 500)
-  }
-})
+    return successResponse('Puzzle updated', {})
+  },
+  { needsAdmin: true },
+)
 
-export const DELETE = withAdminAuth(async (request) => {
-  const { id } = (await request.json()) as { id: number }
-  if (!id) return errorResponse('Missing required fields', 400)
+export const DELETE = apiWrapper(
+  async (request) => {
+    const { id } = (await request.json()) as { id: number }
+    if (!id) throw new BadRequest('Missing required fields')
 
-  try {
     await prisma.curatedSetPuzzle.delete({
       where: {
         id,
       },
     })
 
-    return successResponse('Puzzle deleted', {}, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    if (e instanceof Error) return errorResponse(e.message, 500)
-    else return errorResponse('Unknown error', 500)
-  }
-})
+    return successResponse('Puzzle deleted', {})
+  },
+  { needsAdmin: true },
+)

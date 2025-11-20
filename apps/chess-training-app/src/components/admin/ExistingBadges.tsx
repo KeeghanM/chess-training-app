@@ -22,8 +22,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import posthog from 'posthog-js'
 
 import Heading from '@components/_elements/heading'
-
-import SortableItem from '@utils/SortableItem'
+import SortableItem from '@components/general/sortable-item'
 
 export default function ExistingBadges(props: { existingBadges: Badge[] }) {
   const queryClient = useQueryClient()

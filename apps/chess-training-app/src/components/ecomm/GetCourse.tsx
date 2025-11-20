@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import { env } from '~/env'
 
-import type { ResponseJson } from '@utils/server-responsses'
+import type { ResponseJson } from '@utils/server-responses'
 
 import Button from '../_elements/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../_elements/tooltip'

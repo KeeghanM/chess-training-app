@@ -1,25 +1,9 @@
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { updateStreak } from '~/app/api/_business-logic/user/update-streak'
 
-import { getPostHogServer } from '@server/posthog-server'
+import { apiWrapper } from '@utils/api-wrapper'
+import { successResponse } from '@utils/server-responses'
 
-import { UpdateStreak } from '@utils/UpdateStreak'
-import { errorResponse, successResponse } from '@utils/server-responsses'
-
-const posthog = getPostHogServer()
-
-export async function POST() {
-  const session = getKindeServerSession()
-  if (!session) return errorResponse('Unauthorized', 401)
-
-  const user = await session.getUser()
-  if (!user) return errorResponse('Unauthorized', 401)
-
-  try {
-    await UpdateStreak(user.id)
-    return successResponse('Streak updated', {}, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    if (e instanceof Error) return errorResponse(e.message, 500)
-    else return errorResponse('Unknown error', 500)
-  }
-}
+export const POST = apiWrapper(async (_request, { user }) => {
+  await updateStreak(user.id)
+  return successResponse('Streak updated', {})
+})

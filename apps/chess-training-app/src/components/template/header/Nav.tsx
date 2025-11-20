@@ -8,8 +8,8 @@ import { useState } from 'react'
 import { LogoutLink } from '@kinde-oss/kinde-auth-nextjs'
 import { UserCircle } from 'lucide-react'
 
-import CalculateXpRank from '@utils/CalculateXpRank'
-import type { KindeUser } from '@utils/getUserServer'
+import calculateXpRank from '@utils/calculate-xp-rank'
+import type { KindeUser } from '@utils/get-user-server'
 
 import Button from '../../_elements/button'
 import {
@@ -27,7 +27,7 @@ export default function Nav(props: {
   const [openSub, setOpenSub] = useState('')
 
   const { user, experience } = props
-  const rank = CalculateXpRank(experience)
+  const rank = calculateXpRank(experience)
 
   const links = [
     {

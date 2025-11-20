@@ -9,8 +9,8 @@ import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
 import TextEditor from '@components/general/TextEditor'
 
-import GenerateSlug from '@utils/GenerateSlug'
-import type { ResponseJson } from '@utils/server-responsses'
+import generateSlug from '@utils/generate-slug'
+import type { ResponseJson } from '@utils/server-responses'
 
 import { CuratedSetBrowserContext } from './CuratedSetsBrowser'
 
@@ -36,7 +36,7 @@ export default function SetEditor() {
         body: JSON.stringify({
           id: selectedSet.id,
           name,
-          slug: GenerateSlug(name),
+          slug: generateSlug(name),
           size: selectedSet.size,
           description,
           shortDesc: shortDescription,

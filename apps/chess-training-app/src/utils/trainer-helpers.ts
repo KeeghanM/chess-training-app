@@ -17,7 +17,7 @@ export function makeMove(game: Chess, move: string): boolean {
  * Shows a sequence of moves with delays
  */
 export async function showMoveSequence(
-  game: Chess,
+  _game: Chess,
   moves: string[],
   startIndex: number,
   onMove: (move: string) => void,

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 
-import CalculateBadgePercentage from '@utils/CalculateBadgePercentage'
+import calculateBadgePercentage from '@utils/calculate-badge-percentage'
 
 import { RoundProgress } from '../_elements/progress'
 
@@ -11,7 +11,7 @@ interface BadgeDisplayProps {
 }
 export default function BadgeDisplay({ userBadgeCount }: BadgeDisplayProps) {
   const { percentage, totalBadgeCount } =
-    CalculateBadgePercentage(userBadgeCount)
+    calculateBadgePercentage(userBadgeCount)
 
   return (
     <div className="bg-card/10 text-white rounded-lg p-4 flex flex-col gap-2 items-center">

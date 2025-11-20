@@ -9,7 +9,7 @@ import {
 
 import { PrismaUserCourse } from '@hooks/use-course-queries'
 
-import { generateCoursePercentages } from '@utils/GenerateCoursePercentages'
+import { calculateCoursePercentages } from '@utils/calculate-course-percentages'
 
 import type { UserLineWithData } from './CourseBrowser'
 
@@ -81,7 +81,7 @@ export default function GroupListItem(props: {
               <RoundProgress
                 width="w-20"
                 bgColor="text-card-dark/40"
-                percentages={generateCoursePercentages({
+                percentages={calculateCoursePercentages({
                   linesHard,
                   linesLearned,
                   linesLearning,

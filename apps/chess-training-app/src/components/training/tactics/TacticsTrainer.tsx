@@ -24,7 +24,7 @@ import { useTacticsQueries } from '@hooks/use-tactics-queries'
 
 import { useAppStore } from '@stores/app-store'
 
-import trackEventOnClient from '@utils/trackEventOnClient'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 import ChessBoard from '../ChessBoard'
 import BoardContainer from '../shared/BoardContainer'
@@ -313,6 +313,7 @@ export default function TacticsTrainer(props: {
         return () => clearTimeout(timeoutId)
       }
     }
+    return
   }, [gameReady, game, currentPuzzle])
 
   // Listen for spacebar as a way to press the "next" button

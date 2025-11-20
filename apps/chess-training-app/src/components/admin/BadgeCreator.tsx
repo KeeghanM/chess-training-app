@@ -9,11 +9,11 @@ import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
 
 import {
-  MiscBadges,
-  StreakBadges,
-  TacticStreakBadges,
-} from '@utils/RanksAndBadges'
-import type { ResponseJson } from '@utils/server-responsses'
+  MISC_BADGES,
+  STREAK_BADGES,
+  TACTICS_STREAK_BADGES,
+} from '@utils/ranks-and-badges'
+import type { ResponseJson } from '@utils/server-responses'
 
 export default function BadgeCreator() {
   const [open, setOpen] = useState(false)
@@ -56,12 +56,15 @@ export default function BadgeCreator() {
   const loadCodeBadgesMutation = useMutation({
     mutationFn: async () => {
       const cleanBadges = [
-        ...MiscBadges.map((badge) => ({ ...badge, category: 'Miscellaneous' })),
-        ...StreakBadges.map((badge) => ({
+        ...MISC_BADGES.map((badge) => ({
+          ...badge,
+          category: 'Miscellaneous',
+        })),
+        ...STREAK_BADGES.map((badge) => ({
           ...badge,
           category: 'Daily Streaks',
         })),
-        ...TacticStreakBadges.map((badge) => ({
+        ...TACTICS_STREAK_BADGES.map((badge) => ({
           ...badge,
           category: 'Tactics Streaks',
         })),

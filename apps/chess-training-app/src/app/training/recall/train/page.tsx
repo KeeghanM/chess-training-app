@@ -5,7 +5,7 @@ import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import RecallTrainer from '@components/training/recall/RecallTrainer'
 
-import { getUserServer } from '@utils/getUserServer'
+import { getUserServer } from '@utils/get-user-server'
 
 export default async function RecallTrainPage() {
   const { user } = await getUserServer()

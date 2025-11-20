@@ -7,7 +7,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { CleanMove } from '@components/training/courses/create/parse/ParsePGNtoLineData'
 
-import type { ResponseJson } from '@utils/server-responsses'
+import type { ResponseJson } from '@utils/server-responses'
 
 // Types
 export type PrismaUserCourse = UserCourse & {
@@ -15,7 +15,7 @@ export type PrismaUserCourse = UserCourse & {
   lines?: UserLine[]
 }
 
-export interface Course {
+export type Course = {
   id: string
   title: string
   description: string
@@ -25,12 +25,12 @@ export interface Course {
 }
 
 // Types for course training operations
-export interface TrainingFen {
+export type TrainingFen = {
   fen: string
   commentId?: number
 }
 
-export interface LineStatsUpdate {
+export type LineStatsUpdate = {
   lineCorrect: boolean
   revisionDate: Date
 }

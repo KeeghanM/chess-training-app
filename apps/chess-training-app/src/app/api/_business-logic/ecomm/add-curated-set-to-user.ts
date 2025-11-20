@@ -5,7 +5,7 @@ import { getPostHogServer } from '@server/posthog-server'
 
 const posthog = getPostHogServer()
 
-export async function AddCuratedSetToUser(setId: string, userId: string) {
+export async function addCuratedSetToUser(setId: string, userId: string) {
   if (!setId || !userId) return false
 
   try {

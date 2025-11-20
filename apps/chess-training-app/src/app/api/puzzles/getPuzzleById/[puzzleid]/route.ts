@@ -1,32 +1,20 @@
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-
-import { getPostHogServer } from '@server/posthog-server'
-
-import getPuzzleById from '@utils/GetPuzzleById'
-import { errorResponse, successResponse } from '@utils/server-responsses'
-
-const posthog = getPostHogServer()
+import { apiWrapper } from '@utils/api-wrapper'
+import { BadRequest, NotFound } from '@utils/errors'
+import getPuzzleById from '@utils/get-puzzle-by-id'
+import { successResponse } from '@utils/server-responses'
 
 export async function GET(
   request: Request,
   props: { params: Promise<{ puzzleid: string }> },
 ) {
-  const params = await props.params
-  const puzzleid = params.puzzleid
-  if (!puzzleid) return errorResponse('Missing required fields', 400)
+  return apiWrapper(async () => {
+    const params = await props.params
+    const puzzleid = params.puzzleid
+    if (!puzzleid) throw new BadRequest('Missing required fields')
 
-  const session = getKindeServerSession()
-  if (!session) return errorResponse('Unauthorized', 401)
-
-  const user = await session.getUser()
-  if (!user) return errorResponse('Unauthorized', 401)
-  try {
     const puzzle = await getPuzzleById(puzzleid)
-    if (!puzzle) return errorResponse('Puzzle not found', 404)
+    if (!puzzle) throw new NotFound('Puzzle not found')
 
-    return successResponse('Puzzle found', { puzzle }, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    return errorResponse('Internal Server Error', 500)
-  }
+    return successResponse('Puzzle found', { puzzle })
+  })(request)
 }

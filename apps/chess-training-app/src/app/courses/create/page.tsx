@@ -5,7 +5,7 @@ import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import CreateCourseForm from '@components/training/courses/create/CreateCourse'
 
-import { getUserServer } from '@utils/getUserServer'
+import { getUserServer } from '@utils/get-user-server'
 
 export const metadata = {
   title: 'Create a new course - ChessTraining.app',

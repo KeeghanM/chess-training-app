@@ -1,37 +1,19 @@
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import { TacticsSetStatus } from '@prisma/client'
-
 import { prisma } from '@server/db'
-import { getPostHogServer } from '@server/posthog-server'
 
-import { errorResponse, successResponse } from '@utils/server-responsses'
+import { apiWrapper } from '@utils/api-wrapper'
+import { successResponse } from '@utils/server-responses'
 
-const posthog = getPostHogServer()
+export const GET = apiWrapper(async (_request, { user }) => {
+  const sets = await prisma.tacticsSet.findMany({
+    where: {
+      userId: user.id,
+      status: 'ACTIVE',
+    },
+    include: {
+      rounds: true,
+    },
+    orderBy: { createdAt: 'desc' },
+  })
 
-export async function GET() {
-  const session = getKindeServerSession()
-  if (!session) return errorResponse('Unauthorized', 401)
-
-  const user = await session.getUser()
-  if (!user) return errorResponse('Unauthorized', 401)
-
-  try {
-    const sets = await prisma.tacticsSet.findMany({
-      include: {
-        rounds: true,
-      },
-      where: {
-        userId: user.id,
-        status: {
-          not: TacticsSetStatus.ARCHIVED,
-        },
-      },
-    })
-
-    return successResponse('Sets found', { sets }, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    if (e instanceof Error) return errorResponse(e.message, 500)
-    else return errorResponse('Unknown error', 500)
-  }
-}
+  return successResponse('Tactics sets retrieved', { sets })
+})

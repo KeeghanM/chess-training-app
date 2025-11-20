@@ -1,26 +1,17 @@
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { XpUpdateSchema } from '@schemas/account'
+import { updateStreak } from '~/app/api/_business-logic/user/update-streak'
 
 import { prisma } from '@server/db'
-import { getPostHogServer } from '@server/posthog-server'
 
 import type { availableTypes } from '@components/general/XpTracker'
 
-import { UpdateStreak } from '@utils/UpdateStreak'
-import { errorResponse, successResponse } from '@utils/server-responsses'
+import { apiWrapper } from '@utils/api-wrapper'
+import { Unauthorized } from '@utils/errors'
+import { successResponse } from '@utils/server-responses'
+import { validateBody } from '@utils/validators'
 
-const posthog = getPostHogServer()
-
-export async function PUT(request: Request) {
-  const session = getKindeServerSession()
-  if (!session) return errorResponse('Unauthorized', 401)
-
-  const user = await session.getUser()
-  if (!user) return errorResponse('Unauthorized', 401)
-
-  const { xp, type } = (await request.json()) as {
-    xp: number
-    type: availableTypes
-  }
+export const PUT = apiWrapper(async (request, { user }) => {
+  const { xp, type } = await validateBody(request, XpUpdateSchema)
 
   const calculateXp = (type: availableTypes) => {
     switch (type) {
@@ -35,14 +26,42 @@ export async function PUT(request: Request) {
 
   const xpToAdd = calculateXp(type)
 
-  if (xpToAdd !== xp) return errorResponse('Invalid XP', 401)
+  if (xpToAdd !== xp) throw new Unauthorized('Invalid XP')
 
-  try {
-    await UpdateStreak(user.id)
+  await updateStreak(user.id)
 
-    await prisma.userProfile.update({
+  await prisma.userProfile.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      experience: {
+        increment: xpToAdd,
+      },
+    },
+  })
+
+  const dateString = new Date().toISOString().split('T')[0]!
+
+  const dayTrained = await prisma.dayTrained.findFirst({
+    where: {
+      userId: user.id,
+      date: dateString,
+    },
+  })
+
+  if (!dayTrained) {
+    await prisma.dayTrained.create({
+      data: {
+        date: dateString,
+        userId: user.id,
+        experience: xpToAdd,
+      },
+    })
+  } else {
+    await prisma.dayTrained.update({
       where: {
-        id: user.id,
+        id: dayTrained.id,
       },
       data: {
         experience: {
@@ -50,41 +69,7 @@ export async function PUT(request: Request) {
         },
       },
     })
-
-    const dateString = new Date().toISOString().split('T')[0]!
-
-    const dayTrained = await prisma.dayTrained.findFirst({
-      where: {
-        userId: user.id,
-        date: dateString,
-      },
-    })
-
-    if (!dayTrained) {
-      await prisma.dayTrained.create({
-        data: {
-          date: dateString,
-          userId: user.id,
-          experience: xpToAdd,
-        },
-      })
-    } else {
-      await prisma.dayTrained.update({
-        where: {
-          id: dayTrained.id,
-        },
-        data: {
-          experience: {
-            increment: xpToAdd,
-          },
-        },
-      })
-    }
-
-    return successResponse('XP added', { xp: xpToAdd }, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    if (e instanceof Error) return errorResponse(e.message, 500)
-    return errorResponse('Unknown error', 500)
   }
-}
+
+  return successResponse('XP added', { xp: xpToAdd })
+})

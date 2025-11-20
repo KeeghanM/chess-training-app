@@ -11,7 +11,7 @@ import XpTracker from '@components/general/XpTracker'
 import type { TrainingPuzzle } from '@hooks/use-puzzle-queries'
 import { useSounds } from '@hooks/use-sound'
 
-import trackEventOnClient from '@utils/trackEventOnClient'
+import trackEventOnClient from '@utils/track-event-on-client'
 import {
   showMoveSequence,
   makeMove as utilMakeMove,
@@ -186,6 +186,7 @@ export default function EndgameTrain({
       const timeoutId = makeFirstMove(firstMove!)
       return () => clearTimeout(timeoutId)
     }
+    return
   }, [gameReady, game, currentPuzzle])
 
   return (

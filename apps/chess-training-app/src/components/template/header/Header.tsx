@@ -1,4 +1,4 @@
-import { getUserServer } from '@utils/getUserServer'
+import { getUserServer } from '@utils/get-user-server'
 
 import Nav from './Nav'
 

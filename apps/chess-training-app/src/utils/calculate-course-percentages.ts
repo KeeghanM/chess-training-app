@@ -2,7 +2,7 @@ import { ProgressPercentage } from '@components/_elements/progress'
 
 import { PrismaUserCourse } from '@hooks/use-course-queries'
 
-export const generateCoursePercentages = (
+export const calculateCoursePercentages = (
   userCourse: PrismaUserCourse | null,
 ) => {
   if (!userCourse) return []

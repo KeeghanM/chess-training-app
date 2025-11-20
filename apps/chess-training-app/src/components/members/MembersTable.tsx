@@ -6,7 +6,7 @@ import { useEffect, useRef } from 'react'
 
 import StyledLink from '@components/_elements/styledLink'
 
-import CalculateXpRank from '@utils/CalculateXpRank'
+import calculateXpRank from '@utils/calculate-xp-rank'
 
 // Adjust import path as needed
 
@@ -49,7 +49,7 @@ export default function MembersTable({ members }: MembersTableProps) {
       </thead>
       <tbody>
         {members.map((member, index) => {
-          const rank = CalculateXpRank(member.experience)
+          const rank = calculateXpRank(member.experience)
           const isHighlighted =
             highlight?.toLowerCase() === member.username.toLowerCase()
 

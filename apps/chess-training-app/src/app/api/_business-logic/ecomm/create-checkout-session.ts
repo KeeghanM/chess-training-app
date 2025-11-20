@@ -4,13 +4,13 @@ import { env } from '~/env'
 import { prisma } from '@server/db'
 import { getPostHogServer } from '@server/posthog-server'
 
-import type { KindeUser } from '@utils/getUserServer'
+import type { KindeUser } from '@utils/get-user-server'
 
 const posthog = getPostHogServer()
 
 type ProductType = 'curatedSet' | 'course' | 'subscription'
 
-export async function CreateCheckoutSession(
+export async function createCheckoutSession(
   products: { productType: ProductType; productId: string }[],
   returnUrl: string,
   user: KindeUser,

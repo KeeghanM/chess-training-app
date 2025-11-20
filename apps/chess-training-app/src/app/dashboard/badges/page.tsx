@@ -4,7 +4,7 @@ import Backdrop from '@components/_elements/backdrop'
 import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 
-import { getUserServer } from '@utils/getUserServer'
+import { getUserServer } from '@utils/get-user-server'
 
 export default async function BadgesPage() {
   const { badges } = await getUserServer()

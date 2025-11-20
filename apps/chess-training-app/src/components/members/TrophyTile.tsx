@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import CalculateXpRank from '@utils/CalculateXpRank'
+import calculateXpRank from '@utils/calculate-xp-rank'
 
 import Heading from '../_elements/heading'
 
@@ -11,7 +11,7 @@ export default function TrophyTile(props: {
   published: boolean
 }) {
   const { placement, username, xp, published } = props
-  const { currentXp, rank, nextRank } = CalculateXpRank(xp)
+  const { currentXp, rank, nextRank } = calculateXpRank(xp)
 
   const Trophy = (props: { placement: number }) => {
     switch (props.placement) {

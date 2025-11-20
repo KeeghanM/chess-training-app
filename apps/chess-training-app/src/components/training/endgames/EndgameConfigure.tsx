@@ -1,6 +1,6 @@
 import Button from '@components/_elements/button'
 
-import trackEventOnClient from '@utils/trackEventOnClient'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 interface EndgameConfigureProps {
   type: 'Queen' | 'Rook' | 'Knight' | 'Bishop' | 'Pawn' | 'All'

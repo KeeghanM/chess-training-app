@@ -8,7 +8,7 @@ import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import XpDisplay from '@components/dashboard/XpDisplay'
 
-import CalculateXpRank from '@utils/CalculateXpRank'
+import calculateXpRank from '@utils/calculate-xp-rank'
 
 export default async function MemberPage(props: {
   params: Promise<{ username: string }>
@@ -56,7 +56,7 @@ export default async function MemberPage(props: {
                   <div className="w-fit mx-auto bg-card-light rounded-xl shadow">
                     <XpDisplay
                       color="black"
-                      data={CalculateXpRank(account.experience)}
+                      data={calculateXpRank(account.experience)}
                     />
                   </div>
                   {(account.description ||

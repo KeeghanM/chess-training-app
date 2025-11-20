@@ -22,9 +22,9 @@ import Spinner from '@components/general/Spinner'
 
 import { PrismaUserCourse } from '@hooks/use-course-queries'
 
-import { generateCoursePercentages } from '@utils/GenerateCoursePercentages'
-import type { ResponseJson } from '@utils/server-responsses'
-import trackEventOnClient from '@utils/trackEventOnClient'
+import { calculateCoursePercentages } from '@utils/calculate-course-percentages'
+import type { ResponseJson } from '@utils/server-responses'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 import CourseSettings from './CourseSettings'
 
@@ -132,7 +132,7 @@ export default function CourseListItem(props: {
                 <RoundProgress
                   width="w-20"
                   bgColor="text-card-dark/40"
-                  percentages={generateCoursePercentages(userCourse)}
+                  percentages={calculateCoursePercentages(userCourse)}
                 />
               </TooltipTrigger>
               <TooltipContent className="bg-card-light shadow rounded-lg p-2">

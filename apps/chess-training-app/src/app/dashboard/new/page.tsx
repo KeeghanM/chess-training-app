@@ -7,8 +7,8 @@ import Container from '@components/_elements/container'
 import StyledLink from '@components/_elements/styledLink'
 import PageHeader from '@components/_layouts/pageHeader'
 
-import { createUserProfile, getUserServer } from '@utils/getUserServer'
-import { trackEventOnServer } from '@utils/trackEventOnServer'
+import { createUserProfile, getUserServer } from '@utils/get-user-server'
+import { trackEventOnServer } from '@utils/track-event-on-server'
 
 export default async function NewUserWelcome() {
   const { user, profile } = await getUserServer()

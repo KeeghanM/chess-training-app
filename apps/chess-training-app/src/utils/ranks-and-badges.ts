@@ -1,4 +1,4 @@
-export const MiscBadges = [
+export const MISC_BADGES = [
   {
     name: 'Here from the beginning',
     description: 'You signed up during our first month Post Launch (Jan 2022)',
@@ -21,7 +21,7 @@ export const MiscBadges = [
   },
 ]
 
-export const StreakBadges = [
+export const STREAK_BADGES = [
   {
     name: '2 Day',
     streak: 2,
@@ -69,7 +69,7 @@ export const StreakBadges = [
   },
 ]
 
-export const TacticStreakBadges = [
+export const TACTICS_STREAK_BADGES = [
   {
     name: 'Pawns Progress',
     streak: 10,
@@ -130,7 +130,7 @@ export const TacticStreakBadges = [
   },
 ]
 
-export const XpRanks = [
+export const XP_RANKS = [
   {
     rank: 'Pawn',
     name: 'Starter',

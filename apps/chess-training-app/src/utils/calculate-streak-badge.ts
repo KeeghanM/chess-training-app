@@ -1,12 +1,12 @@
 import type { UserProfile } from '@prisma/client'
 
-import { StreakBadges } from './RanksAndBadges'
+import { STREAK_BADGES } from './ranks-and-badges'
 
-export default function CalculateStreakBadge(profile: UserProfile) {
+export default function calculateStreakBadge(profile: UserProfile) {
   const currentStreak = profile.currentStreak
   const bestStreak = profile.bestStreak
 
-  const streakBadge = [...StreakBadges]
+  const streakBadge = [...STREAK_BADGES]
     .reverse()
     .find((badge) => bestStreak >= badge.streak)
 

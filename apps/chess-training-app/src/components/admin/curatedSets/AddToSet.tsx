@@ -5,7 +5,7 @@ import { useContext } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import posthog from 'posthog-js'
 
-import type { ResponseJson } from '@utils/server-responsses'
+import type { ResponseJson } from '@utils/server-responses'
 
 import Button from '../../_elements/button'
 import Spinner from '../../general/Spinner'

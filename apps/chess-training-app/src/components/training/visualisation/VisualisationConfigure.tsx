@@ -4,7 +4,7 @@ import { ArrowDownCircle, ArrowRightCircle } from 'lucide-react'
 
 import Button from '@components/_elements/button'
 
-import trackEventOnClient from '@utils/trackEventOnClient'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 import {
   Tooltip,

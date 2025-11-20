@@ -6,6 +6,7 @@ import { useState } from 'react'
 
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import type { UserProfile } from '@prisma/client'
+import { AccountSchema } from '@schemas/account'
 import { Info } from 'lucide-react'
 import posthog from 'posthog-js'
 
@@ -13,7 +14,7 @@ import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
 import Spinner from '@components/general/Spinner'
 
-import type { ResponseJson } from '@utils/server-responsses'
+import type { ResponseJson } from '@utils/server-responses'
 
 import { Tooltip, TooltipContent, TooltipTrigger } from '../_elements/tooltip'
 
@@ -23,7 +24,7 @@ export default function AccountForm(props: { profile: UserProfile }) {
   const [username, setUsername] = useState(
     props.profile.username ?? user?.email ?? '',
   )
-  const [fullname, setFullame] = useState(props.profile.fullName ?? '')
+  const [fullname, setFullname] = useState(props.profile.fullName ?? '')
   const [description, setDescription] = useState(
     props.profile.description ?? '',
   )
@@ -47,46 +48,35 @@ export default function AccountForm(props: { profile: UserProfile }) {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     if (!user) return posthog.captureException(new Error('User not found'))
     e.preventDefault()
-    setLoading(true)
     setError('')
     setSuccess(false)
 
-    if (!username) return setError('Username is required')
-    if (username.includes('@components/'))
-      return setError('Username cannot contain the "@" symbol')
-    if (fullname.length > 0 && fullname.length > 150)
-      return setError('Full name must be less than 150 characters')
-    if (description && description.length > 1000)
-      return setError('Bio must be less than 1000 characters')
-    if (highestOnlineRating && highestOnlineRating < 100)
-      return setError('Highest online rating must be at least 100')
-    if (highestOnlineRating && highestOnlineRating > 3500)
-      return setError('Highest online rating must be at most 3500')
-    if (highestOTBRating && highestOTBRating < 100)
-      return setError('Highest OTB rating must be at least 100')
-    if (highestOTBRating && highestOTBRating > 3500)
-      return setError('Highest OTB rating must be at most 3500')
-    if (!puzzleRating || puzzleRating < 500)
-      return setError('Puzzle rating must be at least 500')
-    if (puzzleRating > 3500)
-      return setError('Puzzle rating must be at most 3500')
+    const formData = {
+      username,
+      fullname,
+      description,
+      highestOnlineRating: highestOnlineRating || 0,
+      highestOTBRating: highestOTBRating || 0,
+      puzzleRating,
+      difficulty,
+      publicProfile,
+    }
 
+    const result = AccountSchema.safeParse(formData)
+
+    if (!result.success) {
+      const firstError = result.error.issues[0]
+      return setError(firstError?.message || 'Invalid form data')
+    }
+
+    setLoading(true)
     try {
       const res = await fetch('/api/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          username,
-          fullname,
-          description,
-          highestOnlineRating,
-          highestOTBRating,
-          puzzleRating,
-          difficulty,
-          publicProfile,
-        }),
+        body: JSON.stringify(result.data),
       })
       const json = (await res.json()) as ResponseJson
 
@@ -116,11 +106,16 @@ export default function AccountForm(props: { profile: UserProfile }) {
           </Link>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-2 p-2">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-2 p-2"
+          data-testid="account-form"
+        >
           <div className="flex flex-col gap-4 md:flex-row">
             <div>
-              <label>Username</label>
+              <label htmlFor="username">Username</label>
               <input
+                id="username"
                 type="text"
                 className="w-full border border-gray-300 bg-white rounded-lg px-4 py-2"
                 value={username}
@@ -128,8 +123,9 @@ export default function AccountForm(props: { profile: UserProfile }) {
               />
             </div>
             <div>
-              <label>Email</label>
+              <label htmlFor="email">Email</label>
               <input
+                id="email"
                 type="email"
                 className="w-full border border-gray-300 bg-white rounded-lg px-4 py-2"
                 value={user.email!}
@@ -139,8 +135,9 @@ export default function AccountForm(props: { profile: UserProfile }) {
           </div>
           <div className="flex flex-col gap-4 md:flex-row">
             <div>
-              <label>Puzzle Rating</label>
+              <label htmlFor="puzzleRating">Puzzle Rating</label>
               <input
+                id="puzzleRating"
                 type="number"
                 min={500}
                 max={3500}
@@ -174,23 +171,25 @@ export default function AccountForm(props: { profile: UserProfile }) {
             </div>
           </div>
           <div>
-            <label>
+            <label htmlFor="fullname">
               Full Name <span className="text-xs italic">(optional)</span>
             </label>
             <input
+              id="fullname"
               type="text"
               className="w-full border border-gray-300 bg-white rounded-lg px-4 py-2"
               value={fullname}
-              onChange={(e) => setFullame(e.target.value)}
+              onChange={(e) => setFullname(e.target.value)}
             />
           </div>
           <div className="flex flex-col gap-4 md:flex-row md:justify-between">
             <div>
-              <label>
+              <label htmlFor="highestOnlineRating">
                 Highest Online Rating{' '}
                 <span className="text-xs italic">(optional)</span>
               </label>
               <input
+                id="highestOnlineRating"
                 type="number"
                 min={100}
                 max={3500}
@@ -202,11 +201,12 @@ export default function AccountForm(props: { profile: UserProfile }) {
               />
             </div>
             <div>
-              <label>
+              <label htmlFor="highestOTBRating">
                 Highest OTB Rating{' '}
                 <span className="text-xs italic">(optional)</span>
               </label>
               <input
+                id="highestOTBRating"
                 type="number"
                 min={100}
                 max={3500}
@@ -217,10 +217,11 @@ export default function AccountForm(props: { profile: UserProfile }) {
             </div>
           </div>
           <div>
-            <label>
+            <label htmlFor="description">
               Bio <span className="text-xs italic">(optional)</span>
             </label>
             <textarea
+              id="description"
               rows={5}
               className="w-full border border-gray-300 bg-white rounded-lg px-4 py-2"
               value={description}

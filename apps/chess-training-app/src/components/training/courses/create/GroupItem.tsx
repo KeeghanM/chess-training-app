@@ -6,7 +6,7 @@ import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
 import PrettyPrintLine from '@components/general/PrettyPrintLine'
 
-import trackEventOnClient from '@utils/trackEventOnClient'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 import type { Line } from './parse/ParsePGNtoLineData'
 

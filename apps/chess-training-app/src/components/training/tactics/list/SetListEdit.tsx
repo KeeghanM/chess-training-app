@@ -11,8 +11,8 @@ import type { PrismaTacticsSet } from '@components/training/tactics/create/Tacti
 
 import { useTacticsQueries } from '@hooks/use-tactics-queries'
 
-import type { KindeUser } from '@utils/getUserServer'
-import trackEventOnClient from '@utils/trackEventOnClient'
+import type { KindeUser } from '@utils/get-user-server'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 export default function SetListEdit({
   set,

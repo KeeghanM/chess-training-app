@@ -31,8 +31,8 @@ import {
 
 import { useAppStore } from '@stores/app-store'
 
-import getArrows from '@utils/StringToArrows'
-import trackEventOnClient from '@utils/trackEventOnClient'
+import getArrows from '@utils/get-arrows'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 import ChessBoard from '../ChessBoard'
 import BoardContainer from '../shared/BoardContainer'
@@ -181,8 +181,7 @@ export default function CourseTrainer(props: {
     try {
       game.move(move)
       setPosition(game.fen())
-      // eslint-disable-next-line
-    } catch (e) {
+    } catch {
       // honestly, do nothing
       // I dunno why this is firing, I replicated it once but it didn;t actually affect the usage
       // I think it's to do with premoving and the chess.js library, but nothing actually breaks
@@ -640,6 +639,7 @@ export default function CourseTrainer(props: {
         if (timeoutId) clearTimeout(timeoutId)
       }
     }
+    return
   }, [gameReady, game, currentLine])
 
   useEffect(() => {

@@ -12,7 +12,7 @@ import Info from '@components/training/courses/schedule/Info'
 import LineList from '@components/training/courses/schedule/LineList'
 import ResetButtons from '@components/training/courses/schedule/ResetButtons'
 
-import { getUserServer } from '@utils/getUserServer'
+import { getUserServer } from '@utils/get-user-server'
 
 export default async function CourseSchedulePage(props: {
   params: Promise<{ userCourseId: string }>

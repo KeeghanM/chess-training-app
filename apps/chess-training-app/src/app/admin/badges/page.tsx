@@ -7,7 +7,7 @@ import PageHeader from '@components/_layouts/pageHeader'
 import BadgeCreator from '@components/admin/BadgeCreator'
 import ExistingBadges from '@components/admin/ExistingBadges'
 
-import { getUserServer } from '@utils/getUserServer'
+import { getUserServer } from '@utils/get-user-server'
 
 export default async function AdminBadgePage() {
   const { user, isStaff } = await getUserServer()

@@ -10,7 +10,7 @@ import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import Spinner from '@components/general/Spinner'
 
-import trackEventOnClient from '@utils/trackEventOnClient'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 import { GroupItem } from './GroupItem'
 import type { Line } from './parse/ParsePGNtoLineData'

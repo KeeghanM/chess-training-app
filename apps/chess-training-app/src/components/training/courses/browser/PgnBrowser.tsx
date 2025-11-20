@@ -1,6 +1,6 @@
 'use client'
 
-import type { Move, PGN } from '@utils/BuildPgn'
+import type { Move, PGN } from '@utils/build-pgn'
 
 type PgnBrowserProps = {
   pgn: PGN

@@ -19,8 +19,7 @@ import { useAutoAnimate } from '@formkit/auto-animate/react'
 import type { Group } from '@prisma/client'
 
 import Heading from '@components/_elements/heading'
-
-import SortableItem from '@utils/SortableItem'
+import SortableItem from '@components/general/sortable-item'
 
 import type { LineWithMoves } from './GroupEditor'
 import GroupEditor from './GroupEditor'

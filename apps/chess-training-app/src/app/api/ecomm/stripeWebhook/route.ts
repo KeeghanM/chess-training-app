@@ -4,107 +4,94 @@ import Stripe from 'stripe'
 import { env } from '~/env'
 
 import { prisma } from '@server/db'
-import { getPostHogServer } from '@server/posthog-server'
 
-import {
-  errorResponse,
-  successResponse,
-} from '../../../../utils/server-responsses'
-import { AddCourseToUser } from '../functions/AddCourseToUser'
-import { AddCuratedSetToUser } from '../functions/AddCuratedSetToUser'
-import SubscribeUser from '../functions/SubscribeUser'
+import { BadRequest, InternalError } from '@utils/errors'
+import { publicApiWrapper } from '@utils/public-api-wrapper'
+import { successResponse } from '@utils/server-responses'
 
-const posthog = getPostHogServer()
+import { addCourseToUser } from '../../_business-logic/ecomm/add-course-to-user'
+import { addCuratedSetToUser } from '../../_business-logic/ecomm/add-curated-set-to-user'
+import subscribeUser from '../../_business-logic/ecomm/subscribe-user'
 
 const stripe = new Stripe(env.STRIPE_SECRET_KEY)
 
-export async function POST(request: Request) {
+export const POST = publicApiWrapper(async (request) => {
+  const payload = await request.text()
+  const webHookSecret = env.STRIPE_WEBHOOK_SECRET
+  const signature = (await headers()).get('stripe-signature')
+
+  if (!signature) {
+    throw new BadRequest('Invalid signature')
+  }
+
+  let event: Stripe.Event | undefined
+
   try {
-    const payload = await request.text()
-    const webHookSecret = env.STRIPE_WEBHOOK_SECRET
-    const signature = (await headers()).get('stripe-signature')
+    event = stripe.webhooks.constructEvent(payload, signature, webHookSecret)
+  } catch (err) {
+    let message = 'Unknown Error'
+    if (err instanceof Error) message = err.message
+    throw new BadRequest(`Webhook Error: ${message}`)
+  }
 
-    if (!signature) {
-      posthog.captureException(new Error('No stripe signature provided'))
-      return errorResponse('Invalid signature', 400)
-    }
+  // handle purchase events
+  if (event.type === 'checkout.session.completed') {
+    const checkoutSession = await stripe.checkout.sessions.retrieve(
+      event.data.object.id,
+    )
 
-    let event: Stripe.Event | undefined
+    const dbSession = await prisma.checkoutSession.findUnique({
+      where: {
+        sessionId: checkoutSession.id,
+      },
+      include: {
+        items: true,
+      },
+    })
 
-    try {
-      event = stripe.webhooks.constructEvent(payload, signature, webHookSecret)
-    } catch (err) {
-      let message = 'Unknown Error'
-      if (err instanceof Error) message = err.message
-      posthog.captureException(err)
-      return errorResponse(`Webhook Error: ${message}`, 400)
-    }
+    if (!dbSession) throw new InternalError('Database Session not found')
 
-    // handle purchase events
-    if (event.type === 'checkout.session.completed') {
-      const checkoutSession = await stripe.checkout.sessions.retrieve(
-        event.data.object.id,
-      )
+    for (const item of dbSession.items) {
+      let added = false
+      if (item.productType === 'curatedSet')
+        added = await addCuratedSetToUser(item.productId, dbSession.userId)
 
-      const dbSession = await prisma.checkoutSession.findUnique({
-        where: {
-          sessionId: checkoutSession.id,
-        },
-        include: {
-          items: true,
-        },
-      })
+      if (item.productType === 'course')
+        added = await addCourseToUser(item.productId, dbSession.userId)
 
-      if (!dbSession) throw new Error('Database Session not found')
+      if (item.productType === 'subscription') {
+        const stripeCustomerId = checkoutSession.customer as string | null
+        if (!stripeCustomerId) throw new InternalError('No customer ID found')
 
-      for (const item of dbSession.items) {
-        let added = false
-        if (item.productType === 'curatedSet')
-          added = await AddCuratedSetToUser(item.productId, dbSession.userId)
-
-        if (item.productType === 'course')
-          added = await AddCourseToUser(item.productId, dbSession.userId)
-
-        if (item.productType === 'subscription') {
-          const stripeCustomerId = checkoutSession.customer as string | null
-          if (!stripeCustomerId) throw new Error('No customer ID found')
-
-          added = await SubscribeUser(stripeCustomerId, dbSession.userId)
-        }
-
-        if (!added)
-          posthog.captureException(
-            new Error(`Failed to add ${item.productType} to user`),
-          )
+        added = await subscribeUser(stripeCustomerId, dbSession.userId)
       }
 
-      await prisma.checkoutSession.update({
-        where: {
-          sessionId: checkoutSession.id,
-        },
-        data: {
-          processed: true,
-        },
-      })
+      if (!added)
+        throw new InternalError(`Failed to add ${item.productType} to user`)
     }
 
-    // handle subscription ending
-    if (event.type === 'customer.subscription.deleted') {
-      const subscription = event.data.object
-      await prisma.userProfile.update({
-        where: {
-          stripeCustomerId: subscription.customer as string,
-        },
-        data: {
-          hasPremium: false,
-        },
-      })
-    }
-
-    return successResponse('Session Completed', {}, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    if (e instanceof Error) return errorResponse(e.message, 500)
-    else return errorResponse('Unknown error', 500)
+    await prisma.checkoutSession.update({
+      where: {
+        sessionId: checkoutSession.id,
+      },
+      data: {
+        processed: true,
+      },
+    })
   }
-}
+
+  // handle subscription ending
+  if (event.type === 'customer.subscription.deleted') {
+    const subscription = event.data.object
+    await prisma.userProfile.update({
+      where: {
+        stripeCustomerId: subscription.customer as string,
+      },
+      data: {
+        hasPremium: false,
+      },
+    })
+  }
+
+  return successResponse('Session Completed', {})
+})

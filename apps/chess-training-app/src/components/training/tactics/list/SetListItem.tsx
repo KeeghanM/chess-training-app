@@ -13,8 +13,8 @@ import { ProgressBar } from '@components/_elements/progress'
 import Spinner from '@components/general/Spinner'
 import type { PrismaTacticsSet } from '@components/training/tactics/create/TacticsSetCreator'
 
-import toHHMMSS from '@utils/toHHMMSS'
-import trackEventOnClient from '@utils/trackEventOnClient'
+import toHHMMSS from '@utils/to-HHMMSS'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 import SetListEdit from './SetListEdit'
 import SetListStats from './SetListStats'

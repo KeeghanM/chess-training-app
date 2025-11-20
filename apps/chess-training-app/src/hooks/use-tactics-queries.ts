@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import type { ResponseJson } from '@utils/server-responsses'
+import type { ResponseJson } from '@utils/server-responses'
 
 import type { TrainingPuzzle } from './use-puzzle-queries'
 
@@ -11,7 +11,7 @@ enum TacticsSetStatus {
 }
 
 // Types based on the TacticsTrainer component
-export interface TacticsRound {
+export type TacticsRound = {
   id: string
   setId: string
   roundNumber: number
@@ -22,7 +22,7 @@ export interface TacticsRound {
   updatedAt: Date
 }
 
-export interface TacticsSet {
+export type TacticsSet = {
   id: string
   name: string
   size: number
@@ -38,18 +38,18 @@ export interface TacticsSet {
   // Add other set fields as needed
 }
 
-export interface CreateRoundData {
+export type CreateRoundData = {
   setId: string
   roundNumber: number
   puzzleRating: number
 }
 
-export interface UpdateStatsData {
+export type UpdateStatsData = {
   roundId: string
   currentStreak: number
 }
 
-export interface UpdateTimeData {
+export type UpdateTimeData = {
   roundId: string
   timeTaken: number
   setId: string

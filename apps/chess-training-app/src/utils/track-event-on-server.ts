@@ -1,7 +1,7 @@
 import { PostHog } from 'posthog-node'
 import { env } from '~/env'
 
-import getDistinctId from './getDistinctId'
+import getDistinctId from './get-distinct-id'
 
 export function PostHogClient() {
   const posthogClient = new PostHog(env.NEXT_PUBLIC_POSTHOG_KEY, {

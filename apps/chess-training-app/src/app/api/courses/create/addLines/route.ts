@@ -1,112 +1,101 @@
 // Add new lines to a course
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { z } from 'zod'
 
 import { prisma } from '@server/db'
-import { getPostHogServer } from '@server/posthog-server'
 
 import type { CleanMove } from '@components/training/courses/create/parse/ParsePGNtoLineData'
 
-import { errorResponse, successResponse } from '@utils/server-responsses'
+import { apiWrapper } from '@utils/api-wrapper'
+import { NotFound } from '@utils/errors'
+import { successResponse } from '@utils/server-responses'
+import { validateBody } from '@utils/validators'
 
-const posthog = getPostHogServer()
+const AddLinesSchema = z.object({
+  courseId: z.string(),
+  groupNames: z.array(z.string()),
+  lines: z.array(
+    z.object({
+      groupName: z.string(),
+      colour: z.string(),
+      moves: z.array(z.any()), // CleanMove type - using any for simplicity
+    }),
+  ),
+})
 
-export async function POST(request: Request) {
-  const session = getKindeServerSession()
-  if (!session) return errorResponse('Unauthorized', 401)
+export const POST = apiWrapper(async (request, { user }) => {
+  const { lines, courseId } = await validateBody(request, AddLinesSchema)
 
-  const user = await session.getUser()
-  if (!user) return errorResponse('Unauthorized', 401)
+  const course = await prisma.course.findFirst({
+    where: { id: courseId, createdBy: user.id },
+    include: { groups: true },
+  })
 
-  const { groupNames, lines, courseId } = (await request.json()) as {
-    courseId: string
-    groupNames: string[]
-    lines: {
-      groupName: string
-      colour: string
-      moves: CleanMove[]
-    }[]
-  }
+  if (!course) throw new NotFound('Course not found')
 
-  if (!groupNames || !lines || !courseId)
-    return errorResponse('Missing required fields', 400)
-
-  try {
-    const course = await prisma.course.findFirst({
-      where: { id: courseId, createdBy: user.id },
-      include: { groups: true },
-    })
-
-    if (!course) return errorResponse('Course not found', 404)
-
-    // Create each new line if it doesn't already exist
-    let newGroupCounter = 0
-    const allGroups = [...course.groups]
-    await Promise.all(
-      lines.map(async (line, index) => {
-        // Check if the group already exists, and if not create it
-        let matchingGroup = allGroups.find(
-          (group) => group.groupName === line.groupName,
-        )
-        if (!matchingGroup) {
-          const newGroup = await prisma.group.create({
-            data: {
-              groupName: line.groupName,
-              courseId: course.id,
-              sortOrder: course.groups.length + newGroupCounter,
-            },
-          })
-          matchingGroup = newGroup
-          newGroupCounter++
-          allGroups.push(newGroup)
-        }
-
-        // Now create the actual line & it's moves
-        const transformedMoves = line.moves.map((move, index) => ({
-          move: move.notation,
-          moveNumber: Math.ceil((index + 1) / 2),
-          colour: index % 2 === 0 ? true : false, // True for white, false for black
-          arrows: move.arrows,
-          comment: move.comment
-            ? { create: { comment: move.comment.trim() } } // Create a comment in the comment table if there is one
-            : undefined,
-        }))
-
-        const dbLine = await prisma.line.create({
+  // Create each new line if it doesn't already exist
+  let newGroupCounter = 0
+  const allGroups = [...course.groups]
+  await Promise.all(
+    lines.map(async (line, index) => {
+      // Check if the group already exists, and if not create it
+      let matchingGroup = allGroups.find(
+        (group) => group.groupName === line.groupName,
+      )
+      if (!matchingGroup) {
+        const newGroup = await prisma.group.create({
           data: {
-            colour: line.colour,
-            groupId: matchingGroup.id,
+            groupName: line.groupName,
             courseId: course.id,
-            sortOrder: index,
-            moves: {
-              create: transformedMoves,
-            },
+            sortOrder: course.groups.length + newGroupCounter,
           },
         })
+        matchingGroup = newGroup
+        newGroupCounter++
+        allGroups.push(newGroup)
+      }
 
-        // Now, we need to add this new line to ALL users who are enrolled in this course
-        // TODO: Maybe turn this into a Cron Job that runs every 5 minutes or something checking for new lines to add to users
-        const userCourses = await prisma.userCourse.findMany({
-          where: { courseId: course.id },
-        })
+      // Now create the actual line & it's moves
+      const transformedMoves = line.moves.map((move: CleanMove, index) => ({
+        move: move.notation,
+        moveNumber: Math.ceil((index + 1) / 2),
+        colour: index % 2 === 0 ? true : false, // True for white, false for black
+        arrows: move.arrows,
+        comment: move.comment
+          ? { create: { comment: move.comment.trim() } } // Create a comment in the comment table if there is one
+          : undefined,
+      }))
 
-        await Promise.all(
-          userCourses.map(async (userCourse) => {
-            await prisma.userLine.create({
-              data: {
-                userId: userCourse.userId,
-                userCourseId: userCourse.id,
-                lineId: dbLine.id,
-              },
-            })
-          }),
-        )
-      }),
-    )
+      const dbLine = await prisma.line.create({
+        data: {
+          colour: line.colour,
+          groupId: matchingGroup.id,
+          courseId: course.id,
+          sortOrder: index,
+          moves: {
+            create: transformedMoves,
+          },
+        },
+      })
 
-    return successResponse('Lines added', {}, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    if (e instanceof Error) return errorResponse(e.message, 500)
-    else return errorResponse('Unknown error', 500)
-  }
-}
+      // Now, we need to add this new line to ALL users who are enrolled in this course
+      // TODO: Maybe turn this into a Cron Job that runs every 5 minutes or something checking for new lines to add to users
+      const userCourses = await prisma.userCourse.findMany({
+        where: { courseId: course.id },
+      })
+
+      await Promise.all(
+        userCourses.map(async (userCourse) => {
+          await prisma.userLine.create({
+            data: {
+              userId: userCourse.userId,
+              userCourseId: userCourse.id,
+              lineId: dbLine.id,
+            },
+          })
+        }),
+      )
+    }),
+  )
+
+  return successResponse('Lines added', {})
+})

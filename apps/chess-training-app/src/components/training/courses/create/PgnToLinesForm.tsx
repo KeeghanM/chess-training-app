@@ -7,7 +7,7 @@ import posthog from 'posthog-js'
 
 import Button from '@components/_elements/button'
 
-import trackEventOnClient from '@utils/trackEventOnClient'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 import type { Line } from './parse/ParsePGNtoLineData'
 import { ParsePGNtoLineData } from './parse/ParsePGNtoLineData'

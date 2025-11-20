@@ -9,7 +9,7 @@ import TextEditor from '@components/general/TextEditor'
 
 import { useCourseQueries } from '@hooks/use-course-queries'
 
-import trackEventOnClient from '@utils/trackEventOnClient'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 export default function DetailsForm(props: {
   finished: (name: string, description: string) => void

@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react'
 
 import { Chess } from 'chess.js'
 import type { Arrow } from 'react-chessboard'
+import getArrows from '~/utils/get-arrows'
 
-import type { Move } from '@utils/BuildPgn'
-import BuildPGN from '@utils/BuildPgn'
-import getArrows from '@utils/StringToArrows'
+import type { Move } from '@utils/build-pgn'
+import buildPgn from '@utils/build-pgn'
 
 import ChessBoard from '../../ChessBoard'
 import BoardContainer from '../../shared/BoardContainer'
@@ -15,7 +15,7 @@ import type { UserLineWithData } from './CourseBrowser'
 import PgnBrowser from './PgnBrowser'
 
 export default function GroupBrowser(props: { lines: UserLineWithData[] }) {
-  const pgn = BuildPGN(
+  const pgn = buildPgn(
     props.lines.map((line) =>
       line.line.moves.map((move) => {
         return {

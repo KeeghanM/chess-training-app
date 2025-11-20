@@ -9,7 +9,7 @@ import { useProfileQueries } from '@hooks/use-profile-queries'
 
 import { useAppStore } from '@stores/app-store'
 
-import trackEventOnClient from '@utils/trackEventOnClient'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 import EndgameConfigure from './EndgameConfigure'
 import EndgameTrain from './EndgameTrain'

@@ -8,9 +8,9 @@ import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import CtaRow from '@components/_layouts/ctaRow'
 
-import type { RichTextContent } from '@utils/PrismicRichToHtml'
-import { PrismicRichToHtml } from '@utils/PrismicRichToHtml'
 import Prismic from '@utils/prismicio'
+import type { RichTextContent } from '@utils/rich-text-to-html'
+import { PrismicRichToHtml } from '@utils/rich-text-to-html'
 
 type Params = { uid: string }
 

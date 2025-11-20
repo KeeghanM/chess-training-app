@@ -13,7 +13,7 @@ import StyledLink from '@components/_elements/styledLink'
 
 import { useCourseQueries } from '@hooks/use-course-queries'
 
-import trackEventOnClient from '@utils/trackEventOnClient'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 import GroupSelector from '../create/GroupSelector'
 import PgnToLinesForm from '../create/PgnToLinesForm'

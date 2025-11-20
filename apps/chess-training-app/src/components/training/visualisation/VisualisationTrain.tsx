@@ -12,7 +12,7 @@ import XpTracker from '@components/general/XpTracker'
 import type { TrainingPuzzle } from '@hooks/use-puzzle-queries'
 import { useSounds } from '@hooks/use-sound'
 
-import trackEventOnClient from '@utils/trackEventOnClient'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 import BoardContainer from '../shared/BoardContainer'
 import PgnNavigator from '../shared/PgnNavigator'

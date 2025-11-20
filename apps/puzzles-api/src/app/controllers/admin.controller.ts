@@ -41,15 +41,15 @@ const AdminController = async (req: Request, res: Response) => {
         { outFormat: OUT_FORMAT_OBJECT },
       )
 
-      if (result.rows === undefined || result.rows.length === 0) {
+      if (!result.rows || result.rows.length === 0) {
         res.status(404).send(ErrorResponse('No Matching Puzzles', 404))
         return
       }
 
       const puzzle = {
-        puzzleid: result.rows[0].PUZZLEID,
-        rating: result.rows[0].RATING,
-        ratingdeviation: result.rows[0].RATINGDEVIATION,
+        puzzleid: result.rows[0]!.PUZZLEID,
+        rating: result.rows[0]!.RATING,
+        ratingdeviation: result.rows[0]!.RATINGDEVIATION,
       }
 
       const lichessPuzzleResponse = await fetch(

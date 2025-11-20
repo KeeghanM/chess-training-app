@@ -5,7 +5,7 @@ import { env } from '~/env'
 
 import { prisma } from '@server/db'
 
-import { killBillClient } from './KillBill'
+import { killBillClient } from './kill-bill'
 
 export type KindeUser = {
   id: string

@@ -1,13 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import type { ResponseJson } from '@utils/server-responsses'
+import type { ResponseJson } from '@utils/server-responses'
 
 import type { TrainingPuzzle } from './use-puzzle-queries'
 
 // Types based on existing admin components
 export type CuratedSetPuzzle = TrainingPuzzle & { curatedPuzzleId: number }
 
-export interface CuratedSet {
+export type CuratedSet = {
   id: string
   name: string
   description?: string
@@ -15,7 +15,7 @@ export interface CuratedSet {
   // Add other set fields as needed
 }
 
-export interface Badge {
+export type Badge = {
   id: string
   name: string
   description: string

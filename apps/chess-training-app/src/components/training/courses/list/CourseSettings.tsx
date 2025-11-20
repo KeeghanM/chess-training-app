@@ -23,7 +23,7 @@ import {
   useCourseQueries,
 } from '@hooks/use-course-queries'
 
-import trackEventOnClient from '@utils/trackEventOnClient'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 interface CourseSettingsProps {
   userCourse: PrismaUserCourse

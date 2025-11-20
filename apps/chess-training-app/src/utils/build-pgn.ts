@@ -21,7 +21,7 @@ export type PGN = {
   moves: Move[]
 }
 
-export default function BuildPGN(lines: LineMove[][]): PGN {
+export default function buildPgn(lines: LineMove[][]): PGN {
   const pgn: PGN = { moves: [] }
   let lineToAddTo: Move[] = []
 

@@ -10,9 +10,21 @@
     "isolatedModules": true,
     /* Strictness */
     "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
     "noUncheckedIndexedAccess": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "checkJs": true,
     "useUnknownInCatchVariables": true,
+    "forceConsistentCasingInFileNames": true,
+
     /* Bundled projects */
     "lib": ["dom", "dom.iterable", "ES2022"],
     "noEmit": true,
@@ -34,7 +46,8 @@
       "@auth/*": ["./src/app/auth/*"],
       "@hooks/*": ["./src/hooks/*"],
       "@stores/*": ["./src/stores/*"],
-      "@utils/*": ["./src/utils/*"]
+      "@utils/*": ["./src/utils/*"],
+      "@schemas/*": ["./src/schemas/*"]
     }
   },
   "include": [

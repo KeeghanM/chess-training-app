@@ -21,7 +21,7 @@ import Spinner from '@components/general/Spinner'
 
 import { useTacticsQueries } from '@hooks/use-tactics-queries'
 
-import trackEventOnClient from '@utils/trackEventOnClient'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 export type PrismaTacticsSet = TacticsSet & { rounds: TacticsSetRound[] }
 interface TacticsSetCreatorProps {

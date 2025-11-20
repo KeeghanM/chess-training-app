@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid'
 import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
 
-import type { ResponseJson } from '@utils/server-responsses'
+import type { ResponseJson } from '@utils/server-responses'
 
 export default function CreateCustom() {
   const queryClient = useQueryClient()

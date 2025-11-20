@@ -3,7 +3,7 @@ import { getPostHogServer } from '@server/posthog-server'
 
 const posthog = getPostHogServer()
 
-export default async function SubscribeUser(
+export default async function subscribeUser(
   stripeCustomerId: string,
   userId: string,
 ) {

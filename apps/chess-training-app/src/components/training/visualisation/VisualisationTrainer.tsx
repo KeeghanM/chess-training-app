@@ -7,7 +7,7 @@ import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import { useProfileQueries } from '@hooks/use-profile-queries'
 import { useVisualisationQueries } from '@hooks/use-visualisation-queries'
 
-import trackEventOnClient from '@utils/trackEventOnClient'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 import VisualisationConfigure from './VisualisationConfigure'
 import VisualisationTrain from './VisualisationTrain'
