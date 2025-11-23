@@ -29,6 +29,11 @@ export default async function Home() {
   const reviews = [
     {
       name: 'Anonymous',
+      date: '2025-11-23',
+      text: 'Love this app',
+    },
+    {
+      name: 'Anonymous',
       date: '2025-09-30',
       text: 'Thank you so much for this amazing website!!',
     },
