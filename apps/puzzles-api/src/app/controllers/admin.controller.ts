@@ -21,12 +21,7 @@ const AdminController = async (req: Request, res: Response) => {
   let connection: Connection | undefined
 
   try {
-    connection = await oracledb.getConnection({
-      user: env.DB_USERNAME,
-      password: env.DB_PASSWORD,
-      connectionString: env.DB_CONNECTION_STRING,
-      externalAuth: false,
-    })
+    connection = await oracledb.getConnection()
 
     for (let i = 0; i < count; i++) {
       // Get the oldest unchecked puzzle (or never checked)

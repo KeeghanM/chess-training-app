@@ -2,8 +2,6 @@ import type { Request, Response } from 'express'
 import oracledb, { Connection, OUT_FORMAT_OBJECT } from 'oracledb'
 import { z } from 'zod'
 
-import { env } from '../../env'
-
 export const ErrorResponse = (message: string, status: number) => {
   return {
     message,
@@ -151,12 +149,7 @@ const PuzzleController = async (req: Request, res: Response) => {
   let connection: Connection | undefined
 
   try {
-    connection = await oracledb.getConnection({
-      user: env.DB_USERNAME,
-      password: env.DB_PASSWORD,
-      connectionString: env.DB_CONNECTION_STRING,
-      externalAuth: false,
-    })
+    connection = await oracledb.getConnection()
 
     const result = await connection.execute<PuzzleResult>(
       queryString,
