@@ -31,16 +31,19 @@ export default function EndgameTrainer() {
   const [rating, setRating] = useState(1500)
   const [difficulty, setDifficulty] = useState(1)
 
-  // Get random endgame using React Query
-  const endgameQuery = useRandomEndgameQuery({ type, rating, difficulty })
-  const currentPuzzle = endgameQuery.data
-
   // Setup state for the settings/general
   const [puzzleStatus, setPuzzleStatus] = useState<
     'none' | 'correct' | 'incorrect'
   >('none')
   const [mode, setMode] = useState<'training' | 'settings'>('settings')
   const [error, setError] = useState('')
+
+  // Get random endgame using React Query - only enabled when in training mode
+  const endgameQuery = useRandomEndgameQuery(
+    { type, rating, difficulty },
+    mode === 'training', // Only fetch when training
+  )
+  const currentPuzzle = endgameQuery.data
 
   const [xpCounter, setXpCounter] = useState(0)
   const [currentStreak, setCurrentStreak] = useState(0)
@@ -98,6 +101,31 @@ export default function EndgameTrainer() {
   }
 
   if (!user) return null
+
+  if (mode === 'training' && endgameQuery.isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+      </div>
+    )
+  }
+
+  if (mode === 'training' && (endgameQuery.isError || !currentPuzzle)) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 p-8 text-center">
+        <h3 className="text-xl font-bold text-red-500">Error loading puzzle</h3>
+        <p className="text-gray-300">
+          {endgameQuery.error?.message || 'Could not find a suitable puzzle.'}
+        </p>
+        <button
+          onClick={() => setMode('settings')}
+          className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded text-white"
+        >
+          Back to Settings
+        </button>
+      </div>
+    )
+  }
 
   return mode == 'settings' ? (
     <EndgameConfigure

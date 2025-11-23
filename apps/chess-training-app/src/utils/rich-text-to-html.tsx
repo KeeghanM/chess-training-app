@@ -138,7 +138,7 @@ export function decodeUTF8(str: string) {
     .replace(/“/g, '"')
     .replace(/”/g, '"')
     .replace(/–/g, '-')
-    .replace(/—/g, '-')
+    .replace(/ - /g, '-')
     .replace(/ /g, ' ')
     .replace(/ /g, ' ')
     .replace(/…/g, '...')

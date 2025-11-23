@@ -25,8 +25,15 @@ export const POST = apiWrapper(async (request, { user }) => {
           sortOrder: i,
         })),
       },
+      rounds: {
+        create: {
+          roundNumber: 1,
+        },
+      },
     },
   })
 
-  return successResponse('Set created', { set })
+  return successResponse('Set created', {
+    set: set as unknown as Record<string, unknown>,
+  })
 })

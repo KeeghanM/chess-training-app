@@ -1,3 +1,5 @@
+import { Check } from 'lucide-react'
+
 import Backdrop from '@components/_elements/backdrop'
 import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
@@ -6,9 +8,9 @@ import { TextWall } from '@components/_layouts/textWall'
 import GetPremiumButton from '@components/ecomm/GetPremiumButton'
 
 export const metadata = {
-  title: 'Go Premium and Unlock Unlimited Chess Training at ChessTraining.app',
+  title: 'Upgrade to Premium - Unlimited Chess Training',
   description:
-    'Unlock unlimited chess training at ChessTraining.app with a premium account. Access all features, including unlimited chess puzzles, courses, and more. Start your premium account today!',
+    'Unlock unlimited chess training at ChessTraining.app. Unlimited puzzles, courses, and features for less than the price of a coffee.',
 }
 
 export default async function PremiumPage() {
@@ -17,155 +19,95 @@ export default async function PremiumPage() {
       <Backdrop />
       <Container className="space-y-4" size="wide">
         <Heading as="h1" className="text-white">
-          ChessTraining App is free forever
+          ChessTraining.app is free forever
         </Heading>
         <Heading className="text-primary" as="h2">
-          But we do offer a Premium account for those who want more
+          Unlock unlimited potential for less than a coffee
         </Heading>
-        <TextWall title="Our commitment">
+        <TextWall title="Our Mission">
           <p>
-            ChessTraining.app is committed to our mission of providing an
-            accessible, high-quality chess training experience for everyone. We
-            stand by our vision of making chess available to anyone, regardless
-            of their background or resources. All our features are available for
-            free, forever. However, Premium does unlock the following additional
-            benefits.
+            We believe high-quality chess training should be accessible to
+            everyone. All our core engines (NPL, Woodpecker, Visualisation) are
+            free to use. Premium is for players who want to remove all limits
+            and support the development of the platform.
           </p>
         </TextWall>
         <MultiCol>
-          <MultiColItem title="Free">
+          {/* Free Plan - Positive Framing */}
+          <MultiColItem title="Free Plan">
             <ul className="divide-y divide-slate-300">
-              <li className="py-1">
-                <strong>Max Two</strong> Active Tactics Sets
-              </li>
-              <li className="py-1">
-                <strong>Max Two</strong> Active Openings Courses
-              </li>
-              <li className="flex gap-1  items-center py-1">
-                <span className="text-red-500">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="1.5em"
-                    height="1.5em"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M19.1 4.9C15.2 1 8.8 1 4.9 4.9S1 15.2 4.9 19.1s10.2 3.9 14.1 0s4-10.3.1-14.2m-4.3 11.3L12 13.4l-2.8 2.8l-1.4-1.4l2.8-2.8l-2.8-2.8l1.4-1.4l2.8 2.8l2.8-2.8l1.4 1.4l-2.8 2.8l2.8 2.8z"
-                    />
-                  </svg>
+              <li className="py-2 flex items-center gap-2">
+                <span className="text-green-500 font-bold">
+                  <Check />
                 </span>
-                No discount on store items
-              </li>
-              <li className="flex gap-1  items-center py-1">
-                <span className="text-green-500">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="1.5em"
-                    height="1.5em"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      fill="currentColor"
-                      fillRule="evenodd"
-                      d="M12 21a9 9 0 1 0 0-18a9 9 0 0 0 0 18m-.232-5.36l5-6l-1.536-1.28l-4.3 5.159l-2.225-2.226l-1.414 1.414l3 3l.774.774z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                <span>
+                  <strong>2 Active</strong> Tactics Sets
                 </span>
-                Unlimited access to everything else
+              </li>
+              <li className="py-2 flex items-center gap-2">
+                <span className="text-green-500 font-bold">
+                  <Check />
+                </span>
+                <span>
+                  <strong>2 Active</strong> Opening Courses
+                </span>
+              </li>
+              <li className="py-2 flex items-center gap-2">
+                <span className="text-green-500 font-bold">
+                  <Check />
+                </span>
+                <span>Full NPL Engine Access</span>
+              </li>
+              <li className="py-2 flex items-center gap-2">
+                <span className="text-green-500 font-bold">
+                  <Check />
+                </span>
+                <span>Visualisation & Endgame Trainers</span>
               </li>
             </ul>
           </MultiColItem>
-          <MultiColItem title="Premium">
-            <ul className="divide-y divide-slate-300">
-              <li className="flex gap-1  items-center py-1">
-                <span className="text-green-500">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="1.5em"
-                    height="1.5em"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      fill="currentColor"
-                      fillRule="evenodd"
-                      d="M12 21a9 9 0 1 0 0-18a9 9 0 0 0 0 18m-.232-5.36l5-6l-1.536-1.28l-4.3 5.159l-2.225-2.226l-1.414 1.414l3 3l.774.774z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+
+          {/* Premium Plan - Value Driven */}
+          <MultiColItem title="Premium (£2.99/mo)">
+            <ul className="divide-y divide-slate-300 mb-6">
+              <li className="py-2 flex items-center gap-2 font-semibold text-primary">
+                <span className="text-green-500 text-xl">
+                  <Check />
                 </span>
-                Unlimited Tactics Sets
+                <span>Unlimited Tactics Sets</span>
               </li>
-              <li className="flex gap-1  items-center py-1">
-                <span className="text-green-500">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="1.5em"
-                    height="1.5em"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      fill="currentColor"
-                      fillRule="evenodd"
-                      d="M12 21a9 9 0 1 0 0-18a9 9 0 0 0 0 18m-.232-5.36l5-6l-1.536-1.28l-4.3 5.159l-2.225-2.226l-1.414 1.414l3 3l.774.774z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+              <li className="py-2 flex items-center gap-2 font-semibold text-primary">
+                <span className="text-green-500 text-xl">
+                  <Check />
                 </span>
-                Unlimited Openings Courses
+                <span>Unlimited Opening Courses</span>
               </li>
-              <li className="flex gap-1  items-center py-1">
-                <span className="text-green-500">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="1.5em"
-                    height="1.5em"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      fill="currentColor"
-                      fillRule="evenodd"
-                      d="M12 21a9 9 0 1 0 0-18a9 9 0 0 0 0 18m-.232-5.36l5-6l-1.536-1.28l-4.3 5.159l-2.225-2.226l-1.414 1.414l3 3l.774.774z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+              <li className="py-2 flex items-center gap-2">
+                <span className="text-green-500 text-xl">
+                  <Check />
                 </span>
-                5% Discount on all paid sets/course
+                <span>5% Store Discount</span>
               </li>
-              <li className="flex gap-1  items-center py-1">
-                <span className="text-green-500">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="1.5em"
-                    height="1.5em"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      fill="currentColor"
-                      fillRule="evenodd"
-                      d="M12 21a9 9 0 1 0 0-18a9 9 0 0 0 0 18m-.232-5.36l5-6l-1.536-1.28l-4.3 5.159l-2.225-2.226l-1.414 1.414l3 3l.774.774z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+              <li className="py-2 flex items-center gap-2">
+                <span className="text-green-500 text-xl">
+                  <Check />
                 </span>
-                Unlimited access to everything else
+                <span>Support Solo Development ❤️</span>
               </li>
             </ul>
-            <GetPremiumButton />
-          </MultiColItem>
-        </MultiCol>
-        <TextWall title="Just £2.99/month">
-          <div className="flex flex-col gap-4">
-            <p>
-              Our commitment to keeping the barrier to entry low means that
-              ChessTraining.app Premium is available for just £2.99/month.
-            </p>
-            <div>
+            <div className="w-full">
               <GetPremiumButton />
             </div>
-          </div>
-        </TextWall>
+          </MultiColItem>
+        </MultiCol>
+
+        <div className="flex justify-center pt-8">
+          <p className="text-white text-center opacity-80 max-w-xl">
+            Our commitment to keeping the barrier to entry low means that
+            ChessTraining.app Premium is available for just{' '}
+            <strong>£2.99/month</strong>. Cancel anytime.
+          </p>
+        </div>
       </Container>
     </div>
   )

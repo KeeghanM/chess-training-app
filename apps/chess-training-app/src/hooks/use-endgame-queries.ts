@@ -38,7 +38,7 @@ export function useEndgameQueries() {
   }
 
   // Factory function for random endgame using the generic puzzle query
-  const useRandomEndgameQuery = (filters?: EndgameFilters) => {
+  const useRandomEndgameQuery = (filters?: EndgameFilters, enabled = true) => {
     const adjustedRating = filters?.rating
       ? Math.round(filters.rating * difficultyAdjuster(filters.difficulty || 1))
       : 1500
@@ -48,8 +48,9 @@ export function useEndgameQueries() {
     return useRandomTrainingPuzzleQuery({
       rating: adjustedRating,
       themesType: 'ALL',
-      themes: JSON.stringify([theme]),
-      count: '1',
+      themes: [theme],
+      count: 1,
+      enabled, // Pass through the enabled flag
     })
   }
 

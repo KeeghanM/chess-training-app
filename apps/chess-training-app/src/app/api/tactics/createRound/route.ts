@@ -14,8 +14,9 @@ export const POST = apiWrapper(async (request, { user }) => {
     CreateRoundSchema,
   )
 
+  let round
   if (roundNumber <= 8) {
-    await prisma.tacticsSetRound.create({
+    round = await prisma.tacticsSetRound.create({
       data: {
         setId,
         roundNumber,
@@ -24,11 +25,13 @@ export const POST = apiWrapper(async (request, { user }) => {
   } else {
     if (puzzleRating) {
       const badge = TACTICS_STREAK_BADGES.find(
-        (badge) => badge.level && puzzleRating <= badge.level,
+        (badge) => badge.level && puzzleRating >= badge.level,
       )
-      if (badge) await addBadgeToUser(user.id, badge.name)
+      if (badge) {
+        await addBadgeToUser(user.id, badge.name)
+      }
     }
   }
 
-  return successResponse('Round created', {})
+  return successResponse('Round created', { round })
 })

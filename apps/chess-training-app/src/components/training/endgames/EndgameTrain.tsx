@@ -8,6 +8,7 @@ import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
 import XpTracker from '@components/general/XpTracker'
 
+import { useChessGame } from '@hooks/use-chess-game'
 import type { TrainingPuzzle } from '@hooks/use-puzzle-queries'
 import { useSounds } from '@hooks/use-sound'
 
@@ -64,12 +65,19 @@ export default function EndgameTrain({
   onPuzzleComplete,
   onExit,
 }: EndgameTrainProps) {
-  // Chess state
-  const [game, setGame] = useState(new Chess())
-  const [gameReady, setGameReady] = useState(false)
-  const [orientation, setOrientation] = useState<'white' | 'black'>('white')
-  const [position, setPosition] = useState(game.fen())
-  const [readyForInput, setReadyForInput] = useState(false)
+  // Hooks
+  const {
+    game,
+    gameReady,
+    position,
+    setPosition,
+    orientation,
+    setOrientation,
+    isInteractive: readyForInput,
+    setIsInteractive: setReadyForInput,
+    resetGame,
+  } = useChessGame()
+
   const [puzzleFinished, setPuzzleFinished] = useState(false)
 
   // SFX
@@ -165,18 +173,10 @@ export default function EndgameTrain({
   // Create a new game from the puzzle whenever it changes
   useEffect(() => {
     if (!currentPuzzle) return
-    const newGame = new Chess(currentPuzzle.fen)
-    setGame(newGame)
-    setGameReady(false)
+    resetGame(currentPuzzle.fen)
   }, [currentPuzzle])
 
-  // We need to ensure the game is set before we can make a move
-  useEffect(() => {
-    setGameReady(true)
-  }, [game])
-
-  // Now, whenever any of the elements associated with the game/puzzle
-  // change we can check if we need to make the first move
+  // Handle first move when game is ready
   useEffect(() => {
     if (gameReady && currentPuzzle) {
       setPuzzleFinished(false)

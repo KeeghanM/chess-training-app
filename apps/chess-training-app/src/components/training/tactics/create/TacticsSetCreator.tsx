@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import type { TacticsSet, TacticsSetRound } from '@prisma/client'
 import * as AlertDialog from '@radix-ui/react-alert-dialog'
+import { CreateTacticsSetSchema } from '@schemas/tactics'
 import { Plus } from 'lucide-react'
 import posthog from 'posthog-js'
 import Select from 'react-select'
@@ -83,8 +84,8 @@ export default function TacticsSetCreator({
   ) => {
     const params = {
       rating: Math.round(rating * difficultyAdjuster(difficulty)),
-      count: count.toString(),
-      themes: themes.length > 0 ? JSON.stringify(themes) : undefined,
+      count,
+      themes: themes.length > 0 ? themes : undefined,
     }
 
     try {
@@ -114,21 +115,6 @@ export default function TacticsSetCreator({
   const validForm = () => {
     setMessage('')
 
-    if (name.length < 5) {
-      setMessage('Name must be at least 5 characters')
-      return false
-    }
-    if (name.length > 150) {
-      setMessage('Name must be below 150 characters')
-      return false
-    }
-    // Regex to check for potentially risky special chars
-    const regex = /[@?#%^\*]/g
-    if (regex.test(name)) {
-      setMessage('Name must not include special characters')
-      return false
-    }
-
     if (createFromPgn) {
       if (pgnInput.length < 100) {
         setMessage('PGN must be at least 100 characters long')
@@ -139,17 +125,20 @@ export default function TacticsSetCreator({
         setMessage('Invalid PGN format')
         return false
       }
+      return true
     } else {
-      if (rating < 500 || rating > 3000) {
-        setMessage('Rating must be between 500 & 3000')
+      const validation = CreateTacticsSetSchema.safeParse({
+        name,
+        rating,
+        puzzleIds: Array(size).fill({ puzzleid: 'placeholder' }),
+      })
+
+      if (!validation.success) {
+        setMessage(validation.error?.issues[0]?.message ?? 'Invalid input')
         return false
       }
-      if (size < 20 || size > 500) {
-        setMessage('Set must be between 20 & 500 Puzzles')
-        return false
-      }
+      return true
     }
-    return true
   }
   const createSet = async () => {
     if (!validForm()) {

@@ -100,13 +100,15 @@ export function useTacticsQueries() {
   // --- Mutations ---
   const createRound = useMutation({
     mutationFn: async (data: CreateRoundData) => {
-      await fetch('/api/tactics/createRound', {
+      const response = await fetch('/api/tactics/createRound', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       })
+      const json = (await response.json()) as ResponseJson
+      return json.data?.round as unknown as TacticsRound
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
@@ -180,8 +182,8 @@ export function useTacticsQueries() {
     mutationFn: async (params: {
       rating?: number
       ratingDeviation?: number
-      themes?: string
-      count?: string
+      themes?: string[]
+      count?: number
     }): Promise<TrainingPuzzle[]> => {
       const response = await fetch('/api/puzzles/getPuzzles', {
         method: 'POST',

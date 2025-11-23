@@ -103,7 +103,7 @@ export default function CourseList(props: { hasUnlimitedCourses: boolean }) {
               <CourseListItem
                 key={index}
                 courseId={course.id}
-                courseName={course.course.courseName}
+                courseName={course.course?.courseName ?? 'Unknown Course'}
                 update={() => refetch()}
                 hasPremium={hasUnlimitedCourses}
               />

@@ -24,7 +24,7 @@ export function useVisualisationQueries() {
 
     return useRandomTrainingPuzzleQuery({
       rating: trueRating,
-      count: '1',
+      count: 1,
       playerMoves: params.length / 2,
     })
   }

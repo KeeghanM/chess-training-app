@@ -8,19 +8,18 @@ import ImageRowFull from '@components/_layouts/imageRowFull'
 import { TextWall } from '@components/_layouts/textWall'
 
 export const metadata = {
-  title:
-    'Boost Your Chess Tactics with the Woodpecker Method - ChessTraining.app',
+  title: 'Rewire Your Tactical Brain with the Woodpecker Method',
   description:
-    'Master tactical chess play with the Woodpecker Method. Perfect for all skill levels, this method developed by GMs Axel Smith and Hans Tikkanen emphasizes solving and re-solving puzzles for speed and accuracy. Join ChessTraining.app to revolutionize your tactical skills.',
+    'Master tactical patterns using the Woodpecker Method. Build intuitive speed and accuracy by cycling through customized puzzle sets.',
 }
 
 export default async function WoodPeckerPage() {
   return (
     <>
-      <Hero title="Chess Tactics Training with the Woodpecker Method">
+      <Hero title="Rewire Your Brain for Tactics">
         <Heading className="text-primary" as="h2">
-          Train chess puzzles using the WoodPecker Method developed by GM's Axel
-          Smith, and Hans Tikkanen.
+          Reprogram your subconscious using the proven Woodpecker Method
+          developed by GMs Axel Smith and Hans Tikkanen.
         </Heading>
       </Hero>
       <ImageRowFull
@@ -29,25 +28,25 @@ export default async function WoodPeckerPage() {
           alt: 'A person at a computer engaging in intense chess tactics training',
         }}
         imageSide="left"
-        heading="Discover the Woodpecker Method"
+        heading="What is the Woodpecker Method?"
       >
         <p>
-          The Woodpecker Method, developed by Grandmasters Axel Smith and Hans
-          Tikkanen, is a game-changing approach to improving at chess tactics.
-          It focuses on solving a large set of puzzles and then re-solving them
-          faster and more accurately, embedding core tactical patterns into your
-          subconscious.
+          You can calculate, but can you see it instantly? The Woodpecker Method
+          isn't just about solving puzzles; it's about{' '}
+          <strong>pattern recognition</strong>.
         </p>
         <p>
-          This method is tailored to your chess rating, providing a personalized
-          training experience that automates tracking and admin, allowing you to
-          focus solely on puzzle-solving.
+          By solving a set of puzzles and then re-solving them repeatedly at
+          faster intervals, you move the knowledge from your conscious
+          calculation (slow) to your subconscious intuition (fast). In a real
+          game, this is the difference between spotting a tactic in 2 seconds
+          versus missing it entirely.
         </p>
       </ImageRowFull>
       <BigText color="dark">
-        Enhance your tactical play now -{' '}
+        Build your first set now -{' '}
         <Link
-          className="cursor-pointer font-bold !text-orange-500 underline hover:no-underline"
+          className="cursor-pointer font-bold text-primary! underline hover:no-underline"
           href="/training/tactics/list"
         >
           Start Training
@@ -59,60 +58,52 @@ export default async function WoodPeckerPage() {
           alt: 'A focused individual studying chess tactics on a computer',
         }}
         imageSide="right"
-        heading="How to Train with the Woodpecker Method"
+        heading="We Handle the Schedule, You Do the Work"
       >
         <p>
-          Our Tactics Trainer lets you build and solve a customized set of
-          150-500 puzzles, suited to your chess rating. We track your time and
-          accuracy, helping you improve both as you progress through the
-          puzzles.
+          Manually tracking your Woodpecker cycles in a spreadsheet is a pain.
+          Our Tactics Trainer automates the entire process.
         </p>
         <p>
-          These sessions are designed to be intense yet rewarding, with each
-          puzzle set aiming to challenge and improve your tactical abilities
-          over time.
+          <strong>1. Build a Set:</strong> Create a custom set tailored to your
+          rating.
         </p>
         <p>
-          The key to getting the most out of the Woodpecker Method is to ensure
-          the puzzles are challenging enough to push you, but not so difficult
-          that you can't solve them. Ideally each puzzle on your first run
-          through should take between 1-2 minutes to solve. If you find yourself
-          taking longer than this, you may want to consider reducing the
-          difficulty of the puzzle set.
+          <strong>2. Solve & Repeat:</strong> We track your accuracy and time.
+          Once you finish a cycle, we reset the set and challenge you to beat
+          your previous time.
         </p>
         <p>
-          Each time you complete a tactics set, you will naturally get faster as
-          the patterns become embedded in your subconscious. The recommended
-          amount is 8 repetitions, with a break of 3-4 days after you finish a
-          set. This allows your brain to process the patterns and commit them to
-          memory.
+          The goal is to complete the entire set in a single sitting
+          (eventually). The recommended target is 7-8 repetitions, with short
+          breaks between cycles to let your brain consolidate the patterns.
         </p>
       </ImageRowFull>
-      <TextWall title="Why the Woodpecker Method?">
+      <TextWall title="Why it works">
         <ul>
           <li>
-            <strong>Effective Learning:</strong> Absorb and retain tactical
-            patterns more effectively.
+            <strong>Subconscious Programming:</strong> Embed patterns so deep
+            you can't miss them.
           </li>
           <li>
-            <strong>Personalized Training:</strong> Puzzles tailored to your
-            skill level.
+            <strong>Automated Admin:</strong> No spreadsheets. No timers. Just
+            chess.
           </li>
           <li>
-            <strong>Progress Tracking:</strong> Monitor your improvement over
-            time.
+            <strong>Personalized Difficulty:</strong> We fetch puzzles that
+            match your exact strength.
           </li>
           <li>
-            <strong>Real-Game Scenarios:</strong> Train with puzzles derived
-            from actual game situations.
+            <strong>Real Game Scenarios:</strong> All puzzles are taken from
+            real Lichess games.
           </li>
         </ul>
       </TextWall>
       <CtaRow
-        title="Are You Ready to Revolutionize Your Chess Tactics?"
-        cta={{ text: 'Begin Your Journey', link: '/training/tactics/list' }}
+        title="Ready to stop blundering?"
+        cta={{ text: 'Start Your First Cycle', link: '/training/tactics/list' }}
       >
-        <p>Start now for free and take your tactical skills to new heights.</p>
+        <p>It's free forever. Build your tactical vision today.</p>
       </CtaRow>
     </>
   )

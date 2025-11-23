@@ -11,6 +11,7 @@ export const GET = apiWrapper(async (_request, { user }) => {
     },
     include: {
       lines: true,
+      course: true,
     },
     orderBy: { lastTrained: 'desc' },
   })

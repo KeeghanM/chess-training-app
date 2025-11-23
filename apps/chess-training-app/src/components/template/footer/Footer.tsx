@@ -117,6 +117,10 @@ export default function Footer() {
           text: 'Terms & Conditions',
           url: '/legal/terms',
         },
+        {
+          text: 'Support us with coffee',
+          url: 'https://www.buymeacoffee.com/keeghanm',
+        },
       ],
     },
   ] as const

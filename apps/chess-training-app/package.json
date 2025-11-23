@@ -12,8 +12,7 @@
     "qa:lint": "npx eslint ./src/**/*",
     "qa:test": "jest",
     "db:push": "prisma db push",
-    "db:studio": "prisma studio",
-    "docs": "git log origin/main..HEAD --pretty=format:'%ad:: %s' > git-diff.txt && echo '\n----------\n' >> git-diff.txt && git diff origin/main...HEAD --color ':!*.lock' >> git-diff.txt"
+    "db:studio": "prisma studio"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

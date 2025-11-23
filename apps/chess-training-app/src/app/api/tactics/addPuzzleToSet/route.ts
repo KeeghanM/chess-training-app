@@ -52,7 +52,7 @@ export const POST = apiWrapper(async (req, { user }) => {
       })
     }
     console.log(
-      `[Puzzle ${puzzle.id}] already exists in set ${setId} — skipping insert`,
+      `[Puzzle ${puzzle.id}] already exists in set ${setId}  -  skipping insert`,
     )
     return successResponse('Puzzle already exists in this set', {})
   }

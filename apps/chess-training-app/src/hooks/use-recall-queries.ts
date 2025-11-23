@@ -11,8 +11,8 @@ export function useRecallQueries() {
   const useRandomRecallQuery = () => {
     return useRandomTrainingPuzzleQuery({
       rating: 1500,
-      count: '1',
-      themes: JSON.stringify(['middlegame']),
+      count: 1,
+      themes: ['middlegame'],
       themesType: 'ALL',
     })
   }

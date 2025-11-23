@@ -1,9 +1,10 @@
-import { IncreaseIncorrectSchema } from '~/schemas/tactics-mgmt'
-import { prisma } from '~/server/db'
-import { validateBody } from '~/utils/validators'
+import { IncreaseIncorrectSchema } from '@schemas/tactics-mgmt'
+import { apiWrapper } from '~/utils/api-wrapper'
+import { successResponse } from '~/utils/server-responses'
 
-import { apiWrapper } from '@utils/api-wrapper'
-import { successResponse } from '@utils/server-responses'
+import { prisma } from '@server/db'
+
+import { validateBody } from '@utils/validators'
 
 export const POST = apiWrapper(async (request, { user }) => {
   const { roundId } = await validateBody(request, IncreaseIncorrectSchema)

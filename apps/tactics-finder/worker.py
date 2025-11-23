@@ -135,7 +135,7 @@ def generate_and_send_puzzles(
                     f"for set {set_id} (last={last_puzzle_for_this_call})"
                 )
             except requests.Timeout:
-                print(f"⏱ Timeout sending puzzle {puzzle_id} to API — continuing")
+                print(f"⏱ Timeout sending puzzle {puzzle_id} to API  -  continuing")
             except requests.RequestException as e:
                 print(f"⚠ Error sending puzzle {puzzle_id} to API: {e}")
 

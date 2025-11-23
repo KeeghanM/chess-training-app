@@ -9,139 +9,138 @@ import ImageRowFull from '@components/_layouts/imageRowFull'
 import { TextWall } from '@components/_layouts/textWall'
 
 export const metadata = {
-  title:
-    'Revolutionize your Chess Training with Natural Play Learning - ChessTraining.app',
+  title: 'Natural Play Learning: The Context-Aware Chess Engine',
   description:
-    "Discover ChessTraining.app's Natural Play Learning, an innovative chess training method for faster learning and longer retention. Master chess openings like never before with our unique approach, combining the effectiveness of spaced repetition with real-game scenarios. Join us now and elevate your chess game",
+    "Discover ChessTraining.app's Natural Play Learning. A proprietary algorithm that adapts to your learning curve, allowing you to train openings like you play them.",
 }
 
 export default async function NaturalPlayLearningPage() {
   return (
     <>
-      <Hero title="Master Chess Openings with Natural Play Learning">
+      <Hero title="Learn Openings Like You Play Them">
         <Heading className="text-primary" as="h2">
-          Welcome to a Revolutionary Chess Training Experience
+          Real Game Simulation. Uninterrupted Flow. Powered by NPL.
         </Heading>
       </Hero>
       <BigText size="small">
-        At ChessTraining.app, we're redefining the way you learn chess openings.
-        Our unique Natural Play Learning method is here to transform your
-        understanding and mastery of chess openings.
+        Standard opening trainers are annoying. They either force you to read
+        the same comments a thousand times, or they drop you into a confusing
+        mid-game position. <strong>Natural Play Learning (NPL)</strong> is
+        different.
       </BigText>
-      <ImageRowFull
-        image={{
-          src: '/images/man_chess_computer_3.png',
-          alt: 'A person sat at a computer studying and improving their chess',
-        }}
-        imageSide="right"
-        heading="Courses Powered by Natural Play Learning"
-      >
-        <p>
-          Our Course Trainer is specifically designed to help you learn chess
-          openings. Faster. And better. With Natural Play Learning, you can
-          master chess openings like never before. You can bring your own PGN
-          files and transform them into interactive courses. Or you can explore
-          the courses shared by other users. We will also regularly publish
-          bespoke courses created by our in-house Masters and top players.
+
+      <div className="container mx-auto py-12 px-4 max-w-4xl text-center">
+        <Heading as="h3" className="mb-6">
+          The Problem with Other Apps
+        </Heading>
+        <p className="text-lg text-gray-700 mb-8">
+          Most platforms fall into two traps. Either they force you to re-read
+          "Welcome to the Course" comments on move 1 every single time, breaking
+          your concentration. Or, they try to "save time" by dropping you
+          straight into move 15, leaving you disoriented and lacking the context
+          of how you got there.
         </p>
-        <Heading as="h3">Here's what you can expect:</Heading>
-        <ul>
-          <li>
-            <strong>User-Centric:</strong> You can either create your own
-            courses or explore those shared by other users. Our team of in-house
-            Masters and top players also regularly publishes bespoke courses.
-          </li>
-          <li>
-            <strong>Dynamic and Interactive:</strong> Each course is structured
-            to help you learn and remember chess openings faster than ever
-            before, with an emphasis on practical understanding and retention.
-          </li>
-          <li>
-            <strong>Focusing on Real-Game Scenarios:</strong> The courses are
-            not just about memorising moves but understanding them in the
-            context of real-game scenarios.
-          </li>
-        </ul>
-        <Link href="/courses">
-          <Button variant="primary">Explore Courses</Button>
-        </Link>
-      </ImageRowFull>
-      <BigText color="dark">
-        Start improving your chess now -{' '}
-        <Link
-          className="cursor-pointer font-bold !text-orange-500 underline hover:no-underline"
-          href="/auth/signin"
-        >
-          Sign Up
-        </Link>{' '}
-        for free!
-      </BigText>
+      </div>
+
       <ImageRowFull
         image={{
           src: '/images/man_frustrated_3.png',
           alt: 'A man sat at a desk frustrated yet determined to improve his chess',
         }}
         imageSide="left"
-        heading="What is Natural Play Learning?"
+        heading="The Solution: Uninterrupted Flow"
       >
         <p>
-          Natural Play Learning is a groundbreaking technique developed
-          exclusively by ChessTraining.app. This method revolutionizes
-          traditional chess training by combining the effectiveness of Spaced
-          Repetition with a creative twist.
+          <strong>We treat training like a real game.</strong> You always start
+          from Move 1. This allows you to build the muscle memory required to
+          blitz out your opening moves over the board.
         </p>
         <p>
-          By ensuring you only "learn" a move once, and after that are shown it
-          directly in context as you would when playing, we not only cut down on
-          the time it takes to learn a move, but also ensure you retain it for
-          longer.
+          The difference is in the <strong>Flow</strong>. Once you have seen a
+          position's instructions once, we hide them. You simply play through
+          the moves naturally. We don't interrupt you, we don't pop up comments,
+          and we don't stop the game... unless you get it wrong.
         </p>
-        <Heading as="h3">Here's how it works:</Heading>
+        <Heading as="h3">How it works:</Heading>
         <ul>
           <li>
-            <strong>Learning Through Playing:</strong> Instead of monotonously
-            re-learning the same moves, you engage with them in a more natural,
-            game-like environment. Once you master a move, it becomes a core
-            part of your game play.
+            <strong>Learn Once, Then Play:</strong> Read the theory the first
+            time. After that, it's just you and the board.
           </li>
           <li>
-            <strong>Efficient and Engaging:</strong> As you play through your
-            openings, if you encounter a familiar position, you skip the basic
-            steps and directly engage with the new challenges. This approach not
-            only makes learning more efficient but also deeply engaging.
+            <strong>Correction on Demand:</strong> If you forget a move, the NPL
+            engine instantly pauses, brings back the lesson, and helps you
+            relearn.
           </li>
           <li>
-            <strong>Tailored to All Levels:</strong> Whether you're a beginner
-            or a seasoned Grandmaster, our Natural Play Learning method is
-            designed to cater to every skill level.
+            <strong>Drill Confidence:</strong> By playing the full line every
+            time without "training wheels," you gain the confidence that you
+            actually know the opening, not just the last 3 moves.
           </li>
         </ul>
       </ImageRowFull>
+
+      <ImageRowFull
+        image={{
+          src: '/images/man_chess_computer_3.png',
+          alt: 'A person sat at a computer studying and improving their chess',
+        }}
+        imageSide="right"
+        heading="Bring Your Own Repertoire"
+      >
+        <p>
+          The Course Trainer isn't just for our content. It's a powerful engine
+          for your own PGNs. Upload your repertoire from ChessBase or Lichess
+          and let our NPL engine transform it into an interactive training plan.
+        </p>
+        <Heading as="h3">Key Features:</Heading>
+        <ul>
+          <li>
+            <strong>Upload & Train:</strong> Transform static PGN files into
+            dynamic, spaced-repetition courses.
+          </li>
+          <li>
+            <strong>Community Library:</strong> Explore courses shared by other
+            users or created by our in-house Masters.
+          </li>
+          <li>
+            <strong>Focus on Understanding:</strong> Because you aren't
+            mindlessly clicking "Next" on text boxes, your brain stays engaged
+            for the moves that actually matter.
+          </li>
+        </ul>
+        <Link href="/courses">
+          <Button variant="primary">Explore Courses</Button>
+        </Link>
+      </ImageRowFull>
+
       <TextWall title="Why choose Natural Play Learning?">
         <ul>
           <li>
-            <strong>Faster Learning:</strong> Absorb and comprehend chess
-            openings more quickly than traditional methods
+            <strong>Real-Game Feel:</strong> Experience the opening flow exactly
+            as it happens over the board.
           </li>
           <li>
-            <strong>Longer Retention:</strong> Our method ensures that you
-            remember moves for a longer period
+            <strong>Muscle Memory:</strong> Repetitive drilling of the *start*
+            of the line ensures you never blank on move 4.
           </li>
           <li>
-            <strong>Efficient Training:</strong> Focus on learning new
-            strategies and tactics, not just repeating what you already know
+            <strong>Zero Distractions:</strong> No comments popping up to break
+            your immersion unless you need them.
           </li>
           <li>
-            <strong>Real-Game Feel:</strong> Experience the openings as they
-            would naturally occur in real chess games
+            <strong>Efficient Spaced Repetition:</strong> We schedule the lines
+            you struggle with, so you drill what matters.
           </li>
         </ul>
       </TextWall>
       <CtaRow
-        title="Ready to transform your chess game?"
-        cta={{ text: 'Sign Up Now', link: '/auth/signin' }}
+        title="Ready to upgrade your opening prep?"
+        cta={{ text: 'Start Training Free', link: '/auth/signin' }}
       >
-        <p>Sign up now for free and start your journey to chess mastery.</p>
+        <p>
+          Sign up now and experience the difference of an intelligent engine.
+        </p>
       </CtaRow>
     </>
   )

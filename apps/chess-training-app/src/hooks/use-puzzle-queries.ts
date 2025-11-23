@@ -47,7 +47,7 @@ export function usePuzzleQueries() {
           rating: filters?.rating || 1500, // Default rating
           count: 100, // Default count
           themesType: filters?.themes?.length ? 'include' : undefined,
-          themes: filters?.themes?.join(','),
+          themes: filters?.themes,
         }
 
         const response = await fetch('/api/puzzles/getPuzzles', {
@@ -67,13 +67,15 @@ export function usePuzzleQueries() {
   // Factory function for random training puzzle with parameters (used by all trainers)
   const useRandomTrainingPuzzleQuery = (params?: {
     rating?: number
-    themes?: string
+    themes?: string[]
     themesType?: string
-    count?: string
+    count?: number
     playerMoves?: number
+    enabled?: boolean
   }) =>
     useQuery({
       queryKey: ['random-training-puzzle', params],
+      enabled: params?.enabled !== false, // Default to true, only disable if explicitly false
       queryFn: async ({ queryKey }): Promise<TrainingPuzzle> => {
         const [, queryParams] = queryKey as [
           string,
@@ -82,8 +84,9 @@ export function usePuzzleQueries() {
                 rating?: number
                 themes?: string[]
                 themesType?: string
-                count?: string
+                count?: number
                 playerMoves?: number
+                enabled?: boolean
               }
             | undefined
           ),

@@ -15,11 +15,12 @@
     "qa:lint": "npx eslint .",
     "qa:lint:fix": "npx eslint . --fix",
     "qa:test": "npm run qa:test --workspaces --if-present",
-    "prepare": "husky"
+    "prepare": "husky",
+    "git-diff": "git log origin/main..HEAD --pretty=format:'%ad:: %s' > git-diff.txt && echo '\n----------\n' >> git-diff.txt && git diff origin/main...HEAD --color ':!*.lock' >> git-diff.txt"
   },
   "lint-staged": {
     "**/*": [
-      "yarn qa"
+      "yarn qa:format"
     ]
   },
   "devDependencies": {

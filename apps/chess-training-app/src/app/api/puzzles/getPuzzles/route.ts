@@ -10,7 +10,7 @@ import { validateBody } from '@utils/validators'
 
 const GetPuzzlesSchema = z.object({
   rating: z.number().min(500).max(3000),
-  themes: z.string().optional(),
+  themes: z.array(z.string()).optional(),
   count: z.number().min(1).max(500),
   playerMoves: z.number().optional(),
 })
@@ -32,7 +32,12 @@ export const POST = apiWrapper(async (request) => {
     count: count.toString(),
   }
 
-  if (themes) params = { ...params, themesType: 'OR', themes }
+  if (themes)
+    params = {
+      ...params,
+      themesType: 'OR',
+      themes: themes ? JSON.stringify(themes) : undefined,
+    }
   if (playerMoves) params = { ...params, playerMoves: playerMoves.toString() }
 
   const paramsString = new URLSearchParams(params).toString()

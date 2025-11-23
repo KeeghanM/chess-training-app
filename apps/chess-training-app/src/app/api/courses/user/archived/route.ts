@@ -10,7 +10,11 @@ export const GET = apiWrapper(async (_request, { user }) => {
       active: false,
     },
     orderBy: { lastTrained: 'desc' },
+    include: {
+      lines: true,
+      course: true,
+    },
   })
 
-  return successResponse('Archived courses retrieved', { courses })
+  return successResponse('Courses found', { courses })
 })

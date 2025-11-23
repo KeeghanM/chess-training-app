@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
-import type { Puzzle } from '@prisma/client'
+import type { Puzzle, TacticsSetRound } from '@prisma/client'
 import type { Move } from 'chess.js'
 import { Chess } from 'chess.js'
 import posthog from 'posthog-js'
@@ -18,6 +18,7 @@ import Spinner from '@components/general/Spinner'
 import XpTracker from '@components/general/XpTracker'
 
 import { queryClient } from '@hooks/query-client'
+import { useChessGame } from '@hooks/use-chess-game'
 import { usePuzzleQueries } from '@hooks/use-puzzle-queries'
 import { useSounds } from '@hooks/use-sound'
 import { useTacticsQueries } from '@hooks/use-tactics-queries'
@@ -65,6 +66,20 @@ export default function TacticsTrainer(props: {
   const { user } = useKindeBrowserClient()
   const router = useRouter()
 
+  // Hooks
+  const {
+    game,
+    gameReady,
+    position,
+    setPosition,
+    orientation,
+    setOrientation,
+    isInteractive: readyForInput,
+    setIsInteractive: setReadyForInput,
+    makeMove,
+    resetGame,
+  } = useChessGame()
+
   const { usePuzzleQuery } = usePuzzleQueries()
   const { increaseCorrect, increaseIncorrect, increaseTimeTaken, createRound } =
     useTacticsQueries()
@@ -74,20 +89,22 @@ export default function TacticsTrainer(props: {
   const { correctSound, incorrectSound } = useSounds()
 
   // Setup main state for the game/puzzles
-  const [currentRound, setCurrentRound] = useState(
-    props.set.rounds[props.set.rounds.length - 1]!,
+  const [currentRound, setCurrentRound] = useState<TacticsSetRound | undefined>(
+    props.set.rounds[props.set.rounds.length - 1],
   )
   const [CompletedPuzzles, setCompletedPuzzles] = useState(
-    currentRound.correct + currentRound.incorrect,
+    (currentRound?.correct ?? 0) + (currentRound?.incorrect ?? 0),
   )
-  const [game, setGame] = useState(new Chess())
-  const [gameReady, setGameReady] = useState(false)
-  const [orientation, setOrientation] = useState<'white' | 'black'>('white')
-  const [position, setPosition] = useState(game.fen())
 
   // Setup state for the game and training
-  const [readyForInput, setReadyForInput] = useState(false)
   const [puzzleFinished, setPuzzleFinished] = useState(false)
+
+  // Ensure we have a round to start with
+  useEffect(() => {
+    if (currentRound) {
+      setReadyForInput(true)
+    }
+  }, [currentRound])
   const [startTime, setStartTime] = useState(Date.now())
   const [sessionTimeStarted] = useState(new Date())
   const [puzzleStatus, setPuzzleStatus] = useState<
@@ -102,19 +119,6 @@ export default function TacticsTrainer(props: {
 
   const puzzleQuery = usePuzzleQuery(currentPuzzleId)
   const currentPuzzle = puzzleQuery.data
-
-  const makeMove = (move: string) => {
-    try {
-      game.move(move)
-      setPosition(game.fen())
-      // eslint-disable-next-line
-    } catch (e) {
-      // honestly, do nothing
-      // I dunno why this is firing, I replicated it once but it didn;t actually affect the usage
-      // I think it's to do with premoving and the chess.js library, but nothing actually breaks
-      // so this is just here to stop logging it as an "unhandled error"
-    }
-  }
 
   // Makes a move for the "opponent"
   const makeBookMove = () => {
@@ -151,6 +155,7 @@ export default function TacticsTrainer(props: {
       CompletedPuzzles >= props.set.size
     ) {
       // We have completed the set
+      if (!currentRound) return
 
       if (user) {
         try {
@@ -190,15 +195,17 @@ export default function TacticsTrainer(props: {
       setPuzzleFinished(true)
       setXpCounter(xpCounter + 1)
 
-      increaseCorrect.mutate({
-        roundId: currentRound.id,
-        currentStreak: currentStreak + 1,
-      })
-      setCurrentStreak(currentStreak + 1)
-      setCurrentRound({
-        ...currentRound,
-        correct: currentRound.correct + 1,
-      })
+      if (currentRound) {
+        increaseCorrect.mutate({
+          roundId: currentRound.id,
+          currentStreak: currentStreak + 1,
+        })
+        setCurrentStreak(currentStreak + 1)
+        setCurrentRound({
+          ...currentRound,
+          correct: currentRound.correct + 1,
+        })
+      }
 
       if (autoNext && puzzleStatus != 'incorrect') {
         await goToNextPuzzle()
@@ -246,16 +253,15 @@ export default function TacticsTrainer(props: {
       game.undo()
       setReadyForInput(false)
       await showIncorrectSequence()
-      increaseIncorrect.mutate({
-        roundId: currentRound.id,
-      })
-      setCurrentStreak(0)
-      setReadyForInput(true)
       setPuzzleFinished(true)
-      setCurrentRound({
-        ...currentRound,
-        incorrect: currentRound.incorrect + 1,
-      })
+      setCurrentStreak(0)
+      if (currentRound) {
+        increaseIncorrect.mutate({ roundId: currentRound.id })
+        setCurrentRound({
+          ...currentRound,
+          incorrect: currentRound.incorrect + 1,
+        })
+      }
 
       return false
     }
@@ -285,15 +291,8 @@ export default function TacticsTrainer(props: {
   useEffect(() => {
     // Create a new game from the puzzle whenever it changes
     if (!currentPuzzle) return
-    const newGame = new Chess(currentPuzzle.fen)
-    setGame(newGame)
-    setGameReady(false)
+    resetGame(currentPuzzle.fen)
   }, [currentPuzzle])
-
-  useEffect(() => {
-    // We need to ensure the game is set before we can make a move
-    setGameReady(true)
-  }, [game])
 
   useEffect(() => {
     // Now, whenever any of the elements associated with the game/puzzle
@@ -340,11 +339,13 @@ export default function TacticsTrainer(props: {
       return
     }
 
-    increaseTimeTaken.mutate({
-      roundId: currentRound.id,
-      timeTaken: (newTime - startTime) / 1000,
-      setId: props.set.id,
-    })
+    if (currentRound) {
+      increaseTimeTaken.mutate({
+        roundId: currentRound.id,
+        timeTaken: (newTime - startTime) / 1000,
+        setId: props.set.id,
+      })
+    }
   }, [puzzleFinished])
 
   // Last check to ensure we have a user
@@ -355,7 +356,7 @@ export default function TacticsTrainer(props: {
       <div className="flex gap-4 flex-wrap text-white text-lg mb-4">
         <p>
           <span className="font-bold">Round: </span>
-          {props.set.rounds.length}/8
+          {currentRound?.roundNumber ?? 1}/8
         </p>
         <p>
           <span className="font-bold">Completed: </span>
@@ -363,11 +364,13 @@ export default function TacticsTrainer(props: {
         </p>
         <p>
           <span className="font-bold">Accuracy: </span>
-          {currentRound.correct == 0 && currentRound.incorrect == 0
+          {(currentRound?.correct ?? 0) == 0 &&
+          (currentRound?.incorrect ?? 0) == 0
             ? '0'
             : Math.round(
-                (currentRound.correct /
-                  (currentRound.correct + currentRound.incorrect)) *
+                ((currentRound?.correct ?? 0) /
+                  ((currentRound?.correct ?? 0) +
+                    (currentRound?.incorrect ?? 0))) *
                   100,
               )}
           %

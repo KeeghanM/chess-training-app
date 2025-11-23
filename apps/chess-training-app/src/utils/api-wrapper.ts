@@ -53,6 +53,7 @@ export function apiWrapper(
 
       return await handler(request, { user, isPremium })
     } catch (error) {
+      console.error('API Wrapper Error:', error)
       if (error instanceof ErrorHandler) {
         return errorResponse(error.message, error.status)
       }
