@@ -7,8 +7,7 @@ import { ErrorResponse, PuzzleResult } from './puzzle.controller'
 const AdminController = async (req: Request, res: Response) => {
   if (
     env.NODE_ENV === 'production' &&
-    (req.headers['x-admin-secret'] === undefined ||
-      req.headers['x-admin-secret'] !== env.ADMIN_SECRET)
+    req.headers['x-admin-secret'] !== env.ADMIN_SECRET
   ) {
     res
       .status(400)
@@ -124,6 +123,11 @@ const AdminController = async (req: Request, res: Response) => {
         await new Promise((resolve) => setTimeout(resolve, 3000))
       }
     }
+
+    res.status(200).send({
+      processed: results.length,
+      results,
+    })
   } catch (err) {
     console.error(err)
     res
@@ -131,21 +135,15 @@ const AdminController = async (req: Request, res: Response) => {
       .send(
         ErrorResponse('Error fetching puzzles. Please contact the admin.', 500),
       )
-    return
-  }
-
-  if (connection) {
-    try {
-      await connection.close()
-    } catch (err) {
-      console.error('Error closing connection:', err)
+  } finally {
+    if (connection) {
+      try {
+        await connection.close()
+      } catch (err) {
+        console.error('Error closing connection:', err)
+      }
     }
   }
-
-  res.status(200).send({
-    processed: results.length,
-    results,
-  })
 }
 
 export { AdminController }
