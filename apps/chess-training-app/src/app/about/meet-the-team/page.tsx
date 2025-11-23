@@ -20,7 +20,7 @@ export default function MeetTheTeam() {
     {
       name: 'Keeghan McGarry',
       title: 'Founder & Lead Developer',
-      image: '/images/Keeghan.png',
+      image: '/images/keeghan.png',
       bio: "Keeghan is a passionate chess player and software developer, with a background in computer science and business management. A mostly self-taught chess player, prior to meeting Roger, he's currently working towards his National Master title.",
       links: [
         {

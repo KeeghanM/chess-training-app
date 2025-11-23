@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 
 import { IconName } from 'lucide-react/dynamic'
+import { getPostHogServer } from '~/server/posthog-server'
 
 import { prisma } from '@server/db'
 
@@ -16,7 +17,6 @@ import XpDisplay from '@components/dashboard/XpDisplay'
 import CalculateStreakBadge from '@utils/CalculateStreakBadge'
 import CalculateXpRank from '@utils/CalculateXpRank'
 import { getUserServer } from '@utils/getUserServer'
-import { PostHogClient } from '@utils/trackEventOnServer'
 
 export type Tool = {
   name: string
@@ -54,7 +54,7 @@ export default async function Dashboard() {
   const override = false // process.env.NODE_ENV === 'development'
 
   // Identify the user immediately upon signin
-  const posthog = PostHogClient()
+  const posthog = getPostHogServer()
   posthog.identify({
     distinctId: user.id,
     properties: {
