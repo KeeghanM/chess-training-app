@@ -1,12 +1,15 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
-export default function SortableItem(props: {
+export default function SortableItem({
+  id,
+  children,
+}: {
   id: string | number
   children: React.ReactNode
 }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: props.id })
+    useSortable({ id: id })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -16,7 +19,7 @@ export default function SortableItem(props: {
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      {props.children}
+      {children}
     </div>
   )
 }

@@ -2,11 +2,11 @@ import posthog from 'posthog-js'
 
 import { prisma } from '@server/db'
 
-import { StreakBadges } from '@utils/RanksAndBadges'
+import { STREAK_BADGES } from '@utils/ranks-and-badges'
 
-import { AddBadgeToUser } from './AddBadge'
+import { addBadgeToUser } from './add-badge-to-user'
 
-export async function UpdateStreak(userId: string) {
+export async function updateStreak(userId: string) {
   if (!userId) return
   try {
     const profile = await prisma.userProfile.findUnique({
@@ -28,7 +28,7 @@ export async function UpdateStreak(userId: string) {
       const trainedYesterday = await prisma.dayTrained.findFirst({
         where: {
           userId,
-          date: yesterdayString,
+          ...(yesterdayString && { date: yesterdayString }),
         },
       })
       if (trainedYesterday) {
@@ -52,10 +52,12 @@ export async function UpdateStreak(userId: string) {
     // If the best streak has been updated
     if (bestStreak > profile.bestStreak) {
       // Find the badge that matches the best streak
-      const badge = StreakBadges.find((badge) => badge.streak === currentStreak)
+      const badge = STREAK_BADGES.find(
+        (badge) => badge.streak === currentStreak,
+      )
       if (!badge) return
       // Add the badge to the user
-      await AddBadgeToUser(userId, badge.name)
+      await addBadgeToUser(userId, badge.name)
     }
 
     return

@@ -1,12 +1,9 @@
 import type { Line } from '@components/training/courses/create/parse/ParsePGNtoLineData'
 
-export default function PrettyPrintLine(props: { line: Line | string }) {
+export default function PrettyPrintLine({ line }: { line: Line | string }) {
   // Return the moves, with the move number bolded
   // and each move "set" (i.e one white one black) wrapped in a <p> tag
   // each move, and move number, needs separating by a space
-
-  const { line } = props
-
   if (typeof line === 'string') {
     return <span>{line}</span>
   }

@@ -2,7 +2,7 @@ import posthog from 'posthog-js'
 
 import { prisma } from '@server/db'
 
-export async function AddBadgeToUser(userId: string, name: string) {
+export async function addBadgeToUser(userId: string, name: string) {
   if (!name || !userId) return
 
   try {
@@ -33,7 +33,7 @@ export async function AddBadgeToUser(userId: string, name: string) {
   }
 }
 
-export async function RemoveBadgeFromUser(userId: string, name: string) {
+export async function removeBadgeFromUser(userId: string, name: string) {
   if (!name || !userId) return
 
   try {

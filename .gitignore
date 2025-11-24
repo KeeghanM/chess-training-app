@@ -16,7 +16,6 @@ next-env.d.ts
 /coverage
 /prisma/db.sqlite
 /prisma/db.sqlite-journal
-git-diff.txt
 venv/
 .ipynb_checkpoints/
 __pycache__/

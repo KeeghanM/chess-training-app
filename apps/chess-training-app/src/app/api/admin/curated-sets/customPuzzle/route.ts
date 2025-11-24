@@ -1,15 +1,12 @@
 import type { CustomPuzzle } from '@prisma/client'
 
 import { prisma } from '@server/db'
-import { getPostHogServer } from '@server/posthog-server'
 
-import { withAdminAuth } from '@utils/admin-auth'
-import { errorResponse, successResponse } from '@utils/server-responsses'
+import { apiWrapper } from '@utils/api-wrapper'
+import { successResponse } from '@utils/server-responses'
 
-const posthog = getPostHogServer()
-
-export const POST = withAdminAuth(async (request) => {
-  try {
+export const POST = apiWrapper(
+  async (request) => {
     const { puzzles } = (await request.json()) as {
       puzzles: CustomPuzzle[]
     }
@@ -18,22 +15,18 @@ export const POST = withAdminAuth(async (request) => {
       data: puzzles,
     })
 
-    return successResponse('Puzzles created', { created: puzzles.length }, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    return errorResponse('Internal Server Error', 500)
-  }
-})
+    return successResponse('Puzzles created', { created: puzzles.length })
+  },
+  { needsAdmin: true },
+)
 
-export const GET = withAdminAuth(async () => {
-  try {
+export const GET = apiWrapper(
+  async () => {
     const puzzles = await prisma.customPuzzle.findMany()
     const trainingPuzzles = puzzles.map((p) => {
       return { ...p, puzzleid: p.id, moves: p.moves.split(',') }
     })
-    return successResponse('Puzzles found', { puzzles: trainingPuzzles }, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    return errorResponse('Internal Server Error', 500)
-  }
-})
+    return successResponse('Puzzles found', { puzzles: trainingPuzzles })
+  },
+  { needsAdmin: true },
+)

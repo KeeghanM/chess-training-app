@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import type { TacticsSet, TacticsSetRound } from '@prisma/client'
 import * as AlertDialog from '@radix-ui/react-alert-dialog'
+import { CreateTacticsSetSchema } from '@schemas/tactics'
 import { Plus } from 'lucide-react'
 import posthog from 'posthog-js'
 import Select from 'react-select'
@@ -21,10 +22,10 @@ import Spinner from '@components/general/Spinner'
 
 import { useTacticsQueries } from '@hooks/use-tactics-queries'
 
-import trackEventOnClient from '@utils/trackEventOnClient'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 export type PrismaTacticsSet = TacticsSet & { rounds: TacticsSetRound[] }
-interface TacticsSetCreatorProps {
+type TacticsSetCreatorProps = {
   setCount: number
   maxSets: number
   hasUnlimitedSets: boolean
@@ -76,15 +77,15 @@ export default function TacticsSetCreator({
   const difficultyAdjuster = (d: number) => {
     return d == 0 ? 0.9 : d == 1 ? 1 : 1.2
   }
-  const GetPuzzlesForSet = async (
+  const getPuzzlesForSet = async (
     rating: number,
     count: number,
     themes: string[],
   ) => {
     const params = {
       rating: Math.round(rating * difficultyAdjuster(difficulty)),
-      count: count.toString(),
-      themes: themes.length > 0 ? JSON.stringify(themes) : undefined,
+      count,
+      themes: themes.length > 0 ? themes : [],
     }
 
     try {
@@ -114,21 +115,6 @@ export default function TacticsSetCreator({
   const validForm = () => {
     setMessage('')
 
-    if (name.length < 5) {
-      setMessage('Name must be at least 5 characters')
-      return false
-    }
-    if (name.length > 150) {
-      setMessage('Name must be below 150 characters')
-      return false
-    }
-    // Regex to check for potentially risky special chars
-    const regex = /[@?#%^\*]/g
-    if (regex.test(name)) {
-      setMessage('Name must not include special characters')
-      return false
-    }
-
     if (createFromPgn) {
       if (pgnInput.length < 100) {
         setMessage('PGN must be at least 100 characters long')
@@ -139,17 +125,20 @@ export default function TacticsSetCreator({
         setMessage('Invalid PGN format')
         return false
       }
+      return true
     } else {
-      if (rating < 500 || rating > 3000) {
-        setMessage('Rating must be between 500 & 3000')
+      const validation = CreateTacticsSetSchema.safeParse({
+        name,
+        rating,
+        puzzleIds: Array(size).fill({ puzzleid: 'placeholder' }),
+      })
+
+      if (!validation.success) {
+        setMessage(validation.error?.issues[0]?.message ?? 'Invalid input')
         return false
       }
-      if (size < 20 || size > 500) {
-        setMessage('Set must be between 20 & 500 Puzzles')
-        return false
-      }
+      return true
     }
-    return true
   }
   const createSet = async () => {
     if (!validForm()) {
@@ -167,7 +156,7 @@ export default function TacticsSetCreator({
           isPGN: true,
         })
       } else {
-        const puzzles = await GetPuzzlesForSet(rating, size, themesList)
+        const puzzles = await getPuzzlesForSet(rating, size, themesList)
         if (!puzzles || puzzles.length == 0) {
           setMessage('Failed to fetch puzzles. Please try different criteria.')
           return
@@ -303,19 +292,19 @@ export default function TacticsSetCreator({
                         <label>Difficulty</label>
                         <div className="flex gap-2 flex-row md:gap-4">
                           <Button
-                            variant={difficulty == 0 ? 'success' : undefined}
+                            {...(difficulty == 0 ? { variant: 'success' } : {})}
                             onClick={() => setDifficulty(0)}
                           >
                             Easy
                           </Button>
                           <Button
-                            variant={difficulty == 1 ? 'success' : undefined}
+                            {...(difficulty == 1 ? { variant: 'success' } : {})}
                             onClick={() => setDifficulty(1)}
                           >
                             Medium
                           </Button>
                           <Button
-                            variant={difficulty == 2 ? 'success' : undefined}
+                            {...(difficulty == 2 ? { variant: 'success' } : {})}
                             onClick={() => setDifficulty(2)}
                           >
                             Hard

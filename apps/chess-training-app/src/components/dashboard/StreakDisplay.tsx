@@ -2,7 +2,7 @@
 
 import { Tooltip, TooltipContent, TooltipTrigger } from '../_elements/tooltip'
 
-interface StreakDisplayProps {
+type StreakDisplayProps = {
   data: {
     trainedToday: boolean
     currentStreak: number

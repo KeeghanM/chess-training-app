@@ -10,9 +10,23 @@
     "isolatedModules": true,
     /* Strictness */
     "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
     "noUncheckedIndexedAccess": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "checkJs": true,
     "useUnknownInCatchVariables": true,
+    "forceConsistentCasingInFileNames": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+
     /* Bundled projects */
     "lib": ["dom", "dom.iterable", "ES2022"],
     "noEmit": true,
@@ -34,7 +48,8 @@
       "@auth/*": ["./src/app/auth/*"],
       "@hooks/*": ["./src/hooks/*"],
       "@stores/*": ["./src/stores/*"],
-      "@utils/*": ["./src/utils/*"]
+      "@utils/*": ["./src/utils/*"],
+      "@schemas/*": ["./src/schemas/*"]
     }
   },
   "include": [
@@ -42,7 +57,9 @@
     "next-env.d.ts",
     "./src/**/*",
     ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
+    ".next/dev/types/**/*.ts",
+    "tests/BoardGameplay.test.tsx",
+    "tests/AccountEditing.test.tsx"
   ],
   "exclude": ["node_modules"]
 }

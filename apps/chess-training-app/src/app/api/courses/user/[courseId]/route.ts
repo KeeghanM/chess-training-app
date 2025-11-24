@@ -1,27 +1,19 @@
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-
 import { prisma } from '@server/db'
-import { getPostHogServer } from '@server/posthog-server'
 
-import { errorResponse, successResponse } from '@utils/server-responsses'
-
-const posthog = getPostHogServer()
+import { apiWrapper } from '@utils/api-wrapper'
+import { BadRequest, NotFound } from '@utils/errors'
+import { successResponse } from '@utils/server-responses'
 
 export async function GET(
-  request: Request,
+  _request: Request,
   props: { params: Promise<{ courseId: string }> },
 ) {
-  const params = await props.params
-  const session = getKindeServerSession()
-  if (!session) return errorResponse('Unauthorized', 401)
-  const user = await session.getUser()
-  if (!user) return errorResponse('Unauthorized', 401)
+  return apiWrapper(async (_req, { user }) => {
+    const params = await props.params
+    const { courseId } = params
 
-  const { courseId } = params as { courseId: string }
+    if (!courseId) throw new BadRequest('Missing fields')
 
-  if (courseId === undefined) return errorResponse('Missing fields', 400)
-
-  try {
     const course = await prisma.userCourse.findUnique({
       where: {
         id: courseId,
@@ -56,34 +48,25 @@ export async function GET(
       },
     })
 
-    if (!course) return errorResponse('Course not found', 404)
+    if (!course) throw new NotFound('Course not found')
 
-    return successResponse(
-      'Course Fetched',
-      { course, nextReview: nextReview?.revisionDate },
-      200,
-    )
-  } catch (e) {
-    posthog.captureException(e)
-    return errorResponse('Internal Server Error', 500)
-  }
+    return successResponse('Course Fetched', {
+      course,
+      nextReview: nextReview?.revisionDate,
+    })
+  })(_request)
 }
 
 export async function DELETE(
-  request: Request,
+  _request: Request,
   props: { params: Promise<{ courseId: string }> },
 ) {
-  const params = await props.params
-  const session = getKindeServerSession()
-  if (!session) return errorResponse('Unauthorized', 401)
-  const user = await session.getUser()
-  if (!user) return errorResponse('Unauthorized', 401)
+  return apiWrapper(async (_req, { user }) => {
+    const params = await props.params
+    const { courseId } = params
 
-  const { courseId } = params as { courseId: string }
+    if (!courseId) throw new BadRequest('Missing fields')
 
-  if (courseId === undefined) return errorResponse('Missing fields', 400)
-
-  try {
     // if user is creator and course is unpublished, delete everything
     // if user is creator and course is published, set userCourse to inactive and remove stats
     // if user is not owner, set userCourse to inactive and remove stats
@@ -97,7 +80,7 @@ export async function DELETE(
       },
     })
 
-    if (!userCourse) return errorResponse('Course not found', 404)
+    if (!userCourse) throw new NotFound('Course not found')
 
     const isCreator = userCourse.course.createdBy === user.id
     const isPublished = userCourse.course.published
@@ -138,9 +121,6 @@ export async function DELETE(
       })
     }
 
-    return successResponse('Course archived', {}, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    return errorResponse('Internal Server Error', 500)
-  }
+    return successResponse('Course archived', {})
+  })(_request)
 }

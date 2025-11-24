@@ -10,10 +10,12 @@ import Button from '@components/_elements/button'
 import Heading from '@components/_elements/heading'
 import Spinner from '@components/general/Spinner'
 
-import GenerateSlug from '@utils/GenerateSlug'
-import type { ResponseJson } from '@utils/server-responsses'
+import generateSlug from '@utils/generate-slug'
+import type { ResponseJson } from '@utils/server-responses'
 
-export default function SetCreator(props: {
+export default function SetCreator({
+  onCreate,
+}: {
   onCreate: (set: CuratedSet) => void
 }) {
   // Form
@@ -24,7 +26,7 @@ export default function SetCreator(props: {
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const slug = GenerateSlug(name)
+      const slug = generateSlug(name)
       const resp = await fetch('/api/admin/curated-sets', {
         method: 'POST',
         body: JSON.stringify({ name, slug }),
@@ -33,7 +35,7 @@ export default function SetCreator(props: {
       if (json.message != 'Set created') throw new Error(json.message)
 
       const newSet = json.data!.set as CuratedSet
-      props.onCreate(newSet)
+      onCreate(newSet)
       close()
     },
   })

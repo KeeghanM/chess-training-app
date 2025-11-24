@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation'
 
 import { IconName } from 'lucide-react/dynamic'
-import { getPostHogServer } from '~/server/posthog-server'
 
 import { prisma } from '@server/db'
+import { getPostHogServer } from '@server/posthog-server'
 
 import Backdrop from '@components/_elements/backdrop'
 import Container from '@components/_elements/container'
@@ -14,9 +14,9 @@ import StreakDisplay from '@components/dashboard/StreakDisplay'
 import ToolCard from '@components/dashboard/ToolCard'
 import XpDisplay from '@components/dashboard/XpDisplay'
 
-import CalculateStreakBadge from '@utils/CalculateStreakBadge'
-import CalculateXpRank from '@utils/CalculateXpRank'
-import { getUserServer } from '@utils/getUserServer'
+import calculateStreakBadge from '@utils/calculate-streak-badge'
+import calculateXpRank from '@utils/calculate-xp-rank'
+import { getUserServer } from '@utils/get-user-server'
 
 export type Tool = {
   name: string
@@ -182,14 +182,14 @@ export default async function Dashboard() {
       <Backdrop />
       <Container size="extra-wide" className="flex flex-col gap-6">
         <div className="flex gap-4 items-center mx-auto">
-          <StreakDisplay data={CalculateStreakBadge(profile)} />
+          <StreakDisplay data={calculateStreakBadge(profile)} />
           <PremiumDisplay isPremium={isPremium} />
         </div>
         <Heading className="text-white mx-auto" as="h1">
           Welcome back, {user.given_name ?? profile.username ?? user.email}
         </Heading>
         <div className="flex justify-center gap-2 text-white md:gap-6 text-center">
-          <XpDisplay data={CalculateXpRank(profile.experience)} />
+          <XpDisplay data={calculateXpRank(profile.experience)} />
           <BadgeDisplay userBadgeCount={badges.length} />
         </div>
       </Container>

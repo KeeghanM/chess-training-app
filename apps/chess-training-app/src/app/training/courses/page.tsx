@@ -5,7 +5,7 @@ import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import CourseList from '@components/training/courses/list/CoursesList'
 
-import { getUserServer } from '@utils/getUserServer'
+import { getUserServer } from '@utils/get-user-server'
 
 export const metadata = {
   title: 'Your Courses - ChessTraining.app',

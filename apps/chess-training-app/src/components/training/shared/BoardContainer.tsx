@@ -2,7 +2,9 @@
 
 import { type ReactNode, useEffect, useRef } from 'react'
 
-interface BoardContainerProps {
+import { useAppStore } from '@stores/app-store'
+
+type BoardContainerProps = {
   children: ReactNode
 }
 
@@ -13,9 +15,15 @@ interface BoardContainerProps {
  */
 export default function BoardContainer({ children }: BoardContainerProps) {
   const divRef = useRef<HTMLDivElement>(null)
+  const { preferences, setPreferences } = useAppStore()
 
   useEffect(() => {
     if (!divRef.current) return
+
+    if (preferences.boardSize) {
+      divRef.current.style.width = `${preferences.boardSize}px`
+      divRef.current.style.maxHeight = `${preferences.boardSize}px`
+    }
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
@@ -25,6 +33,8 @@ export default function BoardContainer({ children }: BoardContainerProps) {
         if (el.offsetHeight > el.offsetWidth) {
           el.style.maxHeight = `${el.offsetWidth}px`
         }
+
+        setPreferences({ boardSize: el.offsetWidth })
       }
     })
 

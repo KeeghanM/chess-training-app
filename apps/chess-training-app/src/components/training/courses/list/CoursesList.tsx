@@ -14,8 +14,11 @@ import { useCourseQueries } from '@hooks/use-course-queries'
 import PremiumSubscribe from '../../../ecomm/PremiumSubscribe'
 import CourseListItem from './CourseListItem'
 
-export default function CourseList(props: { hasUnlimitedCourses: boolean }) {
-  const { hasUnlimitedCourses } = props
+export default function CourseList({
+  hasUnlimitedCourses,
+}: {
+  hasUnlimitedCourses: boolean
+}) {
   const maxCourses = 2
 
   // React Query hooks
@@ -40,10 +43,12 @@ export default function CourseList(props: { hasUnlimitedCourses: boolean }) {
           <PremiumSubscribe
             title="Create a new course"
             trigger={
-              <Button variant="primary">
-                <PlusIcon />
-                Create New Course
-              </Button>
+              <div>
+                <Button variant="primary">
+                  <PlusIcon />
+                  Create New Course
+                </Button>
+              </div>
             }
           >
             <p>
@@ -99,11 +104,11 @@ export default function CourseList(props: { hasUnlimitedCourses: boolean }) {
                 (b.lastTrained ? new Date(b.lastTrained).getTime() : 0) -
                   (a.lastTrained ? new Date(a.lastTrained).getTime() : 0),
             )
-            .map((course, index) => (
+            .map((course) => (
               <CourseListItem
-                key={index}
+                key={course.id}
                 courseId={course.id}
-                courseName={course.course.courseName}
+                courseName={course.course?.courseName ?? 'Unknown Course'}
                 update={() => refetch()}
                 hasPremium={hasUnlimitedCourses}
               />

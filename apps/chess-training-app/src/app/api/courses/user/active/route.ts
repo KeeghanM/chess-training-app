@@ -1,32 +1,20 @@
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { apiWrapper } from '~/utils/api-wrapper'
+import { successResponse } from '~/utils/server-responses'
 
 import { prisma } from '@server/db'
-import { getPostHogServer } from '@server/posthog-server'
 
-import { errorResponse, successResponse } from '@utils/server-responsses'
+export const GET = apiWrapper(async (_request, { user }) => {
+  const courses = await prisma.userCourse.findMany({
+    where: {
+      userId: user.id,
+      active: true,
+    },
+    include: {
+      lines: true,
+      course: true,
+    },
+    orderBy: { lastTrained: 'desc' },
+  })
 
-const posthog = getPostHogServer()
-
-export async function GET() {
-  const session = getKindeServerSession()
-  if (!session) return errorResponse('Unauthorized', 401)
-  const user = await session.getUser()
-  if (!user) return errorResponse('Unauthorized', 401)
-
-  try {
-    const courses = await prisma.userCourse.findMany({
-      where: {
-        userId: user.id,
-        active: true,
-      },
-      include: {
-        course: true,
-      },
-    })
-
-    return successResponse('Courses found', { courses }, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    return errorResponse('Internal Server Error', 500)
-  }
-}
+  return successResponse('Active courses retrieved', { courses })
+})

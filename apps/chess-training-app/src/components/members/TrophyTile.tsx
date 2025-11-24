@@ -1,20 +1,24 @@
 import Link from 'next/link'
 
-import CalculateXpRank from '@utils/CalculateXpRank'
+import calculateXpRank from '@utils/calculate-xp-rank'
 
 import Heading from '../_elements/heading'
 
-export default function TrophyTile(props: {
+export default function TrophyTile({
+  placement,
+  username,
+  xp,
+  published,
+}: {
   placement: number
   username: string
   xp: number
   published: boolean
 }) {
-  const { placement, username, xp, published } = props
-  const { currentXp, rank, nextRank } = CalculateXpRank(xp)
+  const { currentXp, rank, nextRank } = calculateXpRank(xp)
 
-  const Trophy = (props: { placement: number }) => {
-    switch (props.placement) {
+  const Trophy = () => {
+    switch (placement) {
       case 1:
         return (
           <svg
@@ -171,7 +175,7 @@ export default function TrophyTile(props: {
     >
       <div className="bg-card-light shadow rounded-lg p-4 flex flex-col gap-2 items-center">
         <div>
-          <Trophy placement={placement} />
+          <Trophy />
         </div>
         {published ? (
           <Link href={`/members/${username}`}>

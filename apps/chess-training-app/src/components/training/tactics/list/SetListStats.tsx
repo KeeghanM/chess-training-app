@@ -7,10 +7,9 @@ import * as AlertDialog from '@radix-ui/react-alert-dialog'
 import Button from '@components/_elements/button'
 import type { PrismaTacticsSet } from '@components/training/tactics/create/TacticsSetCreator'
 
-import toHHMMSS from '@utils/toHHMMSS'
+import toHHMMSS from '@utils/to-HHMMSS'
 
-export default function SetListStats(props: { set: PrismaTacticsSet }) {
-  const { set } = props
+export default function SetListStats({ set }: { set: PrismaTacticsSet }) {
   const [open, setOpen] = useState(false)
 
   const close = () => {

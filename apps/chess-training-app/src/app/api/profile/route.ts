@@ -1,20 +1,14 @@
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { AccountSchema } from '@schemas/account'
+import { addBadgeToUser } from '~/app/api/_business-logic/user/add-badge-to-user'
 
 import { prisma } from '@server/db'
-import { getPostHogServer } from '@server/posthog-server'
 
-import { AddBadgeToUser } from '@utils/AddBadge'
-import { errorResponse, successResponse } from '@utils/server-responsses'
+import { apiWrapper } from '@utils/api-wrapper'
+import { BadRequest } from '@utils/errors'
+import { successResponse } from '@utils/server-responses'
+import { validateBody } from '@utils/validators'
 
-const posthog = getPostHogServer()
-
-export async function PUT(request: Request) {
-  const session = getKindeServerSession()
-  if (!session) return errorResponse('Unauthorized', 401)
-
-  const user = await session.getUser()
-  if (!user) return errorResponse('Unauthorized', 401)
-
+export const PUT = apiWrapper(async (request, { user }) => {
   const {
     username,
     fullname,
@@ -24,92 +18,42 @@ export async function PUT(request: Request) {
     puzzleRating,
     difficulty,
     publicProfile,
-  } = (await request.json()) as {
-    username: string
-    fullname: string
-    description: string
-    highestOnlineRating: number
-    highestOTBRating: number
-    puzzleRating: number
-    difficulty: number
-    publicProfile: boolean
-  }
+  } = await validateBody(request, AccountSchema)
 
-  if (
-    !username ||
-    !puzzleRating ||
-    !difficulty ||
-    publicProfile === undefined
-  ) {
-    return errorResponse('Missing required fields', 400)
-  }
+  // Additional business logic validation (that Zod might miss or is too complex)
+  // Note: Zod handles most of the length/regex checks now.
+  // We keep the username uniqueness check below.
 
-  const nameRegex = /[@?#%^\*]/g
-  if (
-    username.length < 5 ||
-    username.length > 150 ||
-    nameRegex.test(username)
-  ) {
-    return errorResponse('Invalid username', 400)
-  }
+  const existingUsername = await prisma.userProfile.findUnique({
+    where: {
+      username,
+    },
+  })
+  if (existingUsername && existingUsername.id !== user.id)
+    throw new BadRequest('Username already exists')
 
-  if (fullname && (fullname.length > 150 || nameRegex.test(fullname))) {
-    return errorResponse('Invalid fullname', 400)
-  }
+  const profile = await prisma.userProfile.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      username,
+      ...(fullname && { fullName: fullname }),
+      ...(description && { description }),
+      ...(highestOnlineRating && { highestOnlineRating }),
+      ...(highestOTBRating && { highestOTBRating }),
+      ...(puzzleRating && { puzzleRating }),
+      difficulty,
+      public: publicProfile,
+    },
+  })
 
-  if (description.length > 1000) {
-    return errorResponse('Invalid description', 400)
-  }
+  if (highestOTBRating && highestOTBRating > 0)
+    await addBadgeToUser(user.id, 'OTB Player')
+  if (highestOnlineRating && highestOnlineRating > 0)
+    await addBadgeToUser(user.id, 'Online Player')
+  if (description && description.length > 0)
+    await addBadgeToUser(user.id, 'Well Known')
 
-  if (highestOnlineRating < 0 || highestOnlineRating > 3500) {
-    return errorResponse('Invalid highestOnlineRating', 400)
-  }
-
-  if (highestOTBRating < 0 || highestOTBRating > 3500) {
-    return errorResponse('Invalid highestOTBRating', 400)
-  }
-
-  if (puzzleRating < 0 || puzzleRating > 3500) {
-    return errorResponse('Invalid puzzleRating', 400)
-  }
-
-  if (difficulty < 0 || difficulty > 2) {
-    return errorResponse('Invalid difficulty', 400)
-  }
-
-  try {
-    const existingUsername = await prisma.userProfile.findUnique({
-      where: {
-        username,
-      },
-    })
-    if (existingUsername && existingUsername.id !== user.id)
-      return errorResponse('Username already exists', 400)
-
-    const profile = await prisma.userProfile.update({
-      where: {
-        id: user.id,
-      },
-      data: {
-        username,
-        fullName: fullname,
-        description,
-        highestOnlineRating,
-        highestOTBRating,
-        puzzleRating,
-        difficulty,
-        public: publicProfile,
-      },
-    })
-
-    if (highestOTBRating > 0) await AddBadgeToUser(user.id, 'OTB Player')
-    if (highestOnlineRating > 0) await AddBadgeToUser(user.id, 'Online Player')
-    if (description.length > 0) await AddBadgeToUser(user.id, 'Well Known')
-
-    return successResponse('Profile Updated', { profile }, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    if (e instanceof Error) return errorResponse(e.message, 500)
-    else return errorResponse('Unknown error', 500)
-  }
-}
+  return successResponse('Profile Updated', { profile })
+})

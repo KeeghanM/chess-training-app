@@ -1,37 +1,27 @@
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { UpdateCourseStatsSchema } from '@schemas/courses-mgmt'
 
 import { prisma } from '@server/db'
-import { getPostHogServer } from '@server/posthog-server'
 
-import { errorResponse, successResponse } from '@utils/server-responsses'
-
-const posthog = getPostHogServer()
+import { apiWrapper } from '@utils/api-wrapper'
+import { BadRequest } from '@utils/errors'
+import { successResponse } from '@utils/server-responses'
+import { validateBody } from '@utils/validators'
 
 export async function POST(
   request: Request,
   props: { params: Promise<{ courseId: string; lineId: string }> },
 ) {
-  const params = await props.params
-  const session = getKindeServerSession()
-  if (!session) return errorResponse('Unauthorized', 401)
-  const user = await session.getUser()
-  if (!user) return errorResponse('Unauthorized', 401)
+  return apiWrapper(async (req, { user }) => {
+    const params = await props.params
+    const { courseId, lineId } = params
 
-  const { courseId, lineId } = params
-  const { lineCorrect, revisionDate } = (await request.json()) as {
-    lineCorrect: boolean
-    revisionDate: Date
-  }
+    const { lineCorrect, revisionDate } = await validateBody(
+      req,
+      UpdateCourseStatsSchema,
+    )
 
-  if (
-    courseId === undefined ||
-    lineId === undefined ||
-    lineCorrect === undefined ||
-    revisionDate === undefined
-  )
-    return errorResponse('Missing fields', 400)
+    if (!courseId || !lineId) throw new BadRequest('Missing fields')
 
-  try {
     const line = await prisma.userLine.update({
       where: {
         id: parseInt(lineId),
@@ -92,10 +82,6 @@ export async function POST(
       },
     })
 
-    return successResponse('Stats updated', { line }, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    if (e instanceof Error) return errorResponse(e.message, 500)
-    else return errorResponse('Unknown error', 500)
-  }
+    return successResponse('Stats updated', { line })
+  })(request)
 }

@@ -12,8 +12,8 @@ import Heading from '@components/_elements/heading'
 
 import { useCourseQueries } from '@hooks/use-course-queries'
 
-import GenerateSlug from '@utils/GenerateSlug'
-import trackEventOnClient from '@utils/trackEventOnClient'
+import generateSlug from '@utils/generate-slug'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 import DetailsForm from './DetailsForm'
 import GroupSelector from './GroupSelector'
@@ -152,7 +152,7 @@ function transformCourseData(group: string, lines: Line[], courseName: string) {
 
   return {
     courseName,
-    slug: GenerateSlug(courseName),
+    slug: generateSlug(courseName),
     groupNames,
     lines: processedLines,
   }

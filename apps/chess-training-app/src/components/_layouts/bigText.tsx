@@ -1,12 +1,12 @@
 import Container from '@components/_elements/container'
 
-interface BigTextProps {
+type BigTextProps = {
   color?: 'accent' | 'dark'
   size?: 'small' | 'medium' | 'large'
   children: React.ReactNode
 }
 
-export default function BigText(props: BigTextProps) {
+export default function BigText({ color, size, children }: BigTextProps) {
   const colourString = {
     accent: 'bg-primary',
     dark: 'bg-bg-light',
@@ -16,21 +16,21 @@ export default function BigText(props: BigTextProps) {
     <div
       className={
         'flex w-full items-center justify-center py-12 md:py-16 ' +
-        colourString[props.color ?? 'dark']
+        colourString[color ?? 'dark']
       }
     >
       <Container>
         <p
           className={
-            'text-center font-bold !leading-tight text-white' +
-            (props.size === 'small'
+            'text-center font-bold leading-tight! text-white' +
+            (size === 'small'
               ? ' text-xl md:text-2xl'
-              : props.size === 'medium'
+              : size === 'medium'
                 ? ' text-xl md:text-3xl'
                 : ' text-xl md:text-3xl lg:text-4xl')
           }
         >
-          {props.children}
+          {children}
         </p>
       </Container>
     </div>

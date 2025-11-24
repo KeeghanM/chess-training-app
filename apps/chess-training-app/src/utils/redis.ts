@@ -20,7 +20,7 @@ function getRedis(): Redis {
   return redis
 }
 
-interface PgnPayload {
+type PgnPayload = {
   pgn: string
   userId: string
   setId: string

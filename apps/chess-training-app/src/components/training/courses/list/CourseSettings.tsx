@@ -23,15 +23,17 @@ import {
   useCourseQueries,
 } from '@hooks/use-course-queries'
 
-import trackEventOnClient from '@utils/trackEventOnClient'
+import trackEventOnClient from '@utils/track-event-on-client'
 
-interface CourseSettingsProps {
+type CourseSettingsProps = {
   userCourse: PrismaUserCourse
   update: () => void
 }
 
-export default function CourseSettings(props: CourseSettingsProps) {
-  const { userCourse, update } = props
+export default function CourseSettings({
+  userCourse,
+  update,
+}: CourseSettingsProps) {
   const { user } = useKindeBrowserClient()
   const [open, setOpen] = useState(false)
 

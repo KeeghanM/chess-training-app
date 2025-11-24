@@ -1,6 +1,6 @@
 'use client'
 
-interface ButtonProps {
+type ButtonProps = {
   onClick?: () => void
   variant?:
     | 'default'

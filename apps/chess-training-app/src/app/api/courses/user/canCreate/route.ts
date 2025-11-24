@@ -1,36 +1,18 @@
-import { env } from '~/env'
-
 import { prisma } from '@server/db'
-import { getPostHogServer } from '@server/posthog-server'
 
-import { getUserServer } from '@utils/getUserServer'
-import { errorResponse, successResponse } from '@utils/server-responsses'
+import { apiWrapper } from '@utils/api-wrapper'
+import { successResponse } from '@utils/server-responses'
 
-const posthog = getPostHogServer()
+export const GET = apiWrapper(async (_request, { user, isPremium }) => {
+  const courseCount = await prisma.userCourse.count({
+    where: {
+      userId: user.id,
+      active: false,
+    },
+  })
 
-export async function GET() {
-  const { user, isPremium } = await getUserServer()
-  if (!user) return errorResponse('Unauthorized', 401)
+  const maxCourses = Number(process.env.NEXT_PUBLIC_MAX_COURSES) || 10
+  const canCreate = isPremium || courseCount < maxCourses
 
-  const maxCourses = env.NEXT_PUBLIC_MAX_COURSES
-  const hasUnlimitedCourses = isPremium ?? false
-
-  try {
-    const courses = await prisma.userCourse.findMany({
-      where: {
-        userId: user.id,
-        active: true,
-      },
-      include: {
-        course: true,
-      },
-    })
-
-    const canCreate = hasUnlimitedCourses || courses.length < maxCourses
-
-    return successResponse('Courses found', { canCreate }, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    return errorResponse('Internal Server Error', 500)
-  }
-}
+  return successResponse('Check complete', { canCreate })
+})

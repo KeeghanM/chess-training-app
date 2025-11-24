@@ -1,36 +1,25 @@
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { z } from 'zod'
 import { env } from '~/env'
-
-import { getPostHogServer } from '@server/posthog-server'
 
 import type { TrainingPuzzle } from '@components/training/tactics/TacticsTrainer'
 
-import { errorResponse, successResponse } from '@utils/server-responsses'
+import { apiWrapper } from '@utils/api-wrapper'
+import { InternalError } from '@utils/errors'
+import { successResponse } from '@utils/server-responses'
+import { validateBody } from '@utils/validators'
 
-const posthog = getPostHogServer()
+const GetPuzzlesSchema = z.object({
+  rating: z.number().min(500).max(3000),
+  themes: z.array(z.string()).optional(),
+  count: z.number().min(1).max(500),
+  playerMoves: z.number().optional(),
+})
 
-export async function POST(request: Request) {
-  const session = getKindeServerSession()
-  if (!session) return errorResponse('Unauthorized', 401)
-
-  const user = await session.getUser()
-  if (!user) return errorResponse('Unauthorized', 401)
-
-  const { rating, themes, count, playerMoves } = (await request.json()) as {
-    rating: number
-    themes: string
-    count: number
-    playerMoves: number
-  }
-
-  if (!rating || count == undefined)
-    return errorResponse('Missing required fields', 400)
-
-  if (count < 1 || count > 500)
-    return errorResponse('Count must be between 1 and 500', 400)
-
-  if (rating < 500 || rating > 3000)
-    return errorResponse('Rating must be between 500 & 3000', 400)
+export const POST = apiWrapper(async (request) => {
+  const { rating, themes, count, playerMoves } = await validateBody(
+    request,
+    GetPuzzlesSchema,
+  )
 
   let params: {
     rating: string
@@ -43,27 +32,28 @@ export async function POST(request: Request) {
     count: count.toString(),
   }
 
-  if (themes) params = { ...params, themesType: 'OR', themes }
+  if (themes) {
+    params = {
+      ...params,
+      themesType: 'OR',
+      ...(themes && { themes: JSON.stringify(themes) }),
+    }
+  }
   if (playerMoves) params = { ...params, playerMoves: playerMoves.toString() }
 
-  try {
-    const paramsString = new URLSearchParams(params).toString()
-    const resp = await fetch(`${env.PUZZLE_API_URL}/?${paramsString}`, {
-      method: 'GET',
-      headers: {
-        'x-rapidapi-host': 'chess-puzzles.p.rapidapi.com',
-        'x-rapidapi-key': env.RAPIDAPI_KEY,
-      },
-    })
-    const json = (await resp.json()) as { puzzles: TrainingPuzzle[] }
+  const paramsString = new URLSearchParams(params).toString()
+  const resp = await fetch(`${env.PUZZLE_API_URL}/?${paramsString}`, {
+    method: 'GET',
+    headers: {
+      'x-rapidapi-host': 'chess-puzzles.p.rapidapi.com',
+      'x-rapidapi-key': env.RAPIDAPI_KEY,
+    },
+  })
+  const json = (await resp.json()) as { puzzles: TrainingPuzzle[] }
 
-    const puzzles = json.puzzles
+  const puzzles = json.puzzles
 
-    if (!puzzles) return errorResponse('Puzzles not found', 400)
+  if (!puzzles) throw new InternalError('Puzzles not found')
 
-    return successResponse('Puzzles found', { puzzles }, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    return errorResponse('Internal Server Error', 500)
-  }
-}
+  return successResponse('Puzzles found', { puzzles })
+})

@@ -1,40 +1,18 @@
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import { TacticsSetStatus } from '@prisma/client'
+import { TacticsSetIdSchema } from '@schemas/tactics-mgmt'
 
 import { prisma } from '@server/db'
 
-import {
-  errorResponse,
-  successResponse,
-} from '../../../../utils/server-responsses'
+import { apiWrapper } from '@utils/api-wrapper'
+import { successResponse } from '@utils/server-responses'
+import { validateBody } from '@utils/validators'
 
-export async function POST(req: Request) {
-  const session = getKindeServerSession()
-  if (!session) return errorResponse('Unauthorized', 401)
+export const POST = apiWrapper(async (request, { user }) => {
+  const { setId } = await validateBody(request, TacticsSetIdSchema)
 
-  const user = await session.getUser()
-  if (!user) return errorResponse('Unauthorized', 401)
+  await prisma.tacticsSet.update({
+    where: { id: setId, userId: user.id },
+    data: { status: 'ACTIVE' },
+  })
 
-  try {
-    const { setId } = await req.json()
-
-    if (!setId) {
-      return errorResponse('Missing setId', 400)
-    }
-
-    await prisma.tacticsSet.update({
-      where: {
-        id: setId,
-        userId: user.id,
-      },
-      data: {
-        status: TacticsSetStatus.ACTIVE,
-      },
-    })
-
-    return successResponse('Set Restored', { setId }, 200)
-  } catch (error) {
-    console.error('[RESTORE_SET_ERROR]', error)
-    return errorResponse('Internal Error', 500)
-  }
-}
+  return successResponse('Set restored', {})
+})

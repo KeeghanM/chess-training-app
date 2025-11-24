@@ -5,7 +5,7 @@ import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import VisualisationTrainer from '@components/training/visualisation/VisualisationTrainer'
 
-import { getUserServer } from '@utils/getUserServer'
+import { getUserServer } from '@utils/get-user-server'
 
 export default async function VisualisationTrainPage() {
   const { user } = await getUserServer()

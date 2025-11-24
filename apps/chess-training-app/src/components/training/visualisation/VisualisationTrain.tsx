@@ -9,29 +9,29 @@ import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
 import XpTracker from '@components/general/XpTracker'
 
+import { useChessGame } from '@hooks/use-chess-game'
 import type { TrainingPuzzle } from '@hooks/use-puzzle-queries'
 import { useSounds } from '@hooks/use-sound'
 
-import trackEventOnClient from '@utils/trackEventOnClient'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 import BoardContainer from '../shared/BoardContainer'
 import PgnNavigator from '../shared/PgnNavigator'
-import StatusIndicator from '../shared/StatusIndicator'
 
-interface VisualisationTrainProps {
+type VisualisationTrainProps = {
   // Display props
   rating: number
   getDifficulty: () => string
   length: number
 
   // Puzzle data
-  currentPuzzle?: TrainingPuzzle
+  currentPuzzle?: TrainingPuzzle | undefined
   soundEnabled: boolean
   loading: boolean
 
   // Puzzle state
   puzzleStatus: 'none' | 'correct' | 'incorrect'
-  puzzleId?: string
+  puzzleId?: string | undefined
   xpCounter: number
 
   // Auto next
@@ -52,7 +52,6 @@ export default function VisualisationTrain({
   soundEnabled,
   loading,
   puzzleStatus,
-  puzzleId,
   xpCounter,
   autoNext,
   nextPuzzle,
@@ -60,17 +59,25 @@ export default function VisualisationTrain({
   onPuzzleComplete,
   onExit,
 }: VisualisationTrainProps) {
-  // Chess state
-  const [game, setGame] = useState(new Chess())
-  const [orientation, setOrientation] = useState<'white' | 'black'>('white')
-  const [position, setPosition] = useState(game.fen())
+  // Hooks
+  const {
+    game,
+    position,
+    orientation,
+    setOrientation,
+    isInteractive: readyForInput,
+    setIsInteractive: setReadyForInput,
+    setGame,
+    setPosition,
+  } = useChessGame()
+
+  // Display game state (for showing move progression)
   const [displayGame, setDisplayGame] = useState(new Chess())
   const [displayPosition, setDisplayPosition] = useState(displayGame.fen())
   const [startSquare, setStartSquare] = useState<Square>()
   const [selectedSquares, setSelectedSquares] = useState<
     Record<string, React.CSSProperties>
   >({})
-  const [readyForInput, setReadyForInput] = useState(false)
   const [puzzleFinished, setPuzzleFinished] = useState(false)
 
   // SFX
@@ -189,15 +196,18 @@ export default function VisualisationTrain({
   useEffect(() => {
     if (!currentPuzzle) return
 
-    const newGame = new Chess(currentPuzzle.fen)
+    // Create a temporary game to calculate the final position
+    const tempGame = new Chess(currentPuzzle.fen)
     const newDisplayGame = new Chess(currentPuzzle.fen)
-    setOrientation(newGame.turn() == 'w' ? 'black' : 'white') // reversed because the first move is opponents
+    setOrientation(tempGame.turn() == 'w' ? 'black' : 'white') // reversed because the first move is opponents
 
     for (const move of currentPuzzle.moves) {
-      newGame.move(move)
+      tempGame.move(move)
     }
-    setPosition(newGame.fen())
-    setGame(newGame)
+
+    // Reset the main game to the final position
+    setGame(tempGame)
+    setPosition(tempGame.fen())
 
     setDisplayPosition(newDisplayGame.fen())
     setDisplayGame(newDisplayGame)
@@ -263,13 +273,6 @@ export default function VisualisationTrain({
         </div>
         <div className="lg:w-1/3 lg:min-w-1/3 p-4 bg-card-light/20 rounded-lg h-fit my-auto">
           <div className="flex flex-col gap-2 bg-card rounded-lg p-4">
-            <StatusIndicator
-              status={puzzleStatus}
-              orientation={
-                orientation === 'white' ? 'black' : 'white' // this is flipped, because we want the user to start from the beginning. Orientation is the USERS orientation, but the first move they need to visualise is OPPONENTS - so we flip it
-              }
-              puzzleId={puzzleId}
-            />
             <PgnNavigator
               game={game}
               puzzleFinished={puzzleFinished}

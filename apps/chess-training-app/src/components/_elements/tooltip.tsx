@@ -16,7 +16,7 @@ import {
   useRole,
 } from '@floating-ui/react'
 
-interface TooltipOptions {
+type TooltipOptions = {
   initialOpen?: boolean
   placement?: Placement
   open?: boolean
@@ -108,8 +108,10 @@ export const TooltipTrigger = React.forwardRef<
   React.HTMLProps<HTMLElement> & { asChild?: boolean }
 >(function TooltipTrigger({ children, asChild = false, ...props }, propRef) {
   const context = useTooltipContext()
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const childrenRef = (children as any).ref
+  const childrenRef = React.isValidElement(children)
+    ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (children as React.ReactElement & { ref?: React.Ref<any> }).ref
+    : null
   const ref = useMergeRefs([context.refs.setReference, propRef, childrenRef])
 
   // `asChild` allows the user to pass any element as the anchor

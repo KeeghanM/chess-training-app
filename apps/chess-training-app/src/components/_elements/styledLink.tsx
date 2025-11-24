@@ -1,16 +1,16 @@
 import Link from 'next/link'
 
-interface LinkProps {
+type LinkProps = {
   href: string
   children: React.ReactNode
 }
-export default function StyledLink(props: LinkProps) {
+export default function StyledLink({ href, children }: LinkProps) {
   return (
     <Link
-      href={props.href}
+      href={href}
       className="font-bold text-black underline hover:no-underline"
     >
-      {props.children}
+      {children}
     </Link>
   )
 }

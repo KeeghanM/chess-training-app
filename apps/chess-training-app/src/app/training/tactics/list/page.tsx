@@ -5,7 +5,7 @@ import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import TacticsList from '@components/training/tactics/list/TacticsList'
 
-import { getUserServer } from '@utils/getUserServer'
+import { getUserServer } from '@utils/get-user-server'
 
 export default async function TacticsListPage() {
   const { user, isPremium } = await getUserServer()

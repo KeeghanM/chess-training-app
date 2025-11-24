@@ -7,9 +7,9 @@ import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import StyledLink from '@components/_elements/styledLink'
 
-import type { RichTextContent } from '@utils/PrismicRichToHtml'
-import { PrismicRichToHtml } from '@utils/PrismicRichToHtml'
 import Prismic from '@utils/prismicio'
+import type { RichTextContent } from '@utils/rich-text-to-html'
+import { PrismicRichToHtml } from '@utils/rich-text-to-html'
 
 type Params = { uid: string }
 export default async function AuthorPage(props: { params: Promise<Params> }) {

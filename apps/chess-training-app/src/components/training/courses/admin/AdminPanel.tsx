@@ -21,14 +21,12 @@ import { useCourseQueries } from '@hooks/use-course-queries'
 import type { LineWithMoves } from './GroupEditor'
 import GroupsListEditor from './GroupsListEditor'
 
-interface CourseAdminPanelProps {
+type CourseAdminPanelProps = {
   course: Course & {
     lines: LineWithMoves[]
   } & { groups: Group[] }
 }
-export default function CourseAdminPanel(props: CourseAdminPanelProps) {
-  const { course } = props
-
+export default function CourseAdminPanel({ course }: CourseAdminPanelProps) {
   const [saving, setSaving] = useState(false)
   const [hasHadChanges, setHasHadChanges] = useState(false)
   const [lines, setLines] = useState(course.lines)

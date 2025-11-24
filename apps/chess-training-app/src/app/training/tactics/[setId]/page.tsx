@@ -10,7 +10,7 @@ import Heading from '@components/_elements/heading'
 import type { PrismaTacticsSetWithPuzzles } from '@components/training/tactics/TacticsTrainer'
 import TacticsTrainer from '@components/training/tactics/TacticsTrainer'
 
-import { getUserServer } from '@utils/getUserServer'
+import { getUserServer } from '@utils/get-user-server'
 
 export default async function TacticsTrainPage(props: {
   params: Promise<{ setId: string }>

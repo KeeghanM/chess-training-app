@@ -9,7 +9,7 @@ import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import ArchivedSetList from '@components/training/tactics/list/ArchivedList'
 
-import { getUserServer } from '@utils/getUserServer'
+import { getUserServer } from '@utils/get-user-server'
 
 export const metadata = {
   title: 'Your Archived Sets - ChessTraining.app',

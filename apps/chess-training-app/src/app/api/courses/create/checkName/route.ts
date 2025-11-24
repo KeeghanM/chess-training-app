@@ -1,41 +1,26 @@
 import { prisma } from '@server/db'
-import { getPostHogServer } from '@server/posthog-server'
 
-import { errorResponse, successResponse } from '@utils/server-responsses'
+import { apiWrapper } from '@utils/api-wrapper'
+import { BadRequest } from '@utils/errors'
+import { successResponse } from '@utils/server-responses'
 
-const posthog = getPostHogServer()
-
-export async function POST(request: Request) {
+export const POST = apiWrapper(async (request) => {
   const { name } = (await request.json()) as { name: string }
-  if (!name) return errorResponse('Missing name', 400)
+  if (!name) throw new BadRequest('Missing name')
 
-  try {
-    const course = await prisma.course.findFirst({
-      where: {
-        courseName: name,
-      },
-    })
+  const course = await prisma.course.findFirst({
+    where: {
+      courseName: name,
+    },
+  })
 
-    if (!course)
-      return successResponse(
-        'Course name is available',
-        {
-          isAvailable: true,
-        },
-        200,
-      )
+  if (!course)
+    return successResponse('Course name is available', {
+      isAvailable: true,
+    } as Record<string, unknown>)
 
-    return successResponse(
-      'Course name is not available',
-      {
-        courseId: course.id,
-        isAvailable: false,
-      },
-      200,
-    )
-  } catch (e) {
-    posthog.captureException(e)
-    if (e instanceof Error) return errorResponse(e.message, 500)
-    else return errorResponse('Unknown error', 500)
-  }
-}
+  return successResponse('Course name is not available', {
+    courseId: course.id,
+    isAvailable: false,
+  } as Record<string, unknown>)
+})

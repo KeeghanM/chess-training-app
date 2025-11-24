@@ -7,12 +7,15 @@ import posthog from 'posthog-js'
 
 import Button from '@components/_elements/button'
 
-import trackEventOnClient from '@utils/trackEventOnClient'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 import type { Line } from './parse/ParsePGNtoLineData'
 import { ParsePGNtoLineData } from './parse/ParsePGNtoLineData'
 
-export default function PgnToLinesForm(props: {
+export default function PgnToLinesForm({
+  back,
+  finished,
+}: {
   finished: (lines: Line[]) => void
   back: () => void
 }) {
@@ -53,7 +56,7 @@ export default function PgnToLinesForm(props: {
       if (!lines) return handleError('Something went wrong')
 
       trackEventOnClient('create_course_pgn_imported', {})
-      props.finished(lines)
+      finished(lines)
     } catch (e) {
       posthog.captureException(e)
       if (e instanceof Error) setError(e.message)
@@ -90,7 +93,7 @@ export default function PgnToLinesForm(props: {
       <div className="flex flex-col gap-2 md:flex-row md:justify-end md:items-center">
         {error && <p className="text-red-500">Something went wrong: {error}</p>}
         <div>
-          <Button onClick={props.back}>Go Back</Button>
+          <Button onClick={back}>Go Back</Button>
         </div>
         <div>
           <Button

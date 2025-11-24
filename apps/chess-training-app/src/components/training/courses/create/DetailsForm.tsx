@@ -9,17 +9,21 @@ import TextEditor from '@components/general/TextEditor'
 
 import { useCourseQueries } from '@hooks/use-course-queries'
 
-import trackEventOnClient from '@utils/trackEventOnClient'
+import trackEventOnClient from '@utils/track-event-on-client'
 
-export default function DetailsForm(props: {
+export default function DetailsForm({
+  courseName,
+  description: initialDescription,
+  finished,
+}: {
   finished: (name: string, description: string) => void
   courseName: string | undefined
   description: string | undefined
 }) {
-  const [name, setName] = useState<string>(props.courseName ?? '')
+  const [name, setName] = useState<string>(courseName ?? '')
   const [status, setStatus] = useState<'idle' | 'loading'>('idle')
   const [description, setDescription] = useState<string>(
-    props.description ?? '',
+    initialDescription ?? '',
   )
   const [error, setError] = useState<string | null>(null)
 
@@ -58,7 +62,7 @@ export default function DetailsForm(props: {
       }
 
       trackEventOnClient('create_course_details_submitted', { name })
-      props.finished(name, description)
+      finished(name, description)
     } catch (error) {
       posthog.captureException(error)
       setError('Oops! Something went wrong. Please try again later.')

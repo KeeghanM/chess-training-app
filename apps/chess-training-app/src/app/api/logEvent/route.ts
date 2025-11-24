@@ -1,25 +1,17 @@
-import { getPostHogServer } from '@server/posthog-server'
+import { BadRequest } from '@utils/errors'
+import { publicApiWrapper } from '@utils/public-api-wrapper'
+import { successResponse } from '@utils/server-responses'
+import { trackEventOnServer } from '@utils/track-event-on-server'
 
-import { errorResponse, successResponse } from '@utils/server-responsses'
-import { trackEventOnServer } from '@utils/trackEventOnServer'
-
-const posthog = getPostHogServer()
-
-export async function POST(request: Request) {
+export const POST = publicApiWrapper(async (request) => {
   const { eventName, data } = (await request.json()) as {
     eventName: string
     data: Record<string, string>
   }
 
-  if (!eventName) return errorResponse('Missing event name', 400)
-  if (!data) return errorResponse('Missing data', 400)
+  if (!eventName) throw new BadRequest('Missing event name')
+  if (!data) throw new BadRequest('Missing data')
 
-  try {
-    await trackEventOnServer(eventName, data)
-    return successResponse('Logged', {}, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    if (e instanceof Error) return errorResponse(e.message, 500)
-    else return errorResponse('Unknown error', 500)
-  }
-}
+  await trackEventOnServer(eventName, data)
+  return successResponse('Logged', {})
+})

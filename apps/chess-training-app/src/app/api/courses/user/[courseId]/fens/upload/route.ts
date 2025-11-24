@@ -1,34 +1,24 @@
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { UploadFensSchema } from '@schemas/courses'
 
 import { prisma } from '@server/db'
-import { getPostHogServer } from '@server/posthog-server'
 
-import { errorResponse, successResponse } from '@utils/server-responsses'
-
-const posthog = getPostHogServer()
+import { apiWrapper } from '@utils/api-wrapper'
+import { BadRequest } from '@utils/errors'
+import { successResponse } from '@utils/server-responses'
+import { validateBody } from '@utils/validators'
 
 export async function POST(
   request: Request,
   props: { params: Promise<{ courseId: string }> },
 ) {
-  const params = await props.params
-  const session = getKindeServerSession()
-  if (!session) return errorResponse('Unauthorized', 401)
-  const user = await session.getUser()
-  if (!user) return errorResponse('Unauthorized', 401)
+  return apiWrapper(async (req) => {
+    const params = await props.params
+    const { courseId } = params
 
-  const { courseId } = params
-  const { fens } = (await request.json()) as {
-    fens: {
-      fen: string
-      commentId: number
-    }[]
-  }
+    const { fens } = await validateBody(req, UploadFensSchema)
 
-  if (!courseId) return errorResponse('Missing courseId', 400)
-  if (!fens) return errorResponse('Missing fens', 400)
+    if (!courseId) throw new BadRequest('Missing courseId')
 
-  try {
     await prisma.userFen.createMany({
       data: fens.map((fen) => ({
         fen: fen.fen,
@@ -37,10 +27,6 @@ export async function POST(
       })),
     })
 
-    return successResponse('Fens uploaded', { count: fens.length }, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    if (e instanceof Error) return errorResponse(e.message, 500)
-    else return errorResponse('Unknown error', 500)
-  }
+    return successResponse('Fens uploaded', { count: fens.length })
+  })(request)
 }

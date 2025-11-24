@@ -1,36 +1,25 @@
 import { prisma } from '@server/db'
-import { getPostHogServer } from '@server/posthog-server'
 
-import {
-  errorResponse,
-  successResponse,
-} from '../../../../utils/server-responsses'
+import { publicApiWrapper } from '@utils/public-api-wrapper'
+import { successResponse } from '@utils/server-responses'
 
-const posthog = getPostHogServer()
-
-export async function GET() {
+export const GET = publicApiWrapper(async () => {
   const now = new Date()
   const twentyFourHoursAgo = new Date(now.getTime() - 1000 * 60 * 60 * 24)
 
-  try {
-    await prisma.userProfile.updateMany({
-      data: {
-        currentStreak: 0,
+  await prisma.userProfile.updateMany({
+    data: {
+      currentStreak: 0,
+    },
+    where: {
+      lastTrained: {
+        lt: twentyFourHoursAgo,
       },
-      where: {
-        lastTrained: {
-          lt: twentyFourHoursAgo,
-        },
-        currentStreak: {
-          gt: 0,
-        },
+      currentStreak: {
+        gt: 0,
       },
-    })
+    },
+  })
 
-    return successResponse('Reset streaks', {}, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    if (e instanceof Error) return errorResponse(e.message, 500)
-    return errorResponse('Something went wrong', 500)
-  }
-}
+  return successResponse('Reset streaks', {})
+})

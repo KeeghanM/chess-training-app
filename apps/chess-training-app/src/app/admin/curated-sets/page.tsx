@@ -4,7 +4,7 @@ import { prisma } from '@server/db'
 
 import CuratedSetsBrowser from '@components/admin/curatedSets/CuratedSetsBrowser'
 
-import { getUserServer } from '@utils/getUserServer'
+import { getUserServer } from '@utils/get-user-server'
 
 export default async function CuratedSetsPage() {
   const { user, isStaff } = await getUserServer()

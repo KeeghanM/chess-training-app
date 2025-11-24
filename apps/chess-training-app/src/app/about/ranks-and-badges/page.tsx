@@ -3,14 +3,14 @@ import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 
 import {
-  MiscBadges,
-  StreakBadges,
-  TacticStreakBadges,
-  XpRanks,
-} from '@utils/RanksAndBadges'
+  MISC_BADGES,
+  STREAK_BADGES,
+  TACTICS_STREAK_BADGES,
+  XP_RANKS,
+} from '@utils/ranks-and-badges'
 
 export default async function RankAndBadgesPage() {
-  const ranks = Array.from(new Set(XpRanks.map((rank) => rank.rank)))
+  const ranks = Array.from(new Set(XP_RANKS.map((rank) => rank.rank)))
 
   const BadgeElem = (name: string, description: string) => {
     return (
@@ -56,7 +56,7 @@ export default async function RankAndBadgesPage() {
             >
               <p className="bg-card-light p-4 font-bold text-lg">{rank}</p>
               <div className="p-4 space-y-2">
-                {XpRanks.filter((r) => r.rank === rank).map((r) => (
+                {XP_RANKS.filter((r) => r.rank === rank).map((r) => (
                   <p key={r.rank + r.name} className="text-sm">
                     <strong>{r.name}:</strong> {r.xp.toLocaleString()}xp
                   </p>
@@ -75,7 +75,7 @@ export default async function RankAndBadgesPage() {
               Daily Streaks
             </Heading>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {StreakBadges.map((b) => BadgeElem(b.name, b.description))}
+              {STREAK_BADGES.map((b) => BadgeElem(b.name, b.description))}
             </div>
           </div>
           <div>
@@ -83,7 +83,9 @@ export default async function RankAndBadgesPage() {
               Tactics Streaks
             </Heading>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {TacticStreakBadges.map((b) => BadgeElem(b.name, b.description))}
+              {TACTICS_STREAK_BADGES.map((b) =>
+                BadgeElem(b.name, b.description),
+              )}
             </div>
           </div>
           <div>
@@ -91,7 +93,7 @@ export default async function RankAndBadgesPage() {
               Miscellaneous
             </Heading>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {MiscBadges.map((b) => BadgeElem(b.name, b.description))}
+              {MISC_BADGES.map((b) => BadgeElem(b.name, b.description))}
             </div>
           </div>
         </div>

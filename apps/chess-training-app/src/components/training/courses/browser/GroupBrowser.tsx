@@ -4,19 +4,19 @@ import { useEffect, useState } from 'react'
 
 import { Chess } from 'chess.js'
 import type { Arrow } from 'react-chessboard'
+import getArrows from '~/utils/get-arrows'
 
-import type { Move } from '@utils/BuildPgn'
-import BuildPGN from '@utils/BuildPgn'
-import getArrows from '@utils/StringToArrows'
+import type { Move } from '@utils/build-pgn'
+import buildPgn from '@utils/build-pgn'
 
 import ChessBoard from '../../ChessBoard'
 import BoardContainer from '../../shared/BoardContainer'
 import type { UserLineWithData } from './CourseBrowser'
 import PgnBrowser from './PgnBrowser'
 
-export default function GroupBrowser(props: { lines: UserLineWithData[] }) {
-  const pgn = BuildPGN(
-    props.lines.map((line) =>
+export default function GroupBrowser({ lines }: { lines: UserLineWithData[] }) {
+  const pgn = buildPgn(
+    lines.map((line) =>
       line.line.moves.map((move) => {
         return {
           notation: move.move,
@@ -47,7 +47,7 @@ export default function GroupBrowser(props: { lines: UserLineWithData[] }) {
       return
     }
     const newGame = new Chess()
-    const line = props.lines.find((line) => line.id === currentMove.lineId)
+    const line = lines.find((line) => line.id === currentMove.lineId)
     if (!line) return
 
     for (const move of line.line.moves) {
@@ -82,12 +82,10 @@ export default function GroupBrowser(props: { lines: UserLineWithData[] }) {
     setCurrentMove(undefined)
     setGame(new Chess())
     setPosition(new Chess().fen())
-    if (props.lines[0]) {
-      setOrientation(
-        props.lines[0].line.colour.toLowerCase() as 'white' | 'black',
-      )
+    if (lines[0]) {
+      setOrientation(lines[0].line.colour.toLowerCase() as 'white' | 'black')
     }
-  }, [props.lines])
+  }, [lines])
 
   return (
     <>

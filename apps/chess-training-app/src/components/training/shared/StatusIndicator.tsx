@@ -2,10 +2,10 @@ import Link from 'next/link'
 
 import { ExternalLink, ThumbsDown, ThumbsUp } from 'lucide-react'
 
-interface StatusIndicatorProps {
+type StatusIndicatorProps = {
   status: 'none' | 'correct' | 'incorrect'
-  orientation?: 'white' | 'black'
-  puzzleId?: string
+  orientation?: 'white' | 'black' | undefined
+  puzzleId?: string | undefined
 }
 
 export default function StatusIndicator({

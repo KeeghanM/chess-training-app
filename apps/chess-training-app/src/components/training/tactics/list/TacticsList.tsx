@@ -13,8 +13,11 @@ import { useTacticsQueries } from '@hooks/use-tactics-queries'
 
 import SetListItem from './SetListItem'
 
-export default function TacticsList(props: { hasUnlimitedSets: boolean }) {
-  const { hasUnlimitedSets } = props
+export default function TacticsList({
+  hasUnlimitedSets,
+}: {
+  hasUnlimitedSets: boolean
+}) {
   const { tacticsSetsQuery } = useTacticsQueries()
 
   return (

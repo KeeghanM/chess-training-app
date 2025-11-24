@@ -1,7 +1,7 @@
 import posthog from 'posthog-js'
 import { env } from '~/env'
 
-import { getUserServer } from './getUserServer'
+import { getUserServer } from './get-user-server'
 
 export default async function getDistinctId() {
   // First, try to just return the userId

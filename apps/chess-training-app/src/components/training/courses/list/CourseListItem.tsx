@@ -22,15 +22,20 @@ import Spinner from '@components/general/Spinner'
 
 import { PrismaUserCourse } from '@hooks/use-course-queries'
 
-import { generateCoursePercentages } from '@utils/GenerateCoursePercentages'
-import type { ResponseJson } from '@utils/server-responsses'
-import trackEventOnClient from '@utils/trackEventOnClient'
+import { calculateCoursePercentages } from '@utils/calculate-course-percentages'
+import type { ResponseJson } from '@utils/server-responses'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 import CourseSettings from './CourseSettings'
 
 // TODO: Add revision schedule viewer
 
-export default function CourseListItem(props: {
+export default function CourseListItem({
+  courseId,
+  courseName,
+  update,
+  hasPremium,
+}: {
   courseId: string
   courseName: string
   update: () => void
@@ -58,7 +63,7 @@ export default function CourseListItem(props: {
     setOpening(false)
     ;(async () => {
       try {
-        const resp = await fetch(`/api/courses/user/${props.courseId}`)
+        const resp = await fetch(`/api/courses/user/${courseId}`)
         const json = (await resp.json()) as ResponseJson
         if (json?.message != 'Course Fetched')
           throw new Error('Course not fetched')
@@ -75,13 +80,10 @@ export default function CourseListItem(props: {
     })()
       .catch((e) => posthog.captureException(e))
       .finally(() => setLoading(false))
-  }, [])
+  }, [courseId])
 
   return (
-    <div
-      className="space-y-4 rounded-lg p-4 bg-card shadow"
-      key={props.courseId}
-    >
+    <div className="space-y-4 rounded-lg p-4 bg-card shadow" key={courseId}>
       {loading ? (
         <div className="flex flex-col gap-2">
           <div className="space-y-2">
@@ -109,13 +111,13 @@ export default function CourseListItem(props: {
                   <Link href={`/training/courses/${userCourse?.id}/lines`}>
                     <h3 className="font-bold text-xl flex items-center gap-2">
                       <Book />
-                      {props.courseName}
+                      {courseName}
                     </h3>
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent>View lines and other stats</TooltipContent>
               </Tooltip>
-              <CourseSettings userCourse={userCourse!} update={props.update} />
+              <CourseSettings userCourse={userCourse!} update={update} />
             </div>
             <p>
               Last trained{' '}
@@ -132,7 +134,7 @@ export default function CourseListItem(props: {
                 <RoundProgress
                   width="w-20"
                   bgColor="text-card-dark/40"
-                  percentages={generateCoursePercentages(userCourse)}
+                  percentages={calculateCoursePercentages(userCourse)}
                 />
               </TooltipTrigger>
               <TooltipContent className="bg-card-light shadow rounded-lg p-2">
@@ -175,7 +177,7 @@ export default function CourseListItem(props: {
                       ? 'line to learn.'
                       : 'lines to learn.'}
                   </p>
-                  {props.hasPremium ? (
+                  {hasPremium ? (
                     <Link
                       className="text-xs underline hover:no-underline text-purple-700"
                       href={`/training/courses/${userCourse?.id}/schedule`}

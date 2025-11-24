@@ -1,55 +1,26 @@
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { addBadgeToUser } from '~/app/api/_business-logic/user/add-badge-to-user'
+import { IncreaseCorrectSchema } from '~/schemas/tactics-mgmt'
+import { prisma } from '~/server/db'
+import { apiWrapper } from '~/utils/api-wrapper'
+import { TACTICS_STREAK_BADGES } from '~/utils/ranks-and-badges'
+import { successResponse } from '~/utils/server-responses'
+import { validateBody } from '~/utils/validators'
 
-import { prisma } from '@server/db'
-import { getPostHogServer } from '@server/posthog-server'
+export const POST = apiWrapper(async (request, { user }) => {
+  const { roundId, currentStreak } = await validateBody(
+    request,
+    IncreaseCorrectSchema,
+  )
 
-import { AddBadgeToUser } from '@utils/AddBadge'
-import { TacticStreakBadges } from '@utils/RanksAndBadges'
-import { errorResponse, successResponse } from '@utils/server-responsses'
+  await prisma.tacticsSetRound.update({
+    where: { id: roundId, set: { userId: user.id } },
+    data: { correct: { increment: 1 } },
+  })
 
-const posthog = getPostHogServer()
+  const badge = TACTICS_STREAK_BADGES.find(
+    (badge) => badge.streak === currentStreak && !badge.level,
+  )
+  if (badge) await addBadgeToUser(user.id, badge.name)
 
-export async function POST(request: Request) {
-  const session = getKindeServerSession()
-  if (!session) return errorResponse('Unauthorized', 401)
-
-  const user = await session.getUser()
-  if (!user) return errorResponse('Unauthorized', 401)
-
-  const { roundId, currentStreak } = (await request.json()) as {
-    roundId: string
-    currentStreak: number
-  }
-  if (!roundId || currentStreak == undefined)
-    return errorResponse('Missing fields', 400)
-
-  try {
-    await prisma.tacticsSetRound.update({
-      where: {
-        id: roundId,
-        set: {
-          userId: user.id,
-        },
-      },
-      data: {
-        correct: {
-          increment: 1,
-        },
-      },
-    })
-
-    const badge = TacticStreakBadges.find(
-      (badge) => badge.streak === currentStreak && badge.level == undefined,
-    )
-
-    if (badge) {
-      await AddBadgeToUser(user.id, badge.name)
-    }
-
-    return successResponse('Time taken updated', {}, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    if (e instanceof Error) return errorResponse(e.message, 500)
-    else return errorResponse('Unknown error', 500)
-  }
-}
+  return successResponse('Correct increased', {})
+})

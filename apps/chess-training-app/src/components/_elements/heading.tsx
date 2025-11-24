@@ -46,5 +46,17 @@ export default function Heading({
           {children}
         </h4>
       )
+    case 'h5':
+      return (
+        <h5 id={id} className={`text-lg font-bold md:text-base ${className}`}>
+          {children}
+        </h5>
+      )
+    case 'h6':
+      return (
+        <h6 id={id} className={`text-base font-bold md:text-sm ${className}`}>
+          {children}
+        </h6>
+      )
   }
 }

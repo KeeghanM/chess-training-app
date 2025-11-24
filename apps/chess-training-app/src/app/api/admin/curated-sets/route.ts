@@ -1,32 +1,30 @@
 import { prisma } from '@server/db'
-import { getPostHogServer } from '@server/posthog-server'
 
-import { withAdminAuth } from '@utils/admin-auth'
-import { errorResponse, successResponse } from '@utils/server-responsses'
+import { apiWrapper } from '@utils/api-wrapper'
+import { BadRequest } from '@utils/errors'
+import { successResponse } from '@utils/server-responses'
 
-const posthog = getPostHogServer()
+export const POST = apiWrapper(
+  async (request) => {
+    const { name, slug } = (await request.json()) as {
+      name: string
+      slug: string
+    }
+    if (!name || !slug) throw new BadRequest('Missing required fields')
 
-export const POST = withAdminAuth(async (request) => {
-  const { name, slug } = (await request.json()) as {
-    name: string
-    slug: string
-  }
-  if (!name || !slug) return errorResponse('Missing required fields', 400)
+    // Check slug is valid
+    const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+    if (!slugRegex.test(slug)) throw new BadRequest('Invalid slug')
 
-  // Check slug is valid
-  const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
-  if (!slugRegex.test(slug)) return errorResponse('Invalid slug', 400)
+    // Check if name is available
+    const existingSet = await prisma.curatedSet.findFirst({
+      where: {
+        slug: slug,
+      },
+    })
 
-  // Check if name is available
-  const existingSet = await prisma.curatedSet.findFirst({
-    where: {
-      slug: slug,
-    },
-  })
+    if (existingSet) throw new BadRequest('Set name is not available')
 
-  if (existingSet) return errorResponse('Set name is not available', 400)
-
-  try {
     const set = await prisma.curatedSet.create({
       data: {
         name: name,
@@ -35,64 +33,62 @@ export const POST = withAdminAuth(async (request) => {
       },
     })
 
-    return successResponse('Set created', { set }, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    return errorResponse('An error occurred', 500)
-  }
-})
+    return successResponse('Set created', { set })
+  },
+  { needsAdmin: true },
+)
 
-export const PATCH = withAdminAuth(async (request) => {
-  const {
-    id,
-    name,
-    slug,
-    description,
-    shortDesc,
-    minRating,
-    maxRating,
-    price,
-    published,
-    size,
-  } = (await request.json()) as {
-    id: string
-    name: string
-    slug: string
-    description: string
-    shortDesc: string
-    size: number
-    minRating: number
-    maxRating: number
-    price: number
-    published: boolean
-  }
-  if (
-    !id ||
-    !name ||
-    !slug ||
-    !minRating ||
-    !maxRating ||
-    price == undefined ||
-    published == undefined ||
-    size == undefined
-  )
-    return errorResponse('Missing required fields', 400)
+export const PATCH = apiWrapper(
+  async (request) => {
+    const {
+      id,
+      name,
+      slug,
+      description,
+      shortDesc,
+      minRating,
+      maxRating,
+      price,
+      published,
+      size,
+    } = (await request.json()) as {
+      id: string
+      name: string
+      slug: string
+      description: string
+      shortDesc: string
+      size: number
+      minRating: number
+      maxRating: number
+      price: number
+      published: boolean
+    }
+    if (
+      !id ||
+      !name ||
+      !slug ||
+      !minRating ||
+      !maxRating ||
+      price == undefined ||
+      published == undefined ||
+      size == undefined
+    )
+      throw new BadRequest('Missing required fields')
 
-  // Check slug is valid
-  const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
-  if (!slugRegex.test(slug)) return errorResponse('Invalid slug', 400)
+    // Check slug is valid
+    const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+    if (!slugRegex.test(slug)) throw new BadRequest('Invalid slug')
 
-  // Check if name is available
-  const existingSet = await prisma.curatedSet.findFirst({
-    where: {
-      slug: slug,
-    },
-  })
+    // Check if name is available
+    const existingSet = await prisma.curatedSet.findFirst({
+      where: {
+        slug: slug,
+      },
+    })
 
-  if (existingSet && existingSet.id != id)
-    return errorResponse('Set name is not available', 400)
+    if (existingSet && existingSet.id != id)
+      throw new BadRequest('Set name is not available')
 
-  try {
     const set = await prisma.curatedSet.update({
       where: {
         id,
@@ -110,29 +106,25 @@ export const PATCH = withAdminAuth(async (request) => {
       },
     })
 
-    return successResponse('Set updated', { set }, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    return errorResponse('An error occurred', 500)
-  }
-})
+    return successResponse('Set updated', { set })
+  },
+  { needsAdmin: true },
+)
 
-export const DELETE = withAdminAuth(async (request) => {
-  const { id } = (await request.json()) as {
-    id: string
-  }
-  if (!id) return errorResponse('Missing required fields', 400)
+export const DELETE = apiWrapper(
+  async (request) => {
+    const { id } = (await request.json()) as {
+      id: string
+    }
+    if (!id) throw new BadRequest('Missing required fields')
 
-  try {
     await prisma.curatedSet.delete({
       where: {
         id: id,
       },
     })
 
-    return successResponse('Set deleted', {}, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    return errorResponse('An error occurred', 500)
-  }
-})
+    return successResponse('Set deleted', {})
+  },
+  { needsAdmin: true },
+)

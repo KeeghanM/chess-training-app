@@ -4,15 +4,15 @@ import { type ParseTree, parse } from '@mliebelt/pgn-parser'
 
 import ECO from './ecoCodes'
 
-export interface CleanMove {
+export type CleanMove = {
   notation: string
   turn: string
-  comment?: string
-  arrows?: string
+  comment?: string | undefined
+  arrows?: string | undefined
 }
 export type Tags = Record<string, string>
 
-export interface Line {
+export type Line = {
   tags: Tags
   moves: CleanMove[]
 }

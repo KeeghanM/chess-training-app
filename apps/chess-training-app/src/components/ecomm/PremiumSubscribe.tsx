@@ -5,12 +5,15 @@ import * as AlertDialog from '@radix-ui/react-alert-dialog'
 import Button from '@components/_elements/button'
 import GetPremiumButton from '@components/ecomm/GetPremiumButton'
 
-export default function PremiumSubscribe(props: {
+export default function PremiumSubscribe({
+  title,
+  children,
+  trigger,
+}: {
   title: string
   children: React.ReactNode | React.ReactNode[]
   trigger: React.ReactNode
 }) {
-  const { title, children, trigger } = props
   const [open, setOpen] = useState(false)
 
   return (

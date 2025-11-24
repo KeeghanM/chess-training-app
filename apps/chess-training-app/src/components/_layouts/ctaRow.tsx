@@ -4,7 +4,7 @@ import Button from '@components/_elements/button'
 import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 
-interface CtaRowProps {
+type CtaRowProps = {
   title: string
   cta: {
     text: string
@@ -17,22 +17,27 @@ interface CtaRowProps {
   children: React.ReactNode
 }
 
-export default function CtaRow(props: CtaRowProps) {
+export default function CtaRow({
+  title,
+  cta,
+  secondary,
+  children,
+}: CtaRowProps) {
   return (
     <div className="w-full py-12 bg-bg">
       <Container size="wide">
         <div className="bg-card rounded-lg shadow-lg p-6 md:p-8 space-y-6">
-          <Heading as="h2">{props.title}</Heading>
+          <Heading as="h2">{title}</Heading>
           <div className="flex flex-col gap-4 md:flex-row md:gap-6 text-gray-800">
-            {props.children}
+            {children}
           </div>
           <div className="flex gap-4 pt-2">
-            <Link href={props.cta.link}>
-              <Button variant="primary">{props.cta.text}</Button>
+            <Link href={cta.link}>
+              <Button variant="primary">{cta.text}</Button>
             </Link>
-            {props.secondary && (
-              <Link href={props.secondary.link}>
-                <Button>{props.secondary.text}</Button>
+            {secondary && (
+              <Link href={secondary.link}>
+                <Button>{secondary.text}</Button>
               </Link>
             )}
           </div>

@@ -8,7 +8,10 @@ import { useProfileQueries } from '@hooks/use-profile-queries'
 
 export type availableTypes = 'line' | 'tactic'
 
-export default function XpTracker(props: {
+export default function XpTracker({
+  counter,
+  type,
+}: {
   counter: number
   type: availableTypes
 }) {
@@ -28,10 +31,10 @@ export default function XpTracker(props: {
   }
 
   useEffect(() => {
-    if (props.counter === 0) return
+    if (counter === 0) return
 
     // Calculate the XP to add
-    const xpToAdd = calculateXp(props.type)
+    const xpToAdd = calculateXp(type)
     setXpToAdd(xpToAdd)
 
     // We hide and show it, just in case the user gets multiple XP
@@ -44,14 +47,14 @@ export default function XpTracker(props: {
     }, 2500)
 
     updateXp.mutate(
-      { xp: xpToAdd, type: props.type },
+      { xp: xpToAdd, type: type },
       {
         onError: (error) => {
           posthog.captureException(error)
         },
       },
     )
-  }, [props.counter, props.type])
+  }, [counter, type])
 
   return show ? (
     <div className="absolute inset-0 grid place-items-center pointer-events-none">

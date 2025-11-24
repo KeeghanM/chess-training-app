@@ -4,7 +4,7 @@ import Container from '@components/_elements/container'
 import PageHeader from '@components/_layouts/pageHeader'
 import ArchivedList from '@components/training/courses/list/ArhivedList'
 
-import { getUserServer } from '@utils/getUserServer'
+import { getUserServer } from '@utils/get-user-server'
 
 export const metadata = {
   title: 'Your Archived Courses - ChessTraining.app',

@@ -8,10 +8,11 @@ import Button from '@components/_elements/button'
 import Spinner from '@components/general/Spinner'
 import XpTracker from '@components/general/XpTracker'
 
+import { useChessGame } from '@hooks/use-chess-game'
 import type { TrainingPuzzle } from '@hooks/use-puzzle-queries'
 import { useSounds } from '@hooks/use-sound'
 
-import trackEventOnClient from '@utils/trackEventOnClient'
+import trackEventOnClient from '@utils/track-event-on-client'
 import {
   showMoveSequence,
   makeMove as utilMakeMove,
@@ -22,20 +23,20 @@ import BoardContainer from '../shared/BoardContainer'
 import PgnNavigator from '../shared/PgnNavigator'
 import StatusIndicator from '../shared/StatusIndicator'
 
-interface EndgameTrainProps {
+type EndgameTrainProps = {
   // Display props
   type: 'Queen' | 'Rook' | 'Knight' | 'Bishop' | 'Pawn' | 'All'
   rating: number
   getDifficulty: () => string
 
   // Puzzle data
-  currentPuzzle?: TrainingPuzzle
+  currentPuzzle?: TrainingPuzzle | undefined
   soundEnabled: boolean
   loading: boolean
 
   // Puzzle state
   puzzleStatus: 'none' | 'correct' | 'incorrect'
-  puzzleId?: string
+  puzzleId?: string | undefined
   xpCounter: number
 
   // Auto next
@@ -64,12 +65,19 @@ export default function EndgameTrain({
   onPuzzleComplete,
   onExit,
 }: EndgameTrainProps) {
-  // Chess state
-  const [game, setGame] = useState(new Chess())
-  const [gameReady, setGameReady] = useState(false)
-  const [orientation, setOrientation] = useState<'white' | 'black'>('white')
-  const [position, setPosition] = useState(game.fen())
-  const [readyForInput, setReadyForInput] = useState(false)
+  // Hooks
+  const {
+    game,
+    gameReady,
+    position,
+    setPosition,
+    orientation,
+    setOrientation,
+    isInteractive: readyForInput,
+    setIsInteractive: setReadyForInput,
+    resetGame,
+  } = useChessGame()
+
   const [puzzleFinished, setPuzzleFinished] = useState(false)
 
   // SFX
@@ -165,18 +173,10 @@ export default function EndgameTrain({
   // Create a new game from the puzzle whenever it changes
   useEffect(() => {
     if (!currentPuzzle) return
-    const newGame = new Chess(currentPuzzle.fen)
-    setGame(newGame)
-    setGameReady(false)
+    resetGame(currentPuzzle.fen)
   }, [currentPuzzle])
 
-  // We need to ensure the game is set before we can make a move
-  useEffect(() => {
-    setGameReady(true)
-  }, [game])
-
-  // Now, whenever any of the elements associated with the game/puzzle
-  // change we can check if we need to make the first move
+  // Handle first move when game is ready
   useEffect(() => {
     if (gameReady && currentPuzzle) {
       setPuzzleFinished(false)
@@ -186,6 +186,7 @@ export default function EndgameTrain({
       const timeoutId = makeFirstMove(firstMove!)
       return () => clearTimeout(timeoutId)
     }
+    return
   }, [gameReady, game, currentPuzzle])
 
   return (

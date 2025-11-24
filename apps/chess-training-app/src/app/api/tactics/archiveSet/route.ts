@@ -1,43 +1,18 @@
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import { TacticsSetStatus } from '@prisma/client'
+import { ArchiveSetSchema } from '@schemas/tactics-mgmt'
+import { apiWrapper } from '~/utils/api-wrapper'
+import { successResponse } from '~/utils/server-responses'
 
 import { prisma } from '@server/db'
-import { getPostHogServer } from '@server/posthog-server'
 
-import {
-  errorResponse,
-  successResponse,
-} from '../../../../utils/server-responsses'
+import { validateBody } from '@utils/validators'
 
-const posthog = getPostHogServer()
+export const POST = apiWrapper(async (request, { user }) => {
+  const { setId } = await validateBody(request, ArchiveSetSchema)
 
-export async function POST(req: Request) {
-  const session = getKindeServerSession()
-  if (!session) return errorResponse('Unauthorized', 401)
+  await prisma.tacticsSet.update({
+    where: { id: setId, userId: user.id },
+    data: { status: 'ARCHIVED' },
+  })
 
-  const user = await session.getUser()
-  if (!user) return errorResponse('Unauthorized', 401)
-
-  try {
-    const { setId } = await req.json()
-
-    if (!setId) {
-      return errorResponse('Missing setId', 400)
-    }
-
-    await prisma.tacticsSet.update({
-      where: {
-        id: setId,
-        userId: user.id,
-      },
-      data: {
-        status: TacticsSetStatus.ARCHIVED,
-      },
-    })
-
-    return successResponse('Set Archived', { setId }, 200)
-  } catch (error) {
-    posthog.captureException(error)
-    return errorResponse('Internal Error', 500)
-  }
-}
+  return successResponse('Set archived', {})
+})

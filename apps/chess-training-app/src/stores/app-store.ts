@@ -1,15 +1,14 @@
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
 
-// Types for the store
-interface UserPreferences {
+type UserPreferences = {
   soundEnabled: boolean
   autoNext: boolean
   theme: 'light' | 'dark' | 'system'
+  boardSize: number | undefined
 }
 
 interface AppStore {
-  // User preferences (persisted)
   preferences: UserPreferences
   setPreferences: (preferences: Partial<UserPreferences>) => void
   setSoundEnabled: (enabled: boolean) => void
@@ -21,6 +20,7 @@ const initialPreferences: UserPreferences = {
   soundEnabled: true,
   autoNext: false,
   theme: 'system',
+  boardSize: undefined,
 }
 
 export const useAppStore = create<AppStore>()(

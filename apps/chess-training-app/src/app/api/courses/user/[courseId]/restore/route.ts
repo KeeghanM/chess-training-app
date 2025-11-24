@@ -1,28 +1,19 @@
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-
 import { prisma } from '@server/db'
-import { getPostHogServer } from '@server/posthog-server'
 
-import { errorResponse, successResponse } from '@utils/server-responsses'
-
-const posthog = getPostHogServer()
+import { apiWrapper } from '@utils/api-wrapper'
+import { BadRequest, NotFound } from '@utils/errors'
+import { successResponse } from '@utils/server-responses'
 
 export async function POST(
-  request: Request,
+  _request: Request,
   props: { params: Promise<{ courseId: string }> },
 ) {
-  const params = await props.params
-  const session = getKindeServerSession()
-  if (!session) return errorResponse('Unauthorized', 401)
+  return apiWrapper(async (_req, { user }) => {
+    const params = await props.params
+    const { courseId } = params
 
-  const user = await session.getUser()
-  if (!user) return errorResponse('Unauthorized', 401)
+    if (!courseId) throw new BadRequest('Missing required fields')
 
-  const { courseId } = params as { courseId: string }
-
-  if (!courseId) return errorResponse('Missing required fields', 400)
-
-  try {
     const result = await prisma.$transaction(async (prisma) => {
       const userCourse = await prisma.userCourse.findFirst({
         where: {
@@ -37,7 +28,7 @@ export async function POST(
         },
       })
 
-      if (!userCourse) throw new Error('Course not found')
+      if (!userCourse) throw new NotFound('Course not found')
 
       // update userCourse with line count
       await prisma.userCourse.update({
@@ -66,9 +57,6 @@ export async function POST(
       return { userCourseId: userCourse.id }
     })
 
-    return successResponse('Course restored', result, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    return errorResponse('Internal server error', 500)
-  }
+    return successResponse('Course restored', result)
+  })(_request)
 }

@@ -6,7 +6,7 @@ import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import posthog from 'posthog-js'
 import { env } from '~/env'
 
-import type { ResponseJson } from '@utils/server-responsses'
+import type { ResponseJson } from '@utils/server-responses'
 
 import Button from '../_elements/button'
 import Spinner from '../general/Spinner'

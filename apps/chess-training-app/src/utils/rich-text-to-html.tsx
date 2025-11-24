@@ -27,7 +27,7 @@ export function PrismicRichToHtml(content: RichTextContent) {
       if (lastSpan && span.start <= lastSpan.end) {
         lastSpan.end = Math.max(lastSpan.end, span.end)
         lastSpan.types.push(span.type)
-        if (span.type === 'hyperlink') {
+        if (span.type === 'hyperlink' && span.data) {
           lastSpan.data = span.data
         }
       } else {
@@ -138,7 +138,7 @@ export function decodeUTF8(str: string) {
     .replace(/“/g, '"')
     .replace(/”/g, '"')
     .replace(/–/g, '-')
-    .replace(/—/g, '-')
+    .replace(/ - /g, '-')
     .replace(/ /g, ' ')
     .replace(/ /g, ' ')
     .replace(/…/g, '...')

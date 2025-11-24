@@ -28,7 +28,8 @@ async function init() {
     connectionString: env.DB_CONNECTION_STRING,
     externalAuth: false,
     poolIncrement: 1,
-    poolMin: 1,
+    poolMin: 5,
+    poolMax: 20,
   })
 
   // START THE SERVER

@@ -1,29 +1,27 @@
 import { prisma } from '@server/db'
-import { getPostHogServer } from '@server/posthog-server'
 
-import { withAdminAuth } from '@utils/admin-auth'
-import { errorResponse, successResponse } from '@utils/server-responsses'
+import { apiWrapper } from '@utils/api-wrapper'
+import { BadRequest } from '@utils/errors'
+import { successResponse } from '@utils/server-responses'
 
-const posthog = getPostHogServer()
+export const POST = apiWrapper(
+  async (request) => {
+    const { name, description, category } = (await request.json()) as {
+      name: string
+      description: string
+      category: string
+    }
+    if (!name || !description || !category)
+      throw new BadRequest('Missing required fields')
 
-export const POST = withAdminAuth(async (request) => {
-  const { name, description, category } = (await request.json()) as {
-    name: string
-    description: string
-    category: string
-  }
-  if (!name || !description || !category)
-    return errorResponse('Missing required fields', 400)
+    const existingBadge = await prisma.badge.findFirst({
+      where: {
+        name,
+      },
+    })
 
-  const existingBadge = await prisma.badge.findFirst({
-    where: {
-      name,
-    },
-  })
+    if (existingBadge) throw new BadRequest('Badge name is not available')
 
-  if (existingBadge) return errorResponse('Badge name is not available', 400)
-
-  try {
     const badge = await prisma.badge.create({
       data: {
         name,
@@ -31,28 +29,26 @@ export const POST = withAdminAuth(async (request) => {
         category,
       },
     })
-    return successResponse('Badge created', { badge }, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    return errorResponse('Internal server error', 500)
-  }
-})
+    return successResponse('Badge created', { badge })
+  },
+  { needsAdmin: true },
+)
 
-export const PATCH = withAdminAuth(async (request) => {
-  const { name, sort } = (await request.json()) as {
-    name: string
-    sort: number
-  }
+export const PATCH = apiWrapper(
+  async (request) => {
+    const { name, sort } = (await request.json()) as {
+      name: string
+      sort: number
+    }
 
-  const existingBadge = await prisma.badge.findFirst({
-    where: {
-      name,
-    },
-  })
+    const existingBadge = await prisma.badge.findFirst({
+      where: {
+        name,
+      },
+    })
 
-  if (!existingBadge) return errorResponse('Badge not found', 400)
+    if (!existingBadge) throw new BadRequest('Badge not found')
 
-  try {
     const badge = await prisma.badge.update({
       where: {
         name,
@@ -61,9 +57,7 @@ export const PATCH = withAdminAuth(async (request) => {
         sort,
       },
     })
-    return successResponse('Badge updated', { badge }, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    return errorResponse('Internal server error', 500)
-  }
-})
+    return successResponse('Badge updated', { badge })
+  },
+  { needsAdmin: true },
+)

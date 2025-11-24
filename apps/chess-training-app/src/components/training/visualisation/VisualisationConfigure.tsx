@@ -4,7 +4,7 @@ import { ArrowDownCircle, ArrowRightCircle } from 'lucide-react'
 
 import Button from '@components/_elements/button'
 
-import trackEventOnClient from '@utils/trackEventOnClient'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 import {
   Tooltip,
@@ -12,7 +12,7 @@ import {
   TooltipTrigger,
 } from '../../_elements/tooltip'
 
-interface VisualisationConfigureProps {
+type VisualisationConfigureProps = {
   rating: number
   setRating: (rating: number) => void
   difficulty: number
@@ -23,6 +23,12 @@ interface VisualisationConfigureProps {
   error?: string
 }
 
+/**
+ * VisualisationConfigure Component
+ *
+ * Configures settings for chess visualization training,
+ * including rating, difficulty, and number of moves to visualize.
+ */
 export default function VisualisationConfigure({
   rating,
   setRating,
@@ -84,19 +90,19 @@ export default function VisualisationConfigure({
             <label className="font-bold ">Difficulty</label>
             <div className="flex flex-row gap-4">
               <Button
-                variant={difficulty == 0 ? 'accent' : undefined}
+                {...(difficulty == 0 ? { variant: 'accent' } : {})}
                 onClick={() => setDifficulty(0)}
               >
                 Easy
               </Button>
               <Button
-                variant={difficulty == 1 ? 'accent' : undefined}
+                {...(difficulty == 1 ? { variant: 'accent' } : {})}
                 onClick={() => setDifficulty(1)}
               >
                 Medium
               </Button>
               <Button
-                variant={difficulty == 2 ? 'accent' : undefined}
+                {...(difficulty == 2 ? { variant: 'accent' } : {})}
                 onClick={() => setDifficulty(2)}
               >
                 Hard

@@ -3,7 +3,7 @@ import { getPostHogServer } from '@server/posthog-server'
 
 const posthog = getPostHogServer()
 
-export async function AddCourseToUser(courseId: string, userId: string) {
+export async function addCourseToUser(courseId: string, userId: string) {
   if (!userId) return false
 
   if (!courseId) return false

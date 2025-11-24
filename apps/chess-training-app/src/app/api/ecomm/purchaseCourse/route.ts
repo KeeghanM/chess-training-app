@@ -1,104 +1,81 @@
+import { PurchaseSchema } from '@schemas/ecomm'
 import { env } from '~/env'
 
 import { prisma } from '@server/db'
-import { getPostHogServer } from '@server/posthog-server'
 
-import { getUserServer } from '@utils/getUserServer'
+import { apiWrapper } from '@utils/api-wrapper'
+import { BadRequest, InternalError, NotFound } from '@utils/errors'
+import { successResponse } from '@utils/server-responses'
+import { validateBody } from '@utils/validators'
 
+import { addCourseToUser } from '../../_business-logic/ecomm/add-course-to-user'
 import {
-  errorResponse,
-  successResponse,
-} from '../../../../utils/server-responsses'
-import { AddCourseToUser } from '../functions/AddCourseToUser'
-import {
-  CreateCheckoutSession,
+  createCheckoutSession,
   getProductDetails,
-} from '../functions/CreateCheckoutSession'
+} from '../../_business-logic/ecomm/create-checkout-session'
 
-const posthog = getPostHogServer()
+export const POST = apiWrapper(async (request, { user, isPremium }) => {
+  const { productId } = await validateBody(request, PurchaseSchema)
 
-export async function POST(request: Request) {
-  try {
-    const { user, isPremium } = await getUserServer()
-    if (!user) return errorResponse('Unauthorized', 401)
+  // Check if the user already owns the course
+  const existingCourse = await prisma.userCourse.findFirst({
+    where: {
+      userId: user.id,
+      courseId: productId,
+    },
+  })
 
-    const { productId } = (await request.json()) as {
-      productId: string
+  if (existingCourse) {
+    if (!existingCourse.active) {
+      // Check if it was archived, in which case we can just unarchive it
+      await prisma.userCourse.update({
+        where: {
+          id: existingCourse.id,
+        },
+        data: {
+          active: true,
+        },
+      })
     }
 
-    if (!productId) return errorResponse('Missing productId', 400)
-
-    // Check if the user already owns the course
-    const existingCourse = await prisma.userCourse.findFirst({
-      where: {
-        userId: user.id,
-        courseId: productId,
-      },
-    })
-
-    if (existingCourse) {
-      if (!existingCourse.active) {
-        // Check if it was archived, in which case we can just unarchive it
-        await prisma.userCourse.update({
-          where: {
-            id: existingCourse.id,
-          },
-          data: {
-            active: true,
-          },
-        })
-      }
-
-      return successResponse(
-        'User already owns this course',
-        { url: '/training/courses' },
-        200,
-      )
-    }
-
-    // Check if the user has space
-    const ownedCourses = await prisma.userCourse.count({
-      where: {
-        userId: user.id,
-        active: true,
-      },
-    })
-
-    if (!isPremium && ownedCourses >= env.NEXT_PUBLIC_MAX_COURSES)
-      return errorResponse('User has max courses', 400)
-
-    // Now get the product details
-    const { price, name } = await getProductDetails('course', productId)
-    if (price === undefined || !name)
-      return errorResponse('Product not found', 404)
-
-    // If the product is free, add it
-    if (price === 0) {
-      await AddCourseToUser(productId, user.id)
-      return successResponse(
-        'Course Purchased',
-        { url: '/training/courses' },
-        200,
-      )
-    }
-
-    // If the product is paid, create a checkout session
-    const checkoutSession = await CreateCheckoutSession(
-      [{ productType: 'course', productId }],
-      '/training/courses',
-      user,
-    )
-
-    if (!checkoutSession) return errorResponse('Session creation failed', 500)
-
-    return successResponse(
-      'Checkout Session Created',
-      { url: checkoutSession },
-      200,
-    )
-  } catch (e) {
-    posthog.captureException(e)
-    if (e instanceof Error) return errorResponse(e.message, 500)
-    else return errorResponse('Something went wrong', 500)
+    return successResponse('User already owns this course', {
+      url: '/training/courses',
+    } as Record<string, unknown>)
   }
-}
+
+  // Check if the user has space
+  const ownedCourses = await prisma.userCourse.count({
+    where: {
+      userId: user.id,
+      active: true,
+    },
+  })
+
+  if (!isPremium && ownedCourses >= env.NEXT_PUBLIC_MAX_COURSES)
+    throw new BadRequest('User has max courses')
+
+  // Now get the product details
+  const { price, name } = await getProductDetails('course', productId)
+  if (price === undefined || !name) throw new NotFound('Product not found')
+
+  // If the product is free, add it
+  if (price === 0) {
+    await addCourseToUser(productId, user.id)
+    return successResponse('Course Purchased', {
+      url: '/training/courses',
+    } as Record<string, unknown>)
+  }
+
+  // If the product is paid, create a checkout session
+  const checkoutSession = await createCheckoutSession(
+    [{ productType: 'course', productId }],
+    '/training/courses',
+    user,
+  )
+
+  if (!checkoutSession) throw new InternalError('Session creation failed')
+
+  return successResponse('Checkout Session Created', {
+    url: checkoutSession,
+  } as Record<string, unknown>)
+})

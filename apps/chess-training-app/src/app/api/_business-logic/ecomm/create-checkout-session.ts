@@ -4,13 +4,13 @@ import { env } from '~/env'
 import { prisma } from '@server/db'
 import { getPostHogServer } from '@server/posthog-server'
 
-import type { KindeUser } from '@utils/getUserServer'
+import type { KindeUser } from '@utils/get-user-server'
 
 const posthog = getPostHogServer()
 
 type ProductType = 'curatedSet' | 'course' | 'subscription'
 
-export async function CreateCheckoutSession(
+export async function createCheckoutSession(
   products: { productType: ProductType; productId: string }[],
   returnUrl: string,
   user: KindeUser,
@@ -44,7 +44,7 @@ export async function CreateCheckoutSession(
               },
             },
             unit_amount: price,
-            recurring,
+            ...(recurring && { recurring }),
           },
           quantity: 1,
         }
@@ -59,7 +59,7 @@ export async function CreateCheckoutSession(
 
     const checkoutSession = await stripe.checkout.sessions.create({
       payment_method_types: ['card', 'link'],
-      customer_email: user.email ?? undefined,
+      ...(user.email && { customer_email: user.email }),
       line_items: lineItems,
       mode: hasSubscription ? 'subscription' : 'payment',
       success_url: `${env.NEXT_PUBLIC_SITE_URL}/checkout/success`,

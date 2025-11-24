@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import type { Color, PieceSymbol, Square } from 'chess.js'
 import { Chess, SQUARES } from 'chess.js'
@@ -11,12 +11,12 @@ import XpTracker from '@components/general/XpTracker'
 import type { TrainingPuzzle } from '@hooks/use-puzzle-queries'
 import { useSounds } from '@hooks/use-sound'
 
-import trackEventOnClient from '@utils/trackEventOnClient'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 import BoardContainer from '../shared/BoardContainer'
 import StatusIndicator from '../shared/StatusIndicator'
 
-interface RecallTrainProps {
+type RecallTrainProps = {
   // Display props
   difficulty: number
   getDifficulty: () => string
@@ -25,7 +25,7 @@ interface RecallTrainProps {
   timerLength: number
 
   // Puzzle data
-  currentPuzzle?: TrainingPuzzle
+  currentPuzzle?: TrainingPuzzle | undefined
   soundEnabled: boolean
   loading: boolean
 
@@ -126,7 +126,7 @@ export default function RecallTrain({
     }
   }
 
-  const markImReady = () => {
+  const markImReady = useCallback(() => {
     // Hide all pieces (but not the squares themselves)
     const allPieceSquares = game.board().flatMap((row, rowIndex) =>
       row
@@ -152,7 +152,7 @@ export default function RecallTrain({
 
     setHiddenSquares(hidePieces)
     setReadyForInput(true)
-  }
+  }, [game])
 
   const squareClicked = async ({ square }: SquareHandlerArgs) => {
     if (puzzleFinished) return
@@ -249,7 +249,7 @@ export default function RecallTrain({
 
   // Timer logic
   useEffect(() => {
-    if (!timed || !currentPuzzle || readyForInput) return
+    if (!timed || !currentPuzzle || readyForInput || puzzleFinished) return
 
     const interval = setInterval(() => {
       setTimer((prevTimer) => {
@@ -262,7 +262,7 @@ export default function RecallTrain({
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [timed, currentPuzzle, readyForInput])
+  }, [timed, currentPuzzle, readyForInput, markImReady, puzzleFinished])
 
   return (
     <>

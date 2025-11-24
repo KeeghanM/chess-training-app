@@ -1,51 +1,35 @@
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { TacticsSetIdSchema } from '@schemas/tactics-mgmt'
 
 import { prisma } from '@server/db'
-import { getPostHogServer } from '@server/posthog-server'
 
-import { errorResponse, successResponse } from '@utils/server-responsses'
+import { apiWrapper } from '@utils/api-wrapper'
+import { NotFound } from '@utils/errors'
+import { successResponse } from '@utils/server-responses'
+import { validateBody } from '@utils/validators'
 
-const posthog = getPostHogServer()
+export const POST = apiWrapper(async (request, { user }) => {
+  const { setId } = await validateBody(request, TacticsSetIdSchema)
 
-export async function POST(request: Request) {
-  const session = getKindeServerSession()
-  if (!session) return errorResponse('Unauthorized', 401)
+  const existingSet = await prisma.tacticsSet.findFirst({
+    where: {
+      id: setId,
+      userId: user.id,
+    },
+  })
 
-  const user = await session.getUser()
-  if (!user) return errorResponse('Unauthorized', 401)
+  if (!existingSet) throw new NotFound('Set not found')
 
-  const { setId } = (await request.json()) as {
-    setId: string
-  }
-
-  if (!setId) return errorResponse('Missing required fields', 400)
-
-  try {
-    const existingSet = await prisma.tacticsSet.findFirst({
-      where: {
-        id: setId,
-        userId: user.id,
+  // Remove the rounds, which will reset the progress
+  await prisma.tacticsSet.update({
+    where: {
+      id: setId,
+    },
+    data: {
+      rounds: {
+        deleteMany: {},
       },
-    })
+    },
+  })
 
-    if (!existingSet) return errorResponse('Set not found', 404)
-
-    // Remove the rounds, which will reset the progress
-    await prisma.tacticsSet.update({
-      where: {
-        id: setId,
-      },
-      data: {
-        rounds: {
-          deleteMany: {},
-        },
-      },
-    })
-
-    return successResponse('Progress Reset', { setId }, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    if (e instanceof Error) return errorResponse(e.message, 500)
-    else return errorResponse('Unknown error', 500)
-  }
-}
+  return successResponse('Progress Reset', { setId })
+})

@@ -4,7 +4,7 @@ import {
   TooltipTrigger,
 } from '@components/_elements/tooltip'
 
-interface SoundToggleProps {
+type SoundToggleProps = {
   soundEnabled: boolean
   onToggle: () => void
 }

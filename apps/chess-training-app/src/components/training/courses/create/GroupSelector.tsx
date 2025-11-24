@@ -10,18 +10,22 @@ import Container from '@components/_elements/container'
 import Heading from '@components/_elements/heading'
 import Spinner from '@components/general/Spinner'
 
-import trackEventOnClient from '@utils/trackEventOnClient'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 import { GroupItem } from './GroupItem'
 import type { Line } from './parse/ParsePGNtoLineData'
 
-export default function GroupSelector(props: {
+export default function GroupSelector({
+  lines: propsLines,
+  back,
+  finished,
+}: {
   lines: Line[]
   back: () => void
   finished: (group: string, lines: Line[]) => void
 }) {
   const [parent] = useAutoAnimate()
-  const [lines, setLines] = useState<Line[]>(props.lines)
+  const [lines, setLines] = useState<Line[]>(propsLines)
   const [groupOptions, setGroupOptions] = useState<string[]>([])
   const [selectedGroup, setSelectedGroup] = useState<string>('')
   const [groupedLineCounts, setGroupedLineCounts] = useState<
@@ -164,7 +168,7 @@ export default function GroupSelector(props: {
               </p>
             </div>
             <Tabs.Root
-              defaultValue={groupOptions[0]}
+              {...(groupOptions[0] && { defaultValue: groupOptions[0] })}
               onValueChange={async (x) => {
                 setSelectedGroup(x)
                 trackEventOnClient('create_course_change_grouping', {
@@ -205,7 +209,7 @@ export default function GroupSelector(props: {
           </div>
           <div className="flex flex-col gap-2 md:flex-row md:justify-end md:items-center">
             <div>
-              <Button onClick={props.back}>Go Back</Button>
+              <Button onClick={back}>Go Back</Button>
             </div>
             <div>
               <Button
@@ -213,7 +217,7 @@ export default function GroupSelector(props: {
                 variant="primary"
                 onClick={() => {
                   setStatus('loading')
-                  props.finished(selectedGroup, lines)
+                  finished(selectedGroup, lines)
                 }}
               >
                 <div className="flex items-center gap-4">

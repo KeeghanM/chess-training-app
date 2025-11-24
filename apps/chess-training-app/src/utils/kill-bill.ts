@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import globalAxios from 'axios'
 import * as killbill from 'killbill'
 import { env } from '~/env'
@@ -41,7 +40,7 @@ export enum PRODUCTS {
 
 export type TPlanId = keyof typeof PRODUCTS
 
-export interface SubscriptionStatus {
+export type SubscriptionStatus = {
   hasActiveSubscription: boolean
   baseTier: 'free' | 'premium'
   activeAddons: string[]
@@ -54,11 +53,11 @@ export interface SubscriptionStatus {
     subscriptionId: string
     productName: string
     state: string
-    phaseType?: string
+    phaseType?: string | undefined
   }>
 }
 
-export interface KBAccount {
+export type KBAccount = {
   accountId: string
   externalKey: string
   name: string
@@ -67,13 +66,6 @@ export interface KBAccount {
 
 // KillBill Client
 class KillBillClient {
-  private options = {
-    username: KILLBILL_USERNAME,
-    password: KILLBILL_PASSWORD,
-    apiKey: KILLBILL_API_KEY,
-    apiSecret: KILLBILL_API_SECRET,
-  }
-
   private auditData = {
     user: 'arc-aide-system',
     reason: 'New subscription',
@@ -130,8 +122,8 @@ class KillBillClient {
         name: response.data.name!,
         email: response.data.email!,
       }
-    } catch (error: any) {
-      if (error.response?.status === 404) {
+    } catch (error) {
+      if (globalAxios.isAxiosError(error) && error.response?.status === 404) {
         return null // Account not found
       }
       console.error('Error in findAccountByExternalKey:', error)
@@ -184,7 +176,9 @@ class KillBillClient {
 
       // Extract session ID from response (following Ruby example)
       const formFields = response.data.formFields || []
-      const sessionIdField = formFields.find((field: any) => field.key === 'id')
+      const sessionIdField = formFields.find(
+        (field: { key: string; value: string }) => field.key === 'id',
+      )
 
       if (!sessionIdField) {
         throw new Error('No session ID returned from KillBill Stripe plugin')
@@ -379,7 +373,7 @@ class KillBillClient {
     sessionId?: string,
     token?: string,
   ): Promise<{
-    invoice: any
+    invoice: killbill.Invoice
     paymentMethod: killbill.PaymentMethod
     subscription: killbill.Subscription
   }> {
@@ -397,6 +391,10 @@ class KillBillClient {
     const invoicesResponse =
       await killBillAccountApi.getInvoicesForAccount(accountId)
     const invoice = invoicesResponse.data[0] // Most recent invoice
+
+    if (!invoice) {
+      throw new Error('No invoice generated for the charge')
+    }
 
     return { invoice, paymentMethod, subscription }
   }

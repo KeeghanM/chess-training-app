@@ -1,27 +1,19 @@
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-
 import { prisma } from '@server/db'
-import { getPostHogServer } from '@server/posthog-server'
 
-import { errorResponse, successResponse } from '@utils/server-responsses'
-
-const posthog = getPostHogServer()
+import { apiWrapper } from '@utils/api-wrapper'
+import { BadRequest } from '@utils/errors'
+import { successResponse } from '@utils/server-responses'
 
 export async function POST(
-  request: Request,
+  _request: Request,
   props: { params: Promise<{ courseId: string }> },
 ) {
-  const params = await props.params
-  const session = getKindeServerSession()
-  if (!session) return errorResponse('Unauthorized', 401)
-  const user = await session.getUser()
-  if (!user) return errorResponse('Unauthorized', 401)
+  return apiWrapper(async (_req, { user }) => {
+    const params = await props.params
+    const { courseId } = params
 
-  const { courseId } = params
+    if (!courseId) throw new BadRequest('Missing courseId')
 
-  if (!courseId) return errorResponse('Missing courseId', 400)
-
-  try {
     await prisma.userLine.updateMany({
       where: {
         userId: user.id,
@@ -32,10 +24,6 @@ export async function POST(
       },
     })
 
-    return successResponse('Lines updated', {}, 200)
-  } catch (e) {
-    posthog.captureException(e)
-    if (e instanceof Error) return errorResponse(e.message, 500)
-    else return errorResponse('Unknown error', 500)
-  }
+    return successResponse('Lines updated', {})
+  })(_request)
 }

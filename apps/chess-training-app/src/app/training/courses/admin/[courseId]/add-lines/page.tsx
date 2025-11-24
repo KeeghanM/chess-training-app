@@ -5,8 +5,9 @@ import posthog from 'posthog-js'
 
 import { prisma } from '@server/db'
 
+import Backdrop from '@components/_elements/backdrop'
 import Container from '@components/_elements/container'
-import PageHeader from '@components/_layouts/pageHeader'
+import Heading from '@components/_elements/heading'
 import AddLines from '@components/training/courses/admin/AddLines'
 
 export default async function AddLinesPage(props: {
@@ -49,13 +50,14 @@ export default async function AddLinesPage(props: {
   }
 
   return (
-    <>
-      <PageHeader title={course.courseName} subTitle="Add Lines" />
-      <div className="">
-        <Container>
-          <AddLines courseId={courseId} />
-        </Container>
-      </div>
-    </>
+    <div className="relative">
+      <Backdrop />
+      <Container>
+        <Heading as="h1" className="text-white">
+          Admin Panel
+        </Heading>
+        <AddLines courseId={courseId} />
+      </Container>
+    </div>
   )
 }

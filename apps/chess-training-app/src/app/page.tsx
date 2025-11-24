@@ -26,6 +26,9 @@ export const metadata = {
  * @returns The React element representing the complete Home page UI
  */
 export default async function Home() {
+  /**
+   * Testimonials from users, sorted by date in the render.
+   */
   const reviews = [
     {
       name: 'Anonymous',
@@ -98,19 +101,44 @@ export default async function Home() {
     <>
       <Script src="//widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js" />
       <Hero
-        title="Elevate Your Training and Improve Your Chess Today!"
+        title="Stop Forgetting Your Openings. Start Mastering Tactics."
         cta={{
-          text: 'Start Training',
+          text: 'Start Training Now',
           link: '/auth/signin',
         }}
       >
         <Heading className="text-primary" as="h2">
-          Discover the power of science backed chess training - Available for
-          free forever!
+          Discover the power of science-backed chess training.
+          <br />
+          <span className="text-white text-lg mt-2 block opacity-90">
+            ⭐ Rated 5/5 by Chess Enthusiasts
+          </span>
         </Heading>
       </Hero>
+
+      <div className="bg-slate-50 py-8">
+        <div className="container mx-auto px-4">
+          <div
+            className="trustpilot-widget"
+            data-locale="en-GB"
+            data-template-id="56278e9abfbbba0bdcd568bc"
+            data-businessunit-id="6577973a318437a64285f90c"
+            data-style-height="52px"
+            data-style-width="100%"
+          >
+            <a
+              href="https://uk.trustpilot.com/review/chesstraining.app"
+              target="_blank"
+              rel="noopener"
+            >
+              Trustpilot
+            </a>
+          </div>
+        </div>
+      </div>
+
       <ImageRowFull
-        heading="The definitive destination for chess enthusiasts of all skill levels"
+        heading="The definitive destination for chess improvement"
         imageSide="left"
         image={{
           src: '/images/chess_group_detailed.png',
@@ -118,25 +146,23 @@ export default async function Home() {
         }}
       >
         <p>
-          Our mission is simple yet ambitious: to improve your chess game
-          through innovative, science-backed training methods.
-          ChessTraining.app, your ultimate chess learning app, is designed to
-          cater to players of all levels, from those taking their first steps on
-          the chessboard to those seeking to refine their grandmaster-level
-          tactics as a dedicated chess trainer.
+          <strong>Memorization is not enough.</strong> Our mission is to give
+          you tools that actually work. ChessTraining.app is designed to fix the
+          biggest leaks in your game: forgetting your opening lines and missing
+          tactical shots.
         </p>
         <p>
-          Our platform brings science and technology to the world of chess, with
-          a variety of tools and features designed to help you improve your
-          game. From our flagship Tactics Trainer based on the{' '}
+          Our platform brings unique technology to the world of chess. From our
+          flagship Tactics Trainer based on the proven{' '}
           <StyledLink href="/about/features/woodpecker-method">
             Woodpecker Method
           </StyledLink>{' '}
-          to our innovative{' '}
+          to our proprietary{' '}
           <StyledLink href="/about/features/natural-play-learning">
-            "Natural Play Learning"
-          </StyledLink>{' '}
-          courses, each tool is designed to target specific areas of your game.
+            NPL Engine
+          </StyledLink>
+          , every tool is designed to respect your time and maximize your
+          results.
         </p>
         <div>
           <Link href="/about/features">
@@ -144,6 +170,7 @@ export default async function Home() {
           </Link>
         </div>
       </ImageRowFull>
+
       <ImageRowFull
         heading="Introducing Natural Play Learning"
         imageSide="right"
@@ -153,48 +180,46 @@ export default async function Home() {
         }}
       >
         <p>
-          A groundbreaking approach exclusive to ChessTraining.app, Natural Play
-          Learning revolutionizes the way you learn chess. Gone are the days of
-          repetitive drills on positions you've already mastered. Our
-          intelligent system adapts to your learning curve, focusing on new
-          challenges and reinforcing concepts only as needed.
+          <strong>Train like you play.</strong> Other apps interrupt you on
+          every move with comments, or disorient you by dropping you into a
+          random position at move 15. That's not how real chess works.
         </p>
         <p>
-          This mirrors real-game scenarios, preparing you for diverse and
-          unexpected plays. With Natural Play Learning, experience a more
-          intuitive, efficient, and enjoyable path to chess mastery. Join us
-          today and discover the ChessTraining.app difference.
+          With <strong>Natural Play Learning (NPL)</strong>, you play every line
+          from the start, building true muscle memory. We hide the comments and
+          instructions once you've learned them, allowing you to flow through
+          the opening naturally. We only interrupt the game if you make a
+          mistake.
         </p>
         <div>
           <Link href="/courses#natural-play-learning">
-            <Button variant="primary">Learn More</Button>
+            <Button variant="primary">See How It Works</Button>
           </Link>
         </div>
       </ImageRowFull>
+
       <BigText color="accent">
-        From our "Tactics Trainer" to our "Natural Play Learning" courses, every
-        tool is designed to target specific areas of your chess improvement
-        journey.
+        From "Woodpecker" repetition to "Natural Play" logic, we don't just show
+        you moves - we help you understand them.
       </BigText>
       <MultiCol
         title="Our Training Tools"
         cta={{
-          text: 'See all features',
+          text: 'Explore All Tools',
           link: '/about/features',
         }}
       >
         <MultiColItem title="Tactics Trainer">
           <p>
-            Train tactics using the{' '}
+            Rewire your tactical brain using the{' '}
             <StyledLink href="/about/features/woodpecker-method">
               WoodPecker Method
-            </StyledLink>{' '}
-            developed by GM's Axel Smith, and Hans Tikkanen.
+            </StyledLink>
+            .
           </p>
           <p>
-            Generate puzzle sets and train on them, while the site takes care of
-            tracking your accuracy & time spent. You just focus on your chess
-            training experience.
+            Generate custom puzzle sets based on your rating. The system handles
+            the admin while you focus purely on pattern recognition.
           </p>
           <Link href="/training/tactics" className="mt-auto">
             <Button variant="primary">Start Training</Button>
@@ -202,15 +227,15 @@ export default async function Home() {
         </MultiColItem>
         <MultiColItem title="Course Trainer">
           <p>
-            Built using spaced repetition, and implementing our{' '}
+            Master your openings using our{' '}
             <StyledLink href="/about/features/natural-play-learning">
               Natural Play Learning
             </StyledLink>{' '}
-            method, our courses are a great way to learn.
+            engine.
           </p>
           <p>
-            Train using a course you have created, or one that has been shared
-            with you. You won't find a better way to learn chess.
+            Import your own PGNs or learn from community courses. We ensure you
+            retain the lines without the boredom of rote memorization.
           </p>
           <Link href="/courses" className="mt-auto">
             <Button variant="primary">Browse Courses</Button>
@@ -218,25 +243,26 @@ export default async function Home() {
         </MultiColItem>
         <MultiColItem title="Visualisation Trainer">
           <p>
-            Do you struggle to see past two or three moves? Find long
-            calculations difficult? Our Visualisation Trainer is designed for
-            you.
+            Struggle to calculate deep lines? Our Visualisation Trainer forces
+            you to see the board in your mind.
           </p>
           <p>
-            With our trainer, you're presented with a chess position and a
-            sequence of moves. Your task is to visualize these moves in your
-            mind, and find the correct final move.
+            Read the moves, visualize the position, and find the tactic without
+            moving the pieces. It's the fastest way to improve calculation.
           </p>
           <Link href="/training/visualisation" className="mt-auto">
-            <Button variant="primary">Let's See</Button>
+            <Button variant="primary">Try It Now</Button>
           </Link>
         </MultiColItem>
       </MultiCol>
       <CtaRow
         title="Ready to transform your chess game?"
-        cta={{ text: 'Sign Up Now', link: '/auth/signin' }}
+        cta={{ text: 'Sign Up Free', link: '/auth/signin' }}
       >
-        <p>Sign up now for free and start your journey to chess mastery.</p>
+        <p>
+          Join thousands of players improving their game with science-backed
+          methods.
+        </p>
       </CtaRow>
       <div className="item flex flex-col items-center pb-6 md:pb-12">
         <MultiCol title="What Our Members Say">
@@ -247,29 +273,10 @@ export default async function Home() {
             .map((review, i) => (
               <MultiColItem key={`${review.name}-${i}`} title={review.name}>
                 <p className="text-sm italic ">{review.date}</p>
-                <p>{review.text}</p>
+                <p>"{review.text}"</p>
               </MultiColItem>
             ))}
         </MultiCol>
-        <div
-          className="trustpilot-widget"
-          data-locale="en-GB"
-          data-template-id="56278e9abfbbba0bdcd568bc"
-          data-businessunit-id="6577973a318437a64285f90c"
-          data-style-height="52px"
-          data-style-width="100%"
-        >
-          <a
-            href="https://uk.trustpilot.com/review/chesstraining.app"
-            target="_blank"
-            rel="noopener"
-          >
-            Trustpilot
-          </a>
-        </div>
-        <Link target="_blank" href="https://www.buymeacoffee.com/keeghanm">
-          <Button variant="primary">Support us with Coffee</Button>
-        </Link>
       </div>
     </>
   )

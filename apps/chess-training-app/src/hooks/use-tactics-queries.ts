@@ -1,6 +1,17 @@
+import type { CreateRoundData, UpdateTacticsSetData } from '@schemas/tactics'
+import {
+  CreateRoundSchema,
+  CreateTacticsSetFromPgnSchema,
+  CreateTacticsSetSchema,
+  IncreaseCorrectSchema,
+  IncreaseIncorrectSchema,
+  IncreaseTimeTakenSchema,
+  SetIdSchema,
+  UpdateTacticsSetSchema,
+} from '@schemas/tactics'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import type { ResponseJson } from '@utils/server-responsses'
+import type { ResponseJson } from '@utils/server-responses'
 
 import type { TrainingPuzzle } from './use-puzzle-queries'
 
@@ -11,7 +22,7 @@ enum TacticsSetStatus {
 }
 
 // Types based on the TacticsTrainer component
-export interface TacticsRound {
+export type TacticsRound = {
   id: string
   setId: string
   roundNumber: number
@@ -22,7 +33,7 @@ export interface TacticsRound {
   updatedAt: Date
 }
 
-export interface TacticsSet {
+export type TacticsSet = {
   id: string
   name: string
   size: number
@@ -36,23 +47,6 @@ export interface TacticsSet {
   rounds: TacticsRound[]
   puzzles: Array<{ puzzleid: string }>
   // Add other set fields as needed
-}
-
-export interface CreateRoundData {
-  setId: string
-  roundNumber: number
-  puzzleRating: number
-}
-
-export interface UpdateStatsData {
-  roundId: string
-  currentStreak: number
-}
-
-export interface UpdateTimeData {
-  roundId: string
-  timeTaken: number
-  setId: string
 }
 
 // Tactics Queries
@@ -100,13 +94,16 @@ export function useTacticsQueries() {
   // --- Mutations ---
   const createRound = useMutation({
     mutationFn: async (data: CreateRoundData) => {
-      await fetch('/api/tactics/createRound', {
+      const validatedData = CreateRoundSchema.parse(data)
+      const response = await fetch('/api/tactics/createRound', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(validatedData),
       })
+      const json = (await response.json()) as ResponseJson
+      return json.data?.round as unknown as TacticsRound
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
@@ -117,13 +114,14 @@ export function useTacticsQueries() {
   })
 
   const increaseCorrect = useMutation({
-    mutationFn: async (data: UpdateStatsData) => {
+    mutationFn: async (data: { roundId: string; currentStreak: number }) => {
+      const validatedData = IncreaseCorrectSchema.parse(data)
       const response = await fetch('/api/tactics/stats/increaseCorrect', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(validatedData),
       })
 
       const json = (await response.json()) as ResponseJson
@@ -139,12 +137,13 @@ export function useTacticsQueries() {
 
   const increaseIncorrect = useMutation({
     mutationFn: async (data: { roundId: string }) => {
+      const validatedData = IncreaseIncorrectSchema.parse(data)
       const response = await fetch('/api/tactics/stats/increaseIncorrect', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(validatedData),
       })
 
       const json = (await response.json()) as ResponseJson
@@ -159,13 +158,18 @@ export function useTacticsQueries() {
   })
 
   const increaseTimeTaken = useMutation({
-    mutationFn: async (data: UpdateTimeData) => {
+    mutationFn: async (data: {
+      roundId: string
+      timeTaken: number
+      setId: string
+    }) => {
+      const validatedData = IncreaseTimeTakenSchema.parse(data)
       const response = await fetch('/api/tactics/stats/increaseTimeTaken', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(validatedData),
       })
 
       const json = (await response.json()) as ResponseJson
@@ -180,9 +184,10 @@ export function useTacticsQueries() {
     mutationFn: async (params: {
       rating?: number
       ratingDeviation?: number
-      themes?: string
-      count?: string
+      themes?: string[]
+      count?: number
     }): Promise<TrainingPuzzle[]> => {
+      // TODO: Add schema for this params object if needed, currently passed through
       const response = await fetch('/api/puzzles/getPuzzles', {
         method: 'POST',
         headers: {
@@ -213,9 +218,21 @@ export function useTacticsQueries() {
       const url = data.isPGN
         ? '/api/tactics/createFromPgn'
         : '/api/tactics/create'
-      const body = data.isPGN
-        ? { name: data.name, pgn: data.pgn, rating: data.rating }
-        : { name: data.name, puzzleIds: data.puzzleIds, rating: data.rating }
+
+      let body
+      if (data.isPGN) {
+        body = CreateTacticsSetFromPgnSchema.parse({
+          name: data.name,
+          pgn: data.pgn,
+          rating: data.rating,
+        })
+      } else {
+        body = CreateTacticsSetSchema.parse({
+          name: data.name,
+          puzzleIds: data.puzzleIds,
+          rating: data.rating,
+        })
+      }
 
       console.log({ url })
 
@@ -238,12 +255,13 @@ export function useTacticsQueries() {
 
   const archiveTactic = useMutation({
     mutationFn: async ({ setId }: { setId: string }) => {
+      const validatedData = SetIdSchema.parse({ setId })
       await fetch('/api/tactics/archiveSet', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ setId }),
+        body: JSON.stringify(validatedData),
       })
     },
     onSuccess: () => {
@@ -253,12 +271,13 @@ export function useTacticsQueries() {
 
   const deleteTactic = useMutation({
     mutationFn: async ({ setId }: { setId: string }) => {
+      const validatedData = SetIdSchema.parse({ setId })
       await fetch('/api/tactics/delete', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ setId }),
+        body: JSON.stringify(validatedData),
       })
     },
     onSuccess: () => {
@@ -268,12 +287,13 @@ export function useTacticsQueries() {
 
   const resetTacticProgress = useMutation({
     mutationFn: async ({ setId }: { setId: string }) => {
+      const validatedData = SetIdSchema.parse({ setId })
       await fetch('/api/tactics/resetProgress', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ setId }),
+        body: JSON.stringify(validatedData),
       })
     },
     onSuccess: () => {
@@ -282,13 +302,14 @@ export function useTacticsQueries() {
   })
 
   const updateTactic = useMutation({
-    mutationFn: async ({ setId, name }: { setId: string; name: string }) => {
+    mutationFn: async (data: UpdateTacticsSetData) => {
+      const validatedData = UpdateTacticsSetSchema.parse(data)
       await fetch('/api/tactics/update', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ setId, name }),
+        body: JSON.stringify(validatedData),
       })
     },
     onSuccess: () => {
@@ -298,12 +319,13 @@ export function useTacticsQueries() {
 
   const restoreTactic = useMutation({
     mutationFn: async ({ setId }: { setId: string }) => {
+      const validatedData = SetIdSchema.parse({ setId })
       await fetch('/api/tactics/restoreSet', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ setId }),
+        body: JSON.stringify(validatedData),
       })
     },
     onSuccess: () => {

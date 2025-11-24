@@ -18,8 +18,7 @@ export type CourseBrowserProps = {
   lines: UserLineWithData[]
 }
 
-export default function CourseBrowser(props: CourseBrowserProps) {
-  const { lines } = props
+export default function CourseBrowser({ lines }: CourseBrowserProps) {
   const [groupIds] = useState<string[]>(
     Array.from(new Set(lines.map((line) => line.line.groupId))),
   )
@@ -38,7 +37,7 @@ export default function CourseBrowser(props: CourseBrowserProps) {
   )
   const [search] = useState('')
   const [openGroupId, setOpenGroupId] = useState<string | undefined>(
-    props.lines[0]?.line.groupId,
+    lines[0]?.line.groupId,
   )
 
   return (
@@ -50,14 +49,14 @@ export default function CourseBrowser(props: CourseBrowserProps) {
               group.name.toLowerCase().includes(search.toLowerCase()),
             )
             .map((group) => {
-              const lines = props.lines.filter(
+              const groupLines = lines.filter(
                 (line) => line.line.groupId === group.id,
               )
               return (
                 <GroupListItem
                   key={group.id}
                   name={group.name}
-                  lines={lines}
+                  lines={groupLines}
                   onClick={() => setOpenGroupId(group.id)}
                   open={openGroupId === group.id}
                 />

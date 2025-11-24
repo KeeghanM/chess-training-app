@@ -7,11 +7,9 @@ import { useEffect, useState } from 'react'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import type { Comment, Move, UserFen } from '@prisma/client'
 import { useWindowSize } from '@uidotdev/usehooks'
-import type { Move as ChessMove } from 'chess.js'
-import { Chess } from 'chess.js'
+import { Chess, type Move as ChessMove } from 'chess.js'
 import { ThumbsDown, ThumbsUp } from 'lucide-react'
 import posthog from 'posthog-js'
-import type { Arrow } from 'react-chessboard'
 import Toggle from 'react-toggle'
 import 'react-toggle/style.css'
 import useSound from 'use-sound'
@@ -23,16 +21,14 @@ import StyledLink from '@components/_elements/styledLink'
 import Spinner from '@components/general/Spinner'
 import XpTracker from '@components/general/XpTracker'
 
-import {
-  PrismaUserCourse,
-  type TrainingFen,
-  useCourseQueries,
-} from '@hooks/use-course-queries'
+import { useChessGame } from '@hooks/use-chess-game'
+import { PrismaUserCourse, type TrainingFen } from '@hooks/use-course-queries'
+import { useCourseStats } from '@hooks/use-course-stats'
 
 import { useAppStore } from '@stores/app-store'
 
-import getArrows from '@utils/StringToArrows'
-import trackEventOnClient from '@utils/trackEventOnClient'
+import getArrows from '@utils/get-arrows'
+import trackEventOnClient from '@utils/track-event-on-client'
 
 import ChessBoard from '../ChessBoard'
 import BoardContainer from '../shared/BoardContainer'
@@ -44,23 +40,59 @@ import BoardContainer from '../shared/BoardContainer'
 
 type PrismaMove = Move & { comment?: Comment | null }
 
-export default function CourseTrainer(props: {
-  userCourse: PrismaUserCourse
-  userLines: PrismaUserLine[]
-  userFens: UserFen[]
-}) {
+type CourseTrainerProps = {
+  readonly userCourse: PrismaUserCourse
+  readonly userLines: PrismaUserLine[]
+  readonly userFens: UserFen[]
+}
+
+/**
+ * CourseTrainer Component
+ *
+ * Handles the interactive training session for a course.
+ * Manages game state, user moves, teaching mode, and stats tracking.
+ */
+export default function CourseTrainer({
+  userCourse,
+  userLines,
+  userFens,
+}: CourseTrainerProps) {
   const router = useRouter()
   const { user } = useKindeBrowserClient()
 
   // --- Hooks ---
-  const { uploadTrainedFens, updateLineStats } = useCourseQueries()
+  const {
+    game,
+    gameReady,
+    position,
+    setPosition,
+    orientation,
+    setOrientation,
+    isInteractive,
+    setIsInteractive,
+    arrows,
+    setArrows,
+    highlightSquares,
+    setHighlightSquares,
+    makeMove,
+    resetGame,
+  } = useChessGame()
+
+  const { lines, existingFens, processStats, processNewFens } = useCourseStats({
+    userCourse,
+    userLines,
+    userFens: userFens.map((fen) => ({
+      fen: fen.fen,
+      commentId: fen.commentId ?? undefined,
+    })),
+  })
+
   const { preferences, setAutoNext } = useAppStore()
   const { soundEnabled, autoNext } = preferences
 
   // Line/Course State
-  const [lines, setLines] = useState<PrismaUserLine[]>(props.userLines)
   const [allComments] = useState(
-    props.userLines
+    userLines
       .map((line) => {
         return line.line.moves
           .map((move) => move.comment)
@@ -74,16 +106,6 @@ export default function CourseTrainer(props: {
   const [currentLineMoves, setCurrentLineMoves] = useState<PrismaMove[]>([])
   const [indexOfOurLastMove, setIndexOfOurLastMove] = useState<number>(0)
 
-  // Game State
-  const [game, setGame] = useState(new Chess())
-  const [gameReady, setGameReady] = useState(false)
-  const [orientation, setOrientation] = useState<'white' | 'black'>('white')
-  const [position, setPosition] = useState(game.fen())
-  const [arrows, setArrows] = useState<Arrow[]>([])
-  const [highlightSquares, setHighlightSquares] = useState<
-    Record<string, { backgroundColor: string }>
-  >({})
-
   // Training State
   const [mode, setMode] = useState<'normal' | 'recap'>('normal')
   const [isTeaching, setIsTeaching] = useState(false)
@@ -95,11 +117,6 @@ export default function CourseTrainer(props: {
   const [incorrectCounter, setIncorrectCounter] = useState(0)
 
   // Tracking/Stats State
-  const [existingFens, setExistingFens] = useState<TrainingFen[]>(
-    props.userFens.map((fen) => {
-      return { fen: fen.fen, commentId: fen.commentId ?? undefined }
-    }),
-  )
   const [trainedFens, setTrainedFens] = useState<TrainingFen[]>([])
   const [wrongFens, setWrongFens] = useState<string[]>([])
   const [wrongMoves, setWrongMoves] = useState<{ move: string; fen: string }[]>(
@@ -109,7 +126,6 @@ export default function CourseTrainer(props: {
   // General/Settings State
   const windowSize = useWindowSize() as { width: number; height: number }
   const [isLoading, setIsLoading] = useState(false)
-  const [isInteractive, setIsInteractive] = useState(true)
   const [xpCounter, setXpCounter] = useState(0)
   const [showComment, setShowComment] = useState(false)
   const [error, setError] = useState('')
@@ -118,6 +134,9 @@ export default function CourseTrainer(props: {
   const [incorrectSound] = useSound('/sfx/incorrect.mp3')
   const [correctSound] = useSound('/sfx/correct.mp3')
 
+  /**
+   * Determines the next line to train based on revision date and sort order.
+   */
   const getNextLine = (lines: PrismaUserLine[]) => {
     // Sorts the lines in order of priority
     // 1. Lines with a "revisionDate" in the past, sorted by date (oldest first)
@@ -143,6 +162,9 @@ export default function CourseTrainer(props: {
     return null
   }
 
+  /**
+   * Checks if the current move needs to be taught (shown to the user).
+   */
   const needsTeachingMove = () => {
     // If we haven't seen any fens, we need to teach the first move
     const allFens = [...existingFens, ...trainedFens]
@@ -177,19 +199,9 @@ export default function CourseTrainer(props: {
     return true
   }
 
-  const makeMove = (move: string) => {
-    try {
-      game.move(move)
-      setPosition(game.fen())
-      // eslint-disable-next-line
-    } catch (e) {
-      // honestly, do nothing
-      // I dunno why this is firing, I replicated it once but it didn;t actually affect the usage
-      // I think it's to do with premoving and the chess.js library, but nothing actually breaks
-      // so this is just here to stop logging it as an "unhandled error"
-    }
-  }
-
+  /**
+   * Plays the opponent's move automatically.
+   */
   const playOpponentsMove = () => {
     const opponentsMove = currentLineMoves[game.history().length]
     if (!opponentsMove) return
@@ -222,8 +234,9 @@ export default function CourseTrainer(props: {
     return timeoutId
   }
 
-  // Makes a move for the "player"
-  // and pauses to let them make a move
+  /**
+   * Makes a move for the "player" and pauses to let them make a move.
+   */
   const makeTeachingMove = (delay = 500) => {
     const currentMove =
       mode == 'normal'
@@ -280,9 +293,7 @@ export default function CourseTrainer(props: {
         setMode('normal')
         setHadTeachingMove(false)
         setCurrentWrongMove(0)
-        const newGame = new Chess()
-        setPosition(newGame.fen())
-        setGame(newGame)
+        resetGame()
       }, 500)
       return
     }
@@ -292,8 +303,9 @@ export default function CourseTrainer(props: {
       // Now we want to log all the stats
       setXpCounter(xpCounter + 1)
       setIsLoading(true)
-      processNewFens()
-      const updatedLines = processStats()
+      processNewFens(currentLineMoves, getComment)
+      if (!currentLine) throw new Error('No current line')
+      const updatedLines = processStats(currentLine, lineCorrect)
       if (soundEnabled) correctSound()
 
       if (updatedLines === null) throw new Error('No updated lines') // This is likely because we've lost auth somehow
@@ -306,7 +318,7 @@ export default function CourseTrainer(props: {
         // if so, show a nice modal popup and track event
         // For now, just redirect to the course page
         trackEventOnClient('course_completed', {
-          courseName: props.userCourse.course.courseName,
+          courseName: userCourse.course.courseName,
         })
         router.push('/training/courses/')
         return
@@ -316,7 +328,7 @@ export default function CourseTrainer(props: {
         // We've reached the end of the group
         // TODO: Add a nice modal popup here
         trackEventOnClient('course_group_completed', {
-          courseName: props.userCourse.course.courseName,
+          courseName: userCourse.course.courseName,
         })
       }
 
@@ -327,7 +339,6 @@ export default function CourseTrainer(props: {
       game.reset()
       currentLineMoves.forEach((move) => game.move(move.move))
       setPosition(game.fen())
-      setGame(game)
 
       // Setup for the next line
       setNextLine(nextLine)
@@ -347,7 +358,7 @@ export default function CourseTrainer(props: {
     setIsLoading(true)
     try {
       trackEventOnClient('course_next_line', {
-        courseName: props.userCourse.course.courseName,
+        courseName: userCourse.course.courseName,
       })
 
       setNextLine(null)
@@ -360,9 +371,8 @@ export default function CourseTrainer(props: {
       setLineCorrect(true)
       setIsInteractive(true)
       setIsTeaching(false)
-      game.reset()
+      resetGame()
       setIsInteractive(true)
-      setPosition(game.fen())
     } catch (e) {
       posthog.captureException(e)
       if (e instanceof Error) setError(e.message)
@@ -375,126 +385,6 @@ export default function CourseTrainer(props: {
   const getComment = (commentId: number | undefined) => {
     if (!commentId) return undefined
     return allComments.find((comment) => comment.id == commentId)?.comment
-  }
-
-  const processNewFens = () => {
-    if (!user) return
-    // Reconstruct all the FENs we saw as the trainedFens state isn't updated
-    // it misses the last move out due to the update sequence of State
-    const seenFens = (() => {
-      const newGame = new Chess()
-      const fens = [] as TrainingFen[]
-
-      // Add the starting position
-      const commentId = currentLineMoves[0]?.comment?.id
-      fens.push({ fen: newGame.fen(), commentId })
-
-      currentLineMoves.forEach((move) => {
-        newGame.move(move.move)
-        fens.push({
-          fen: newGame.fen(),
-          commentId: move.comment?.id,
-        })
-      })
-      return fens
-    })()
-
-    // To only upload the fens we haven't seen before
-    // we need to check both the fen string, and the actual comment (not just the id)
-    // Doing this here means we only need to store a single fen with one commentId in the DB
-    const fensToUpload = seenFens.filter((seenFen) => {
-      const fenComment = getComment(seenFen.commentId)
-      const existingFen = existingFens.find((existingFen) => {
-        const existingFenComment = getComment(existingFen.commentId)
-        return (
-          existingFen.fen == seenFen.fen && existingFenComment == fenComment
-        )
-      })
-      return !existingFen
-    })
-
-    const allSeenFens = [...existingFens, ...fensToUpload]
-    setExistingFens(allSeenFens)
-
-    if (fensToUpload.length > 0) {
-      // This is not using await, because actually we want this to run in the background
-      // and not block the user from continuing. If this errors, all it means is that the user
-      // will have to re-do some moves, next time they train which isn't a big deal.
-      uploadTrainedFens.mutate(
-        {
-          userCourseId: props.userCourse.id,
-          fens: fensToUpload,
-        },
-        {
-          onError: (error) => {
-            posthog.captureException(error) // Don't do anything with the error, just log it
-          },
-        },
-      )
-    }
-  }
-
-  const calculateRevisionData = (line: PrismaUserLine) => {
-    // find the review date for the line
-    const now = new Date()
-    const tenMinutes = 10 * 60 * 1000
-    const oneHour = 6 * tenMinutes
-    const fourHours = 4 * oneHour
-    const oneDay = 24 * oneHour
-    const threeDays = oneDay * 3
-    const oneWeek = oneDay * 7
-    const oneMonth = oneDay * 30
-    const timeToAdd = lineCorrect
-      ? (() => {
-          switch (line.currentStreak) {
-            case 0: // First time ever correct, or first time since wrong
-              return oneHour
-            case 1:
-              return fourHours
-            case 2:
-              return oneDay
-            case 3:
-              return threeDays
-            case 4:
-              return oneWeek
-            default:
-              return oneMonth
-          }
-        })()
-      : tenMinutes
-
-    return new Date(now.getTime() + timeToAdd)
-  }
-
-  const processStats = () => {
-    if (!user || !currentLine) return null
-
-    const revisionDate = calculateRevisionData(currentLine)
-    const optimisticallyUpdatedLine = { ...currentLine, revisionDate }
-    const updatedLines = lines.map((line) =>
-      line.id === optimisticallyUpdatedLine.id
-        ? optimisticallyUpdatedLine
-        : line,
-    )
-    setLines(updatedLines)
-
-    // Send the update to the server in the background
-    updateLineStats.mutate(
-      {
-        userCourseId: props.userCourse.id,
-        lineId: currentLine.id.toString(),
-        lineCorrect,
-        revisionDate,
-      },
-      {
-        onError: (error) => {
-          posthog.captureException(error)
-          // Revert to the previous state or handle the error
-        },
-      },
-    )
-
-    return updatedLines // Return the optimistically updated lines
   }
 
   const handleMove = async (playerMove: ChessMove) => {
@@ -592,9 +482,7 @@ export default function CourseTrainer(props: {
   useEffect(() => {
     // Create a new game when the line changes
     if (!currentLine) return
-    const newGame = new Chess()
-    setGame(newGame)
-    setGameReady(false)
+    resetGame()
     setCurrentLineMoves(currentLine.line.moves)
     setWrongMoves([])
   }, [currentLine])
@@ -612,11 +500,6 @@ export default function CourseTrainer(props: {
 
     setIndexOfOurLastMove(lastIndex)
   }, [currentLineMoves])
-
-  useEffect(() => {
-    // We need to ensure the game is set before we can make a move
-    setGameReady(true)
-  }, [game])
 
   useEffect(() => {
     // Now, whenever any of the elements associated with the game/line
@@ -640,6 +523,7 @@ export default function CourseTrainer(props: {
         if (timeoutId) clearTimeout(timeoutId)
       }
     }
+    return
   }, [gameReady, game, currentLine])
 
   useEffect(() => {

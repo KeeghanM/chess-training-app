@@ -2,7 +2,7 @@ type LineMove = {
   notation: string
   number: number
   colour: boolean
-  comment?: string
+  comment?: string | undefined
   arrows: string | null
   lineId: number
 }
@@ -12,7 +12,7 @@ export type Move = {
   number: number
   colour: boolean
   variations: Move[][]
-  comment?: string
+  comment?: string | undefined
   arrows: string | null
   lineId: number
 }
@@ -21,7 +21,7 @@ export type PGN = {
   moves: Move[]
 }
 
-export default function BuildPGN(lines: LineMove[][]): PGN {
+export default function buildPgn(lines: LineMove[][]): PGN {
   const pgn: PGN = { moves: [] }
   let lineToAddTo: Move[] = []
 

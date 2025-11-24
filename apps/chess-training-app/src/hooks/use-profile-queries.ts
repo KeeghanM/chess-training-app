@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Types
-export interface UserProfile {
+export type UserProfile = {
   id: string
   email: string
   name: string
@@ -10,7 +10,7 @@ export interface UserProfile {
   // Add other profile fields as needed
 }
 
-export interface XpUpdate {
+export type XpUpdate = {
   xp: number
   type: 'line' | 'tactic'
 }
