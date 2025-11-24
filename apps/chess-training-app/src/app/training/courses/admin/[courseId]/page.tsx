@@ -61,7 +61,9 @@ export default async function CourseAdminPage(props: {
     <div className="relative">
       <Backdrop />
       <Container>
-        <Heading as="h1">Admin Panel</Heading>
+        <Heading as="h1" className="text-white">
+          Admin Panel
+        </Heading>
         <CourseAdminPanel course={course} />
       </Container>
     </div>

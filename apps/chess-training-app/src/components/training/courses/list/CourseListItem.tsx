@@ -75,7 +75,7 @@ export default function CourseListItem(props: {
     })()
       .catch((e) => posthog.captureException(e))
       .finally(() => setLoading(false))
-  }, [])
+  }, [props.courseId])
 
   return (
     <div

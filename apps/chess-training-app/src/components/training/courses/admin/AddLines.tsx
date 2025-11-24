@@ -80,56 +80,58 @@ export default function AddLines(props: { courseId: string }) {
   }
 
   return (
-    <div className="p-4 bg-slate-900">
-      {step === 'error' && (
-        <>
-          <Heading className="text-red-500" as={'h2'}>
-            Oops! Something went wrong
-          </Heading>
-          <p className="text-white">
-            Please refresh and try again, or{' '}
-            <StyledLink href="/contact/report-an-issue">
-              report an issue
-            </StyledLink>
-            .
-          </p>
-        </>
-      )}
-      {step === 'pgn' && (
-        <PgnToLinesForm
-          finished={async (lines) => {
-            await processLines(lines)
-          }}
-          back={() => {
-            history.back()
-          }}
-        />
-      )}
-      {step === 'groups' && (
-        <GroupSelector
-          lines={lines}
-          back={() => setStep('pgn')}
-          finished={uploadLines}
-        />
-      )}
-      {step === 'success' && (
-        <div className="flex flex-col gap-2">
-          <Heading className="text-green-500" as={'h2'}>
-            Success!
-          </Heading>
-          <p className="text-white">
-            Your new lines were successfully added to the course.
-          </p>
-          <div className="flex gap-2">
-            <Link href={`/training/courses/`}>
-              <Button variant="primary">Back to course list</Button>
-            </Link>
-            <Link href={`/training/courses/admin/${props.courseId}`}>
-              <Button variant="warning">Back to admin page</Button>
-            </Link>
+    <div className="p-4 bg-card-light/20 rounded-lg">
+      <div className="bg-card rounded-lg p-4 shadow space-y-6">
+        {step === 'error' && (
+          <>
+            <Heading className="text-red-500" as={'h2'}>
+              Oops! Something went wrong
+            </Heading>
+            <p className="text-white">
+              Please refresh and try again, or{' '}
+              <StyledLink href="/contact/report-an-issue">
+                report an issue
+              </StyledLink>
+              .
+            </p>
+          </>
+        )}
+        {step === 'pgn' && (
+          <PgnToLinesForm
+            finished={async (lines) => {
+              await processLines(lines)
+            }}
+            back={() => {
+              history.back()
+            }}
+          />
+        )}
+        {step === 'groups' && (
+          <GroupSelector
+            lines={lines}
+            back={() => setStep('pgn')}
+            finished={uploadLines}
+          />
+        )}
+        {step === 'success' && (
+          <div className="flex flex-col gap-2">
+            <Heading className="text-green-500" as={'h2'}>
+              Success!
+            </Heading>
+            <p className="text-white">
+              Your new lines were successfully added to the course.
+            </p>
+            <div className="flex gap-2">
+              <Link href={`/training/courses/`}>
+                <Button variant="primary">Back to course list</Button>
+              </Link>
+              <Link href={`/training/courses/admin/${props.courseId}`}>
+                <Button variant="warning">Back to admin page</Button>
+              </Link>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }

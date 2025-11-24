@@ -17,7 +17,6 @@ import trackEventOnClient from '@utils/track-event-on-client'
 
 import BoardContainer from '../shared/BoardContainer'
 import PgnNavigator from '../shared/PgnNavigator'
-import StatusIndicator from '../shared/StatusIndicator'
 
 interface VisualisationTrainProps {
   // Display props
@@ -53,7 +52,6 @@ export default function VisualisationTrain({
   soundEnabled,
   loading,
   puzzleStatus,
-  puzzleId,
   xpCounter,
   autoNext,
   nextPuzzle,
@@ -275,13 +273,6 @@ export default function VisualisationTrain({
         </div>
         <div className="lg:w-1/3 lg:min-w-1/3 p-4 bg-card-light/20 rounded-lg h-fit my-auto">
           <div className="flex flex-col gap-2 bg-card rounded-lg p-4">
-            <StatusIndicator
-              status={puzzleStatus}
-              orientation={
-                orientation === 'white' ? 'black' : 'white' // this is flipped, because we want the user to start from the beginning. Orientation is the USERS orientation, but the first move they need to visualise is OPPONENTS - so we flip it
-              }
-              puzzleId={puzzleId}
-            />
             <PgnNavigator
               game={game}
               puzzleFinished={puzzleFinished}
