@@ -135,7 +135,13 @@ export default function EndgameTrainer() {
       setRating={setRating}
       difficulty={difficulty}
       setDifficulty={setDifficulty}
-      onStartTraining={() => setMode('training')}
+      onStartTraining={() => {
+        if (rating > 3000 || rating < 500) {
+          setError('Invalid Puzzle Rating')
+          return
+        }
+        setMode('training')
+      }}
       error={endgameQuery.error?.message || error}
     />
   ) : (

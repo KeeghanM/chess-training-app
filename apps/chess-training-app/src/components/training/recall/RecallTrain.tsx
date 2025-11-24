@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import type { Color, PieceSymbol, Square } from 'chess.js'
 import { Chess, SQUARES } from 'chess.js'
@@ -126,7 +126,7 @@ export default function RecallTrain({
     }
   }
 
-  const markImReady = () => {
+  const markImReady = useCallback(() => {
     // Hide all pieces (but not the squares themselves)
     const allPieceSquares = game.board().flatMap((row, rowIndex) =>
       row
@@ -152,7 +152,7 @@ export default function RecallTrain({
 
     setHiddenSquares(hidePieces)
     setReadyForInput(true)
-  }
+  }, [game])
 
   const squareClicked = async ({ square }: SquareHandlerArgs) => {
     if (puzzleFinished) return
@@ -249,7 +249,7 @@ export default function RecallTrain({
 
   // Timer logic
   useEffect(() => {
-    if (!timed || !currentPuzzle || readyForInput) return
+    if (!timed || !currentPuzzle || readyForInput || puzzleFinished) return
 
     const interval = setInterval(() => {
       setTimer((prevTimer) => {
@@ -262,7 +262,7 @@ export default function RecallTrain({
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [timed, currentPuzzle, readyForInput])
+  }, [timed, currentPuzzle, readyForInput, markImReady, puzzleFinished])
 
   return (
     <>
