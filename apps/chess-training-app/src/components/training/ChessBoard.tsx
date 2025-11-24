@@ -204,8 +204,7 @@ export default function ChessBoard({
     const history = game.history({ verbose: true })
     const lastMove = history[history.length - 1]
     if (lastMove) playMoveSound(lastMove.san)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [position, soundEnabled]) // Added soundEnabled to deps, kept position as trigger
+  }, [position, soundEnabled])
 
   // --- Promotion dialog placement ---
   // Note: accessing document directly in render is not ideal for SSR, but this is a client component.

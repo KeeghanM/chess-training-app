@@ -5,6 +5,7 @@ type UserPreferences = {
   soundEnabled: boolean
   autoNext: boolean
   theme: 'light' | 'dark' | 'system'
+  boardSize: number | undefined
 }
 
 interface AppStore {
@@ -19,6 +20,7 @@ const initialPreferences: UserPreferences = {
   soundEnabled: true,
   autoNext: false,
   theme: 'system',
+  boardSize: undefined,
 }
 
 export const useAppStore = create<AppStore>()(

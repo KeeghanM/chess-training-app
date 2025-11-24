@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { Chess } from 'chess.js'
 
-import ChessBoard from '../ChessBoard'
+import ChessBoard from '@components/training/ChessBoard'
 
 // Mock use-sound
 jest.mock('use-sound', () => {
@@ -10,6 +10,7 @@ jest.mock('use-sound', () => {
 
 // Mock react-chessboard
 jest.mock('react-chessboard', () => ({
+  // eslint-disable-next-line
   Chessboard: ({ options }: { options: any }) => (
     <div data-testid="chessboard-board">
       {['e2', 'e4', 'a7', 'a8'].map((sq) => (

@@ -5,7 +5,7 @@ import '@testing-library/jest-dom'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import AccountForm from '../AccountForm'
+import AccountForm from '@components/dashboard/AccountForm'
 
 // Mock dependencies
 jest.mock('@kinde-oss/kinde-auth-nextjs', () => ({
