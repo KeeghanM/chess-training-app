@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { usePuzzleQueries } from './use-puzzle-queries'
 
 // Types for endgames
-export interface EndgameFilters {
+export type EndgameFilters = {
   type?: 'Queen' | 'Rook' | 'Knight' | 'Bishop' | 'Pawn' | 'All'
   rating?: number
   difficulty?: number

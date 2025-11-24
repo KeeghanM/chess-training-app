@@ -16,7 +16,7 @@ import trackEventOnClient from '@utils/track-event-on-client'
 import BoardContainer from '../shared/BoardContainer'
 import StatusIndicator from '../shared/StatusIndicator'
 
-interface RecallTrainProps {
+type RecallTrainProps = {
   // Display props
   difficulty: number
   getDifficulty: () => string
@@ -25,7 +25,7 @@ interface RecallTrainProps {
   timerLength: number
 
   // Puzzle data
-  currentPuzzle?: TrainingPuzzle
+  currentPuzzle?: TrainingPuzzle | undefined
   soundEnabled: boolean
   loading: boolean
 

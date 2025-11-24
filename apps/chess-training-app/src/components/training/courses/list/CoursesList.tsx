@@ -14,8 +14,11 @@ import { useCourseQueries } from '@hooks/use-course-queries'
 import PremiumSubscribe from '../../../ecomm/PremiumSubscribe'
 import CourseListItem from './CourseListItem'
 
-export default function CourseList(props: { hasUnlimitedCourses: boolean }) {
-  const { hasUnlimitedCourses } = props
+export default function CourseList({
+  hasUnlimitedCourses,
+}: {
+  hasUnlimitedCourses: boolean
+}) {
   const maxCourses = 2
 
   // React Query hooks

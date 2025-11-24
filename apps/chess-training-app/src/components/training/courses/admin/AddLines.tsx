@@ -23,7 +23,7 @@ type FullCourseData = Course & {
   lines: { tags: Tags[]; moves: Move[] }[]
 }
 
-export default function AddLines(props: { courseId: string }) {
+export default function AddLines({ courseId }: { courseId: string }) {
   const [step, setStep] = useState<'pgn' | 'groups' | 'error' | 'success'>(
     'pgn',
   )
@@ -41,7 +41,7 @@ export default function AddLines(props: { courseId: string }) {
       const allGroups = [...new Set(cleanLines.map((line) => line.groupName))]
 
       await addLines.mutateAsync({
-        courseId: props.courseId,
+        courseId,
         groupNames: allGroups,
         lines: cleanLines,
       })
@@ -58,7 +58,7 @@ export default function AddLines(props: { courseId: string }) {
     // Download existing data
     try {
       const existingCourseData = (await getCourseLines.mutateAsync({
-        courseId: props.courseId,
+        courseId,
       })) as FullCourseData
 
       // Now filter out any lines that already exist
@@ -125,7 +125,7 @@ export default function AddLines(props: { courseId: string }) {
               <Link href={`/training/courses/`}>
                 <Button variant="primary">Back to course list</Button>
               </Link>
-              <Link href={`/training/courses/admin/${props.courseId}`}>
+              <Link href={`/training/courses/admin/${courseId}`}>
                 <Button variant="warning">Back to admin page</Button>
               </Link>
             </div>

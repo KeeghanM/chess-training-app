@@ -13,28 +13,33 @@ import type { Line } from './parse/ParsePGNtoLineData'
 // TODO: Add informational lines
 // TODO: Add priority lines
 
-export function GroupItem(props: {
+export function GroupItem({
+  lines,
+  selectedGroup,
+  groupKey,
+  count,
+  updateLines,
+}: {
   lines: Line[]
   selectedGroup: string
   groupKey: string
   count: number
   updateLines: (lines: Line[]) => void
 }) {
-  const { lines, selectedGroup, groupKey, count } = props
   const [open, setOpen] = useState<boolean>(false)
   const [setAllOpen, setSetAllOpen] = useState<boolean>(false)
   const [selectedColor, setSelectedColor] = useState<string>('White')
 
   const handleColorChange = (line: Line, newColor: string) => {
-    const updatedLines = props.lines.map((l) =>
+    const updatedLines = lines.map((l) =>
       l === line ? { ...l, tags: { ...l.tags, Colour: newColor } } : l,
     )
-    props.updateLines(updatedLines)
+    updateLines(updatedLines)
   }
 
   const handleLineDeletion = (line: Line) => {
-    const updatedLines = props.lines.filter((l) => l !== line)
-    props.updateLines(updatedLines)
+    const updatedLines = lines.filter((l) => l !== line)
+    updateLines(updatedLines)
   }
 
   return (
@@ -86,12 +91,12 @@ export function GroupItem(props: {
               <Button
                 variant="primary"
                 onClick={async () => {
-                  const updatedLines = props.lines.map((l) =>
+                  const updatedLines = lines.map((l) =>
                     l.tags[selectedGroup] === groupKey
                       ? { ...l, tags: { ...l.tags, Colour: selectedColor } }
                       : l,
                   )
-                  props.updateLines(updatedLines)
+                  updateLines(updatedLines)
                   setSetAllOpen(false)
                   trackEventOnClient('create_course_set_all_lines_colour', {})
                 }}

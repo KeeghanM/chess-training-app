@@ -32,12 +32,13 @@ export const POST = apiWrapper(async (request) => {
     count: count.toString(),
   }
 
-  if (themes)
+  if (themes) {
     params = {
       ...params,
       themesType: 'OR',
-      themes: themes ? JSON.stringify(themes) : undefined,
+      ...(themes && { themes: JSON.stringify(themes) }),
     }
+  }
   if (playerMoves) params = { ...params, playerMoves: playerMoves.toString() }
 
   const paramsString = new URLSearchParams(params).toString()

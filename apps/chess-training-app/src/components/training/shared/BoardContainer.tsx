@@ -2,7 +2,7 @@
 
 import { type ReactNode, useEffect, useRef } from 'react'
 
-interface BoardContainerProps {
+type BoardContainerProps = {
   children: ReactNode
 }
 

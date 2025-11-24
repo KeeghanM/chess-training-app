@@ -44,7 +44,7 @@ export async function createCheckoutSession(
               },
             },
             unit_amount: price,
-            recurring,
+            ...(recurring && { recurring }),
           },
           quantity: 1,
         }
@@ -59,7 +59,7 @@ export async function createCheckoutSession(
 
     const checkoutSession = await stripe.checkout.sessions.create({
       payment_method_types: ['card', 'link'],
-      customer_email: user.email ?? undefined,
+      ...(user.email && { customer_email: user.email }),
       line_items: lineItems,
       mode: hasSubscription ? 'subscription' : 'payment',
       success_url: `${env.NEXT_PUBLIC_SITE_URL}/checkout/success`,

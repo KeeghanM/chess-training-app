@@ -1,8 +1,6 @@
 import NumberIcon from '@components/general/NumberIcon'
 
-export default function Steps(props: { currentStep: string }) {
-  const { currentStep } = props
-
+export default function Steps({ currentStep }: { currentStep: string }) {
   return (
     <div className="mx-auto my-4 w-max ">
       <div className="mx-auto flex items-center gap-4">

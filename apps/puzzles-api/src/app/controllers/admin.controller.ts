@@ -19,11 +19,9 @@ const AdminController = async (req: Request, res: Response) => {
   const results = []
 
   let connection: Connection | undefined
-
   try {
-    connection = await oracledb.getConnection()
-
     for (let i = 0; i < count; i++) {
+      connection = await oracledb.getConnection()
       // Get the oldest unchecked puzzle (or never checked)
       // NULLS FIRST ensures puzzles that have never been checked are prioritised
       const result = await connection.execute<PuzzleResult>(
@@ -34,6 +32,9 @@ const AdminController = async (req: Request, res: Response) => {
         {},
         { outFormat: OUT_FORMAT_OBJECT },
       )
+
+      await connection.close()
+      connection = undefined
 
       if (!result.rows || result.rows.length === 0) {
         res.status(404).send(ErrorResponse('No Matching Puzzles', 404))
@@ -53,6 +54,7 @@ const AdminController = async (req: Request, res: Response) => {
       if (!lichessPuzzleResponse.ok) {
         // if it's a 404 just update last_checked, if LiChess doesn't have it any more it will just permantly be whatever it's rating was.
         if (lichessPuzzleResponse.status === 404) {
+          connection = await oracledb.getConnection()
           await connection.execute(
             `UPDATE PUZZLES 
            SET last_checked = SYSTIMESTAMP 
@@ -66,6 +68,8 @@ const AdminController = async (req: Request, res: Response) => {
             checked: puzzle.puzzleid,
             ratingChanged: false,
           })
+          await connection.close()
+          connection = undefined
           continue
         }
 
@@ -85,6 +89,7 @@ const AdminController = async (req: Request, res: Response) => {
       }
 
       // Update the puzzle if rating has changed, and always update last_checked
+      connection = await oracledb.getConnection()
       if (lichessData.puzzle.rating !== parseInt(puzzle.rating)) {
         await connection.execute(
           `UPDATE PUZZLES 
@@ -108,6 +113,8 @@ const AdminController = async (req: Request, res: Response) => {
           { autoCommit: true },
         )
       }
+      await connection.close()
+      connection = undefined
 
       results.push({
         checked: puzzle.puzzleid,

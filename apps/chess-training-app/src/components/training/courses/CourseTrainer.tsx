@@ -7,8 +7,7 @@ import { useEffect, useState } from 'react'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import type { Comment, Move, UserFen } from '@prisma/client'
 import { useWindowSize } from '@uidotdev/usehooks'
-import type { Move as ChessMove } from 'chess.js'
-import { Chess } from 'chess.js'
+import { Chess, type Move as ChessMove } from 'chess.js'
 import { ThumbsDown, ThumbsUp } from 'lucide-react'
 import posthog from 'posthog-js'
 import Toggle from 'react-toggle'
@@ -41,11 +40,23 @@ import BoardContainer from '../shared/BoardContainer'
 
 type PrismaMove = Move & { comment?: Comment | null }
 
-export default function CourseTrainer(props: {
-  userCourse: PrismaUserCourse
-  userLines: PrismaUserLine[]
-  userFens: UserFen[]
-}) {
+type CourseTrainerProps = {
+  readonly userCourse: PrismaUserCourse
+  readonly userLines: PrismaUserLine[]
+  readonly userFens: UserFen[]
+}
+
+/**
+ * CourseTrainer Component
+ *
+ * Handles the interactive training session for a course.
+ * Manages game state, user moves, teaching mode, and stats tracking.
+ */
+export default function CourseTrainer({
+  userCourse,
+  userLines,
+  userFens,
+}: CourseTrainerProps) {
   const router = useRouter()
   const { user } = useKindeBrowserClient()
 
@@ -68,9 +79,9 @@ export default function CourseTrainer(props: {
   } = useChessGame()
 
   const { lines, existingFens, processStats, processNewFens } = useCourseStats({
-    userCourse: props.userCourse,
-    userLines: props.userLines,
-    userFens: props.userFens.map((fen) => ({
+    userCourse,
+    userLines,
+    userFens: userFens.map((fen) => ({
       fen: fen.fen,
       commentId: fen.commentId ?? undefined,
     })),
@@ -81,7 +92,7 @@ export default function CourseTrainer(props: {
 
   // Line/Course State
   const [allComments] = useState(
-    props.userLines
+    userLines
       .map((line) => {
         return line.line.moves
           .map((move) => move.comment)
@@ -123,6 +134,9 @@ export default function CourseTrainer(props: {
   const [incorrectSound] = useSound('/sfx/incorrect.mp3')
   const [correctSound] = useSound('/sfx/correct.mp3')
 
+  /**
+   * Determines the next line to train based on revision date and sort order.
+   */
   const getNextLine = (lines: PrismaUserLine[]) => {
     // Sorts the lines in order of priority
     // 1. Lines with a "revisionDate" in the past, sorted by date (oldest first)
@@ -148,6 +162,9 @@ export default function CourseTrainer(props: {
     return null
   }
 
+  /**
+   * Checks if the current move needs to be taught (shown to the user).
+   */
   const needsTeachingMove = () => {
     // If we haven't seen any fens, we need to teach the first move
     const allFens = [...existingFens, ...trainedFens]
@@ -182,6 +199,9 @@ export default function CourseTrainer(props: {
     return true
   }
 
+  /**
+   * Plays the opponent's move automatically.
+   */
   const playOpponentsMove = () => {
     const opponentsMove = currentLineMoves[game.history().length]
     if (!opponentsMove) return
@@ -214,8 +234,9 @@ export default function CourseTrainer(props: {
     return timeoutId
   }
 
-  // Makes a move for the "player"
-  // and pauses to let them make a move
+  /**
+   * Makes a move for the "player" and pauses to let them make a move.
+   */
   const makeTeachingMove = (delay = 500) => {
     const currentMove =
       mode == 'normal'
@@ -297,7 +318,7 @@ export default function CourseTrainer(props: {
         // if so, show a nice modal popup and track event
         // For now, just redirect to the course page
         trackEventOnClient('course_completed', {
-          courseName: props.userCourse.course.courseName,
+          courseName: userCourse.course.courseName,
         })
         router.push('/training/courses/')
         return
@@ -307,7 +328,7 @@ export default function CourseTrainer(props: {
         // We've reached the end of the group
         // TODO: Add a nice modal popup here
         trackEventOnClient('course_group_completed', {
-          courseName: props.userCourse.course.courseName,
+          courseName: userCourse.course.courseName,
         })
       }
 
@@ -337,7 +358,7 @@ export default function CourseTrainer(props: {
     setIsLoading(true)
     try {
       trackEventOnClient('course_next_line', {
-        courseName: props.userCourse.course.courseName,
+        courseName: userCourse.course.courseName,
       })
 
       setNextLine(null)

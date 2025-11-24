@@ -41,9 +41,7 @@ export default async function CoursePage(props: {
             {
               published: true,
             },
-            {
-              createdBy: user?.id,
-            },
+            ...(user?.id ? [{ createdBy: user.id }] : []),
           ],
         },
         include: {

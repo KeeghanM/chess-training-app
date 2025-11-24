@@ -18,20 +18,20 @@ import trackEventOnClient from '@utils/track-event-on-client'
 import BoardContainer from '../shared/BoardContainer'
 import PgnNavigator from '../shared/PgnNavigator'
 
-interface VisualisationTrainProps {
+type VisualisationTrainProps = {
   // Display props
   rating: number
   getDifficulty: () => string
   length: number
 
   // Puzzle data
-  currentPuzzle?: TrainingPuzzle
+  currentPuzzle?: TrainingPuzzle | undefined
   soundEnabled: boolean
   loading: boolean
 
   // Puzzle state
   puzzleStatus: 'none' | 'correct' | 'incorrect'
-  puzzleId?: string
+  puzzleId?: string | undefined
   xpCounter: number
 
   // Auto next

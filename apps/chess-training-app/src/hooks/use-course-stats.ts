@@ -14,7 +14,7 @@ import {
 
 type PrismaMove = Move & { comment?: Comment | null }
 
-interface UseCourseStatsProps {
+type UseCourseStatsProps = {
   userCourse: PrismaUserCourse
   userLines: PrismaUserLine[]
   userFens: TrainingFen[]

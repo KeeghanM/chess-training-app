@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 import { RoundProgress } from '../_elements/progress'
 
-interface XpDisplayProps {
+type XpDisplayProps = {
   data: {
     currentXp: number
     rank: {

@@ -40,7 +40,7 @@ export enum PRODUCTS {
 
 export type TPlanId = keyof typeof PRODUCTS
 
-export interface SubscriptionStatus {
+export type SubscriptionStatus = {
   hasActiveSubscription: boolean
   baseTier: 'free' | 'premium'
   activeAddons: string[]
@@ -53,11 +53,11 @@ export interface SubscriptionStatus {
     subscriptionId: string
     productName: string
     state: string
-    phaseType?: string
+    phaseType?: string | undefined
   }>
 }
 
-export interface KBAccount {
+export type KBAccount = {
   accountId: string
   externalKey: string
   name: string

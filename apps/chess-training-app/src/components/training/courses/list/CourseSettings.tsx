@@ -25,13 +25,15 @@ import {
 
 import trackEventOnClient from '@utils/track-event-on-client'
 
-interface CourseSettingsProps {
+type CourseSettingsProps = {
   userCourse: PrismaUserCourse
   update: () => void
 }
 
-export default function CourseSettings(props: CourseSettingsProps) {
-  const { userCourse, update } = props
+export default function CourseSettings({
+  userCourse,
+  update,
+}: CourseSettingsProps) {
   const { user } = useKindeBrowserClient()
   const [open, setOpen] = useState(false)
 

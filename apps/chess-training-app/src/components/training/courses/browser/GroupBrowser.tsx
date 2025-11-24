@@ -14,9 +14,9 @@ import BoardContainer from '../../shared/BoardContainer'
 import type { UserLineWithData } from './CourseBrowser'
 import PgnBrowser from './PgnBrowser'
 
-export default function GroupBrowser(props: { lines: UserLineWithData[] }) {
+export default function GroupBrowser({ lines }: { lines: UserLineWithData[] }) {
   const pgn = buildPgn(
-    props.lines.map((line) =>
+    lines.map((line) =>
       line.line.moves.map((move) => {
         return {
           notation: move.move,
@@ -47,7 +47,7 @@ export default function GroupBrowser(props: { lines: UserLineWithData[] }) {
       return
     }
     const newGame = new Chess()
-    const line = props.lines.find((line) => line.id === currentMove.lineId)
+    const line = lines.find((line) => line.id === currentMove.lineId)
     if (!line) return
 
     for (const move of line.line.moves) {
@@ -82,12 +82,10 @@ export default function GroupBrowser(props: { lines: UserLineWithData[] }) {
     setCurrentMove(undefined)
     setGame(new Chess())
     setPosition(new Chess().fen())
-    if (props.lines[0]) {
-      setOrientation(
-        props.lines[0].line.colour.toLowerCase() as 'white' | 'black',
-      )
+    if (lines[0]) {
+      setOrientation(lines[0].line.colour.toLowerCase() as 'white' | 'black')
     }
-  }, [props.lines])
+  }, [lines])
 
   return (
     <>

@@ -37,7 +37,7 @@ export type PrismaTacticsSetWithPuzzles = PrismaTacticsSet & {
   puzzles: Puzzle[]
 }
 
-export interface TrainingPuzzle {
+export type TrainingPuzzle = {
   puzzleid: string
   fen: string
   rating: number
@@ -60,7 +60,9 @@ export interface TrainingPuzzle {
  * @returns The trainer UI for the provided tactics set; `null` when no authenticated user is present.
  */
 
-export default function TacticsTrainer(props: {
+export default function TacticsTrainer({
+  set,
+}: {
   set: PrismaTacticsSetWithPuzzles
 }) {
   const { user } = useKindeBrowserClient()
@@ -90,7 +92,7 @@ export default function TacticsTrainer(props: {
 
   // Setup main state for the game/puzzles
   const [currentRound, setCurrentRound] = useState<TacticsSetRound | undefined>(
-    props.set.rounds[props.set.rounds.length - 1],
+    set.rounds[set.rounds.length - 1],
   )
   const [CompletedPuzzles, setCompletedPuzzles] = useState(
     (currentRound?.correct ?? 0) + (currentRound?.incorrect ?? 0),
@@ -115,7 +117,7 @@ export default function TacticsTrainer(props: {
 
   // Get current puzzle data using React Query
   const currentPuzzleIndex = CompletedPuzzles
-  const currentPuzzleId = props.set.puzzles[currentPuzzleIndex]?.puzzleid || ''
+  const currentPuzzleId = set.puzzles[currentPuzzleIndex]?.puzzleid || ''
 
   const puzzleQuery = usePuzzleQuery(currentPuzzleId)
   const currentPuzzle = puzzleQuery.data
@@ -146,14 +148,11 @@ export default function TacticsTrainer(props: {
     // Check if we've completed the set, in which case we need to create a new round & exit
     // If we haven't then load the next puzzle
 
-    const currentPuzzleIndex = props.set.puzzles.findIndex(
+    const currentPuzzleIndex = set.puzzles.findIndex(
       (item) => item.puzzleid == currentPuzzle!.puzzleid,
     )
 
-    if (
-      currentPuzzleIndex + 1 >= props.set.size ||
-      CompletedPuzzles >= props.set.size
-    ) {
+    if (currentPuzzleIndex + 1 >= set.size || CompletedPuzzles >= set.size) {
       // We have completed the set
       if (!currentRound) return
 
@@ -167,9 +166,9 @@ export default function TacticsTrainer(props: {
 
           // Use React Query mutation for creating new round
           await createRound.mutateAsync({
-            setId: props.set.id,
+            setId: set.id,
             roundNumber: currentRound.roundNumber + 1,
-            puzzleRating: props.set.rating ?? 1500, // Default to 1500 if null
+            puzzleRating: set.rating ?? 1500, // Default to 1500 if null
           })
         } catch (e) {
           posthog.captureException(e)
@@ -343,7 +342,7 @@ export default function TacticsTrainer(props: {
       increaseTimeTaken.mutate({
         roundId: currentRound.id,
         timeTaken: (newTime - startTime) / 1000,
-        setId: props.set.id,
+        setId: set.id,
       })
     }
   }, [puzzleFinished])
@@ -360,7 +359,7 @@ export default function TacticsTrainer(props: {
         </p>
         <p>
           <span className="font-bold">Completed: </span>
-          {CompletedPuzzles}/{props.set.size}
+          {CompletedPuzzles}/{set.size}
         </p>
         <p>
           <span className="font-bold">Accuracy: </span>

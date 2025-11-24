@@ -2,7 +2,7 @@ import { ReactNode } from 'react'
 
 import Spinner from '@components/general/Spinner'
 
-interface TrainerContainerProps {
+type TrainerContainerProps = {
   loading?: boolean
   children: ReactNode
 }

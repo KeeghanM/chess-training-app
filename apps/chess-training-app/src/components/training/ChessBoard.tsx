@@ -7,19 +7,30 @@ import type { Arrow } from 'react-chessboard'
 import { Chessboard, defaultPieces } from 'react-chessboard'
 import useSound from 'use-sound'
 
-interface ChessBoardProps {
-  game: Chess
-  position: string
-  orientation: 'white' | 'black'
-  readyForInput: boolean
-  soundEnabled: boolean
-  additionalSquares: Record<string, { backgroundColor: string }>
-  additionalArrows: Arrow[]
-  enableArrows: boolean
-  enableHighlights: boolean
-  moveMade: null | ((move: Move) => void)
+type ChessBoardProps = {
+  readonly game: Chess
+  readonly position: string
+  readonly orientation: 'white' | 'black'
+  readonly readyForInput: boolean
+  readonly soundEnabled: boolean
+  readonly additionalSquares: Record<string, { backgroundColor: string }>
+  readonly additionalArrows: Arrow[]
+  readonly enableArrows: boolean
+  readonly enableHighlights: boolean
+  readonly moveMade: null | ((move: Move) => void)
 }
 
+type PromotionMove = {
+  from: Square
+  to: Square
+}
+
+/**
+ * ChessBoard component
+ *
+ * Renders a chessboard with interactive features like move validation,
+ * promotion handling, sound effects, and visual highlights.
+ */
 export default function ChessBoard({
   game,
   position,
@@ -37,10 +48,7 @@ export default function ChessBoard({
   const [optionSquares, setOptionSquares] = useState<
     Record<string, React.CSSProperties>
   >({})
-  const [promotionMove, setPromotionMove] = useState<{
-    from: Square
-    to: Square
-  } | null>(null)
+  const [promotionMove, setPromotionMove] = useState<PromotionMove | null>(null)
 
   const [checkSound] = useSound('/sfx/check.mp3')
   const [captureSound] = useSound('/sfx/capture.mp3')
@@ -48,15 +56,35 @@ export default function ChessBoard({
   const [castleSound] = useSound('/sfx/castle.mp3')
   const [moveSound] = useSound('/sfx/move.mp3')
 
-  const playMoveSound = (move: string) => {
+  /**
+   * Plays the appropriate sound effect for a move.
+   */
+  const playMoveSound = (moveSan: string) => {
     if (!soundEnabled) return
-    if (move.includes('+')) checkSound()
-    else if (move.includes('x')) captureSound()
-    else if (move.includes('=')) promotionSound()
-    else if (move.includes('O')) castleSound()
-    else moveSound()
+
+    if (moveSan.includes('+')) {
+      checkSound()
+      return
+    }
+    if (moveSan.includes('x')) {
+      captureSound()
+      return
+    }
+    if (moveSan.includes('=')) {
+      promotionSound()
+      return
+    }
+    if (moveSan.includes('O')) {
+      castleSound()
+      return
+    }
+    moveSound()
   }
 
+  /**
+   * Handles a move attempt by the user.
+   * Returns true if the move was successful or a promotion is pending.
+   */
   function handleUserMove(sourceSquare: Square, targetSquare: Square): boolean {
     try {
       const moves = game.moves({ square: sourceSquare, verbose: true })
@@ -71,20 +99,25 @@ export default function ChessBoard({
       }
 
       const result = game.move({ from: sourceSquare, to: targetSquare })
-      if (result) {
-        if (moveMade) moveMade(result)
-        setStartSquare(undefined)
-        setClickedPiece(undefined)
-        setOptionSquares({})
-      }
-      return !!result
+      if (!result) return false
+
+      if (moveMade) moveMade(result)
+      setStartSquare(undefined)
+      setClickedPiece(undefined)
+      setOptionSquares({})
+
+      return true
     } catch {
       return false
     }
   }
 
+  /**
+   * Confirms a pawn promotion.
+   */
   function confirmPromotion(piece: 'q' | 'r' | 'b' | 'n') {
     if (!promotionMove) return
+
     try {
       const move = game.move({
         from: promotionMove.from,
@@ -92,16 +125,20 @@ export default function ChessBoard({
         promotion: piece,
       })
       if (move && moveMade) moveMade(move)
-      setPromotionMove(null)
     } catch {
+      // Ignore invalid moves during promotion
+    } finally {
       setPromotionMove(null)
     }
   }
 
+  /**
+   * Handles clicks on squares to select pieces or make moves.
+   */
   function handleSquareClick(clickedSquare: Square) {
     if (!readyForInput || promotionMove) return
 
-    // deselect by clicking same square
+    // Deselect by clicking same square
     if (clickedSquare === startSquare) {
       setStartSquare(undefined)
       setClickedPiece(undefined)
@@ -110,14 +147,15 @@ export default function ChessBoard({
     }
 
     const piece = game.get(clickedSquare)
-    // select own piece
+
+    // Select own piece
     if (piece && piece.color === game.turn()) {
       setStartSquare(clickedSquare)
       setClickedPiece(piece)
       return
     }
 
-    // try a move
+    // Try a move if a piece is already selected
     if (startSquare && clickedPiece) {
       const moved = handleUserMove(startSquare, clickedSquare)
       if (moved) {
@@ -128,16 +166,15 @@ export default function ChessBoard({
       return
     }
 
-    // deselect by clicking empty square
+    // Deselect by clicking empty square
     if (!piece) {
       setStartSquare(undefined)
       setClickedPiece(undefined)
       setOptionSquares({})
-      return
     }
   }
 
-  // --- highlights ---
+  // --- Highlights ---
   useEffect(() => {
     if (!startSquare || !clickedPiece || !enableHighlights) {
       setOptionSquares({})
@@ -146,27 +183,33 @@ export default function ChessBoard({
 
     const validMoves = game.moves({ square: startSquare, verbose: true })
     const newOpts: Record<string, React.CSSProperties> = {}
+
     newOpts[startSquare] = { background: 'rgba(255,255,0,0.4)' }
 
     validMoves.forEach((m) => {
+      const isCapture = game.get(m.to)
       newOpts[m.to] = {
-        background: game.get(m.to)
+        background: isCapture
           ? 'radial-gradient(circle, transparent 50%, rgba(0,0,0,0.25) 52%, rgba(0,0,0,0.25) 60%, transparent 62%)'
           : 'radial-gradient(circle, rgba(0,0,0,.2) 18%, transparent 20%)',
         borderRadius: '50%',
       }
     })
     setOptionSquares(newOpts)
-  }, [startSquare, clickedPiece, enableHighlights])
+  }, [startSquare, clickedPiece, enableHighlights, game])
 
-  // --- sound effect on move completion ---
+  // --- Sound effect on move completion ---
   useEffect(() => {
     if (!soundEnabled) return
-    const lastMove = game.history({ verbose: true }).slice(-1)[0]
+    const history = game.history({ verbose: true })
+    const lastMove = history[history.length - 1]
     if (lastMove) playMoveSound(lastMove.san)
-  }, [position])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [position, soundEnabled]) // Added soundEnabled to deps, kept position as trigger
 
-  // --- promotion dialog placement ---
+  // --- Promotion dialog placement ---
+  // Note: accessing document directly in render is not ideal for SSR, but this is a client component.
+  // Ideally this should be in a useEffect or use a ref, but keeping logic similar for now with safe check.
   const squareWidth =
     typeof document !== 'undefined'
       ? (document.querySelector(`[data-square]`)?.getBoundingClientRect()
@@ -224,6 +267,15 @@ export default function ChessBoard({
               <button
                 key={p}
                 type="button"
+                aria-label={`Promote to ${
+                  p === 'q'
+                    ? 'Queen'
+                    : p === 'r'
+                      ? 'Rook'
+                      : p === 'b'
+                        ? 'Bishop'
+                        : 'Knight'
+                }`}
                 onClick={() => confirmPromotion(p)}
                 onContextMenu={(e) => e.preventDefault()}
                 style={{
@@ -249,7 +301,7 @@ export default function ChessBoard({
 
       <Chessboard
         options={{
-          position: position,
+          position,
           boardOrientation: orientation,
           allowDragging: readyForInput && !promotionMove,
           onPieceDrop: ({ sourceSquare, targetSquare }) =>

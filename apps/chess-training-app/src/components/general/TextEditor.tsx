@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
 
-interface TextEditorProps {
+type TextEditorProps = {
   value: string
   onChange: (value: string) => void
 }

@@ -18,8 +18,8 @@ export async function trackEventOnServer(
   const captureData: {
     distinctId: string
     event: string
-    properties?: Record<string, string>
-    '$feature/experiment-feature-flag-key'?: string | boolean
+    properties?: Record<string, string> | undefined
+    '$feature/experiment-feature-flag-key'?: string | boolean | undefined
   } = {
     distinctId: await getDistinctId(),
     event,
@@ -31,8 +31,20 @@ export async function trackEventOnServer(
       experimentName,
       captureData.distinctId,
     )
-    captureData['$feature/experiment-feature-flag-key'] = experimentFlagValue
+    if (experimentFlagValue !== undefined) {
+      captureData['$feature/experiment-feature-flag-key'] =
+        experimentFlagValue as string | boolean
+    }
   }
 
-  posthog.capture(captureData)
+  // Build the final capture object with proper typing
+  posthog.capture({
+    distinctId: captureData.distinctId,
+    event: captureData.event,
+    ...(captureData.properties && { properties: captureData.properties }),
+    ...(captureData['$feature/experiment-feature-flag-key'] !== undefined && {
+      '$feature/experiment-feature-flag-key':
+        captureData['$feature/experiment-feature-flag-key'],
+    }),
+  })
 }

@@ -24,9 +24,9 @@ import posthog from 'posthog-js'
 import Heading from '@components/_elements/heading'
 import SortableItem from '@components/general/sortable-item'
 
-export default function ExistingBadges(props: { existingBadges: Badge[] }) {
+export default function ExistingBadges({ badges }: { badges: Badge[] }) {
   const queryClient = useQueryClient()
-  const [existingBadges, setExistingBadges] = useState(props.existingBadges)
+  const [existingBadges, setExistingBadges] = useState(badges)
   const [items, setItems] = useState(existingBadges.map((badge) => badge.name))
 
   const sensors = useSensors(

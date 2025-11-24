@@ -24,14 +24,19 @@ import LineDisplay from './LineDisplay'
 
 export type LineWithMoves = Line & { moves: Move[] }
 
-export default function GroupEditor(props: {
+export default function GroupEditor({
+  group,
+  lines,
+  setGroup,
+  setLines,
+  addIdToDelete,
+}: {
   group: Group
   lines: LineWithMoves[]
   setGroup: (group: Group) => void
   setLines: (lines: LineWithMoves[]) => void
   addIdToDelete: (newIds: number) => void
 }) {
-  const { group, lines, setGroup, setLines, addIdToDelete } = props
   const [parent] = useAutoAnimate()
   const [open, setOpen] = useState(false)
   const [hiddenLineIds, setHiddenLineIds] = useState<number[]>([])

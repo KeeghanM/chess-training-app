@@ -34,7 +34,7 @@ export default async function CuratedSetPage(props: {
       const userSet = await prisma.tacticsSet.findFirst({
         where: {
           curatedSetId: set.id,
-          userId: user?.id,
+          ...(user?.id && { userId: user.id }),
           status: TacticsSetStatus.ACTIVE,
         },
       })

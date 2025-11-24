@@ -6,7 +6,7 @@ import calculateBadgePercentage from '@utils/calculate-badge-percentage'
 
 import { RoundProgress } from '../_elements/progress'
 
-interface BadgeDisplayProps {
+type BadgeDisplayProps = {
   userBadgeCount: number
 }
 export default function BadgeDisplay({ userBadgeCount }: BadgeDisplayProps) {

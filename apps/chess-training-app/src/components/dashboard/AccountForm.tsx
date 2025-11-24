@@ -18,29 +18,23 @@ import type { ResponseJson } from '@utils/server-responses'
 
 import { Tooltip, TooltipContent, TooltipTrigger } from '../_elements/tooltip'
 
-export default function AccountForm(props: { profile: UserProfile }) {
+export default function AccountForm({ profile }: { profile: UserProfile }) {
   const { user } = useKindeBrowserClient()
 
   const [username, setUsername] = useState(
-    props.profile.username ?? user?.email ?? '',
+    profile.username ?? user?.email ?? '',
   )
-  const [fullname, setFullname] = useState(props.profile.fullName ?? '')
-  const [description, setDescription] = useState(
-    props.profile.description ?? '',
-  )
+  const [fullname, setFullname] = useState(profile.fullName ?? '')
+  const [description, setDescription] = useState(profile.description ?? '')
   const [highestOnlineRating, setHighestOnlineRating] = useState(
-    props.profile.highestOnlineRating ?? undefined,
+    profile.highestOnlineRating ?? undefined,
   )
   const [highestOTBRating, setHighestOTBRating] = useState(
-    props.profile.highestOTBRating ?? undefined,
+    profile.highestOTBRating ?? undefined,
   )
-  const [puzzleRating, setPuzzleRating] = useState(
-    props.profile.puzzleRating ?? 1500,
-  )
-  const [difficulty, setDifficulty] = useState(props.profile.difficulty ?? 1)
-  const [publicProfile, setPublicProfile] = useState(
-    props.profile.public ?? false,
-  )
+  const [puzzleRating, setPuzzleRating] = useState(profile.puzzleRating ?? 1500)
+  const [difficulty, setDifficulty] = useState(profile.difficulty ?? 1)
+  const [publicProfile, setPublicProfile] = useState(profile.public ?? false)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
@@ -150,19 +144,19 @@ export default function AccountForm(props: { profile: UserProfile }) {
               <label>Default Difficulty</label>
               <div className="flex items-center gap-2 flex-row">
                 <Button
-                  variant={difficulty == 0 ? 'success' : undefined}
+                  {...(difficulty == 0 ? { variant: 'success' } : {})}
                   onClick={() => setDifficulty(0)}
                 >
                   Easy
                 </Button>
                 <Button
-                  variant={difficulty == 1 ? 'success' : undefined}
+                  {...(difficulty == 1 ? { variant: 'success' } : {})}
                   onClick={() => setDifficulty(1)}
                 >
                   Medium
                 </Button>
                 <Button
-                  variant={difficulty == 2 ? 'success' : undefined}
+                  {...(difficulty == 2 ? { variant: 'success' } : {})}
                   onClick={() => setDifficulty(2)}
                 >
                   Hard

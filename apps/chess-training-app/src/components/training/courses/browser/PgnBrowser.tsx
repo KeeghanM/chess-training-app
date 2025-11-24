@@ -4,14 +4,16 @@ import type { Move, PGN } from '@utils/build-pgn'
 
 type PgnBrowserProps = {
   pgn: PGN
-  moveSelected: (move: Move) => void
-  currentMove?: Move
+  moveSelected: (move: Move | undefined) => void
+  currentMove?: Move | undefined
 }
 
 // TODO: Add arrow keys to navigate moves
-export default function PgnBrowser(props: PgnBrowserProps) {
-  const { pgn, moveSelected, currentMove } = props
-
+export default function PgnBrowser({
+  pgn,
+  currentMove,
+  moveSelected,
+}: PgnBrowserProps) {
   const isCurrentMove = (move: Move) => {
     return (
       move.number == currentMove?.number &&
@@ -21,12 +23,15 @@ export default function PgnBrowser(props: PgnBrowserProps) {
     )
   }
 
-  const Move = (props: {
+  const Move = ({
+    move,
+    mainLine,
+    ellipses,
+  }: {
     move: Move
     mainLine?: boolean
     ellipses?: boolean
   }) => {
-    const { move, mainLine, ellipses } = props
     return (
       <>
         <span
@@ -70,10 +75,10 @@ export default function PgnBrowser(props: PgnBrowserProps) {
     )
   }
 
-  const Variation = (props: { moves: Move[] }) => {
+  const Variation = ({ moves }: { moves: Move[] }) => {
     return (
       <div className="col-span-2 flex flex-row items-center flex-wrap gap-0.5 text-black px-2 py-1 bg-bg-light/20  mt-2">
-        {props.moves.map((move, i) => (
+        {moves.map((move, i) => (
           <Move
             key={move.colour + move.notation + move.number}
             move={move}

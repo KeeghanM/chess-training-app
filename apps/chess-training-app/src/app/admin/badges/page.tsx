@@ -14,7 +14,7 @@ export default async function AdminBadgePage() {
   if (!user) redirect('/auth/signin')
   if (!isStaff) redirect('/dashboard')
 
-  const existingBadges = await prisma.badge.findMany().then((badges) => {
+  const badges = await prisma.badge.findMany().then((badges) => {
     return badges.sort((a, b) => a.sort - b.sort)
   })
 
@@ -23,7 +23,7 @@ export default async function AdminBadgePage() {
       <PageHeader title="Admin: Badges" />
       <Container>
         <BadgeCreator />
-        <ExistingBadges existingBadges={existingBadges} />
+        <ExistingBadges badges={badges} />
       </Container>
     </>
   )

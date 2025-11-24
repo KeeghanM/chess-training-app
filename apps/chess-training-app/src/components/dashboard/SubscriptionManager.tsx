@@ -11,7 +11,7 @@ import Spinner from '@components/general/Spinner'
 
 import type { SubscriptionStatus } from '@utils/kill-bill'
 
-interface ApiResponse {
+type ApiResponse = {
   success: boolean
   message?: string
   data?: SubscriptionStatus

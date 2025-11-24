@@ -24,14 +24,19 @@ import SortableItem from '@components/general/sortable-item'
 import type { LineWithMoves } from './GroupEditor'
 import GroupEditor from './GroupEditor'
 
-export default function GroupsListEditor(props: {
+export default function GroupsListEditor({
+  groups,
+  setGroups,
+  lines,
+  setLines,
+  addIdToDelete,
+}: {
   groups: Group[]
   setGroups: (groups: Group[]) => void
   lines: LineWithMoves[]
   setLines: (lines: LineWithMoves[]) => void
   addIdToDelete: (id: number) => void
 }) {
-  const { groups, setGroups, lines, setLines, addIdToDelete } = props
   const [parent] = useAutoAnimate()
   const [groupListItems, setGroupListItems] = useState(
     groups.map((group) => group.id),

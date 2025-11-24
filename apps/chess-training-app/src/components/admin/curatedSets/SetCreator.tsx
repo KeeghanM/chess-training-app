@@ -13,7 +13,9 @@ import Spinner from '@components/general/Spinner'
 import generateSlug from '@utils/generate-slug'
 import type { ResponseJson } from '@utils/server-responses'
 
-export default function SetCreator(props: {
+export default function SetCreator({
+  onCreate,
+}: {
   onCreate: (set: CuratedSet) => void
 }) {
   // Form
@@ -33,7 +35,7 @@ export default function SetCreator(props: {
       if (json.message != 'Set created') throw new Error(json.message)
 
       const newSet = json.data!.set as CuratedSet
-      props.onCreate(newSet)
+      onCreate(newSet)
       close()
     },
   })

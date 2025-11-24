@@ -26,6 +26,9 @@ export const metadata = {
  * @returns The React element representing the complete Home page UI
  */
 export default async function Home() {
+  /**
+   * Testimonials from users, sorted by date in the render.
+   */
   const reviews = [
     {
       name: 'Anonymous',

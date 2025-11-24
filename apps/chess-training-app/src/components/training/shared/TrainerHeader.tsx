@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 
-interface TrainerHeaderProps {
+type TrainerHeaderProps = {
   children: ReactNode
 }
 

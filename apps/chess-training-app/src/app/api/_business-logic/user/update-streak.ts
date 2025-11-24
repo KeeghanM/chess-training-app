@@ -28,7 +28,7 @@ export async function updateStreak(userId: string) {
       const trainedYesterday = await prisma.dayTrained.findFirst({
         where: {
           userId,
-          date: yesterdayString,
+          ...(yesterdayString && { date: yesterdayString }),
         },
       })
       if (trainedYesterday) {

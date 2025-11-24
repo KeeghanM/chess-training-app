@@ -13,14 +13,21 @@ import Button from '../_elements/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../_elements/tooltip'
 import Spinner from '../general/Spinner'
 
-export default function GetCourse(props: {
+type GetCourseProps = {
   courseId: string
   price: number
   slug: string
-  userCourseId?: string
+  userCourseId?: string | undefined
   showPrice: boolean
-}) {
-  const { courseId, price, userCourseId, slug, showPrice } = props
+}
+
+export default function GetCourse({
+  courseId,
+  price,
+  slug,
+  userCourseId,
+  showPrice,
+}: GetCourseProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const { user } = useKindeBrowserClient()

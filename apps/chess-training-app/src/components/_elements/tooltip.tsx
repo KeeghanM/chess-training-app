@@ -16,7 +16,7 @@ import {
   useRole,
 } from '@floating-ui/react'
 
-interface TooltipOptions {
+type TooltipOptions = {
   initialOpen?: boolean
   placement?: Placement
   open?: boolean

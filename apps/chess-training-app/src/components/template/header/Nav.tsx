@@ -18,7 +18,10 @@ import {
   TooltipTrigger,
 } from '../../_elements/tooltip'
 
-export default function Nav(props: {
+export default function Nav({
+  user,
+  experience,
+}: {
   user: KindeUser | null
   experience: number
 }) {
@@ -26,7 +29,6 @@ export default function Nav(props: {
   const [menuOpen, setMenuOpen] = useState(false)
   const [openSub, setOpenSub] = useState('')
 
-  const { user, experience } = props
   const rank = calculateXpRank(experience)
 
   const links = [

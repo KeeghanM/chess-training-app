@@ -28,7 +28,7 @@ export const POST = apiWrapper(async (req, { user }) => {
     data: {
       name,
       userId: user.id,
-      rating,
+      ...(rating !== undefined && { rating }),
       size: 0, // Size will be updated by the worker
       status: TacticsSetStatus.PENDING,
     },

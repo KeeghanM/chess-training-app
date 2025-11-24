@@ -19,7 +19,7 @@ import PuzzleSearch from './puzzleSearch/PuzzleSearch'
 export type CuratedSetPuzzle = TrainingPuzzle & { curatedPuzzleId: number }
 
 type Modes = 'list' | 'search' | 'edit'
-interface ICuratedSetBrowserContext {
+interface CuratedSetBrowserContext {
   sets: CuratedSet[]
   selectedSet: CuratedSet | undefined
   setSelectedSet: (set: CuratedSet) => void
@@ -28,8 +28,8 @@ interface ICuratedSetBrowserContext {
   mode: Modes
   setMode: (mode: Modes) => void
 }
-export const CuratedSetBrowserContext =
-  createContext<ICuratedSetBrowserContext>({
+export const CuratedSetBrowserContext = createContext<CuratedSetBrowserContext>(
+  {
     sets: [],
     selectedSet: undefined,
     setSelectedSet: () => {},
@@ -37,7 +37,8 @@ export const CuratedSetBrowserContext =
     setPuzzle: () => {},
     mode: 'edit',
     setMode: () => {},
-  })
+  },
+)
 
 export default function CuratedSetsBrowser({ sets }: { sets: CuratedSet[] }) {
   const [puzzle, setPuzzle] = useState<CuratedSetPuzzle>()

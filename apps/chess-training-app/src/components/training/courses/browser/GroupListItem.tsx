@@ -15,14 +15,17 @@ import type { UserLineWithData } from './CourseBrowser'
 
 // TODO: Add a "Train by group" button
 
-export default function GroupListItem(props: {
+export default function GroupListItem({
+  name,
+  lines,
+  onClick,
+  open,
+}: {
   name: string
   lines: UserLineWithData[]
   onClick: () => void
   open: boolean
 }) {
-  const { name, lines, open } = props
-
   const { linesLearned, linesLearning, linesHard, linesUnseen } = lines.reduce(
     (acc, line) => {
       if (line.timesTrained == 0) acc.linesUnseen++
@@ -54,7 +57,7 @@ export default function GroupListItem(props: {
           ? 'border-orange-500'
           : 'cursor-pointer border-bg-light hover:shadow-lg')
       }
-      onClick={() => (!open ? props.onClick() : null)}
+      onClick={() => (!open ? onClick() : null)}
     >
       <div className="flex items-center justify-between gap-2 p-2">
         <div className="flex items-center gap-2 transition-all duration-200">

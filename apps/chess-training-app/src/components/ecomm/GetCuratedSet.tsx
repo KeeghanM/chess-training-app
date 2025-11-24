@@ -14,14 +14,20 @@ import Button from '../_elements/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../_elements/tooltip'
 import Spinner from '../general/Spinner'
 
-export default function GetCuratedSet(props: {
+type GetCuratedSetProps = {
   setId: string
   price: number
   slug: string
-  userSetId?: string
+  userSetId?: string | undefined
   showPrice: boolean
-}) {
-  const { setId, price, slug, userSetId, showPrice } = props
+}
+export default function GetCuratedSet({
+  setId,
+  price,
+  slug,
+  userSetId,
+  showPrice,
+}: GetCuratedSetProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const { user } = useKindeBrowserClient()

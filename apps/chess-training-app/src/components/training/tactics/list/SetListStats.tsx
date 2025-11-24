@@ -9,8 +9,7 @@ import type { PrismaTacticsSet } from '@components/training/tactics/create/Tacti
 
 import toHHMMSS from '@utils/to-HHMMSS'
 
-export default function SetListStats(props: { set: PrismaTacticsSet }) {
-  const { set } = props
+export default function SetListStats({ set }: { set: PrismaTacticsSet }) {
   const [open, setOpen] = useState(false)
 
   const close = () => {

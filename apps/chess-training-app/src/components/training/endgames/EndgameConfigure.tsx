@@ -2,7 +2,7 @@ import Button from '@components/_elements/button'
 
 import trackEventOnClient from '@utils/track-event-on-client'
 
-interface EndgameConfigureProps {
+type EndgameConfigureProps = {
   type: 'Queen' | 'Rook' | 'Knight' | 'Bishop' | 'Pawn' | 'All'
   setType: (
     type: 'Queen' | 'Rook' | 'Knight' | 'Bishop' | 'Pawn' | 'All',
@@ -15,6 +15,12 @@ interface EndgameConfigureProps {
   error?: string
 }
 
+/**
+ * EndgameConfigure Component
+ *
+ * Allows the user to configure settings for endgame training,
+ * including rating, difficulty, and piece type.
+ */
 export default function EndgameConfigure({
   type,
   setType,
@@ -46,19 +52,19 @@ export default function EndgameConfigure({
           <p className="font-bold mb-2">Difficulty</p>
           <div className="flex gap-4 flex-row max-w-md">
             <Button
-              variant={difficulty == 0 ? 'accent' : undefined}
+              {...(difficulty == 0 ? { variant: 'accent' } : {})}
               onClick={() => setDifficulty(0)}
             >
               Easy
             </Button>
             <Button
-              variant={difficulty == 1 ? 'accent' : undefined}
+              {...(difficulty == 1 ? { variant: 'accent' } : {})}
               onClick={() => setDifficulty(1)}
             >
               Medium
             </Button>
             <Button
-              variant={difficulty == 2 ? 'accent' : undefined}
+              {...(difficulty == 2 ? { variant: 'accent' } : {})}
               onClick={() => setDifficulty(2)}
             >
               Hard
@@ -70,7 +76,7 @@ export default function EndgameConfigure({
           <div className="flex flex-wrap gap-2">
             <div>
               <Button
-                variant={type == 'All' ? 'accent' : undefined}
+                {...(type == 'All' ? { variant: 'accent' } : {})}
                 onClick={() => setType('All')}
               >
                 All
@@ -78,7 +84,7 @@ export default function EndgameConfigure({
             </div>
             <div>
               <Button
-                variant={type == 'Queen' ? 'accent' : undefined}
+                {...(type == 'Queen' ? { variant: 'accent' } : {})}
                 onClick={() => setType('Queen')}
               >
                 Queen
@@ -86,7 +92,7 @@ export default function EndgameConfigure({
             </div>
             <div>
               <Button
-                variant={type == 'Rook' ? 'accent' : undefined}
+                {...(type == 'Rook' ? { variant: 'accent' } : {})}
                 onClick={() => setType('Rook')}
               >
                 Rook
@@ -94,7 +100,7 @@ export default function EndgameConfigure({
             </div>
             <div>
               <Button
-                variant={type == 'Bishop' ? 'accent' : undefined}
+                {...(type == 'Bishop' ? { variant: 'accent' } : {})}
                 onClick={() => setType('Bishop')}
               >
                 Bishop
@@ -102,7 +108,7 @@ export default function EndgameConfigure({
             </div>
             <div>
               <Button
-                variant={type == 'Knight' ? 'accent' : undefined}
+                {...(type == 'Knight' ? { variant: 'accent' } : {})}
                 onClick={() => setType('Knight')}
               >
                 Knight
@@ -110,7 +116,7 @@ export default function EndgameConfigure({
             </div>
             <div>
               <Button
-                variant={type == 'Pawn' ? 'accent' : undefined}
+                {...(type == 'Pawn' ? { variant: 'accent' } : {})}
                 onClick={() => setType('Pawn')}
               >
                 Pawn

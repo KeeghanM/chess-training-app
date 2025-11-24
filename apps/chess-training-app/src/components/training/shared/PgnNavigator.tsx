@@ -1,6 +1,6 @@
 import { Chess } from 'chess.js'
 
-interface PgnNavigatorProps {
+type PgnNavigatorProps = {
   game: Chess
   puzzleFinished: boolean
   onMoveClick?: (moveIndex: number) => void

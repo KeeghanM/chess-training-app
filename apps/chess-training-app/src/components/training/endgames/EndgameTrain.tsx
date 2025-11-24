@@ -23,20 +23,20 @@ import BoardContainer from '../shared/BoardContainer'
 import PgnNavigator from '../shared/PgnNavigator'
 import StatusIndicator from '../shared/StatusIndicator'
 
-interface EndgameTrainProps {
+type EndgameTrainProps = {
   // Display props
   type: 'Queen' | 'Rook' | 'Knight' | 'Bishop' | 'Pawn' | 'All'
   rating: number
   getDifficulty: () => string
 
   // Puzzle data
-  currentPuzzle?: TrainingPuzzle
+  currentPuzzle?: TrainingPuzzle | undefined
   soundEnabled: boolean
   loading: boolean
 
   // Puzzle state
   puzzleStatus: 'none' | 'correct' | 'incorrect'
-  puzzleId?: string
+  puzzleId?: string | undefined
   xpCounter: number
 
   // Auto next

@@ -6,12 +6,15 @@ import type { Line } from '@components/training/courses/create/parse/ParsePGNtoL
 
 import type { LineWithMoves } from './GroupEditor'
 
-export default function LineDisplay(props: {
+export default function LineDisplay({
+  line,
+  onChange,
+  onDelete,
+}: {
   line: LineWithMoves
   onChange: (line: LineWithMoves) => void
   onDelete: () => void
 }) {
-  const { line } = props
   const niceLine = {
     moves: line.moves.map((move) => ({
       notation: move.move,
@@ -25,7 +28,7 @@ export default function LineDisplay(props: {
         "Are you sure you want to delete this line? Remember, you'll need to save the course to make this change permanent.",
       )
     ) {
-      props.onDelete()
+      onDelete()
     }
   }
 
@@ -52,7 +55,7 @@ export default function LineDisplay(props: {
             className="border border-bg rounded px-2 py-1 text-sm"
             value={line.trainable ? 1 : 0}
             onChange={(e) =>
-              props.onChange({ ...line, trainable: e.target.value === '1' })
+              onChange({ ...line, trainable: e.target.value === '1' })
             }
           >
             <option value={1}>Trainable</option>

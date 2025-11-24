@@ -25,7 +25,7 @@ import { useTacticsQueries } from '@hooks/use-tactics-queries'
 import trackEventOnClient from '@utils/track-event-on-client'
 
 export type PrismaTacticsSet = TacticsSet & { rounds: TacticsSetRound[] }
-interface TacticsSetCreatorProps {
+type TacticsSetCreatorProps = {
   setCount: number
   maxSets: number
   hasUnlimitedSets: boolean
@@ -77,7 +77,7 @@ export default function TacticsSetCreator({
   const difficultyAdjuster = (d: number) => {
     return d == 0 ? 0.9 : d == 1 ? 1 : 1.2
   }
-  const GetPuzzlesForSet = async (
+  const getPuzzlesForSet = async (
     rating: number,
     count: number,
     themes: string[],
@@ -85,7 +85,7 @@ export default function TacticsSetCreator({
     const params = {
       rating: Math.round(rating * difficultyAdjuster(difficulty)),
       count,
-      themes: themes.length > 0 ? themes : undefined,
+      themes: themes.length > 0 ? themes : [],
     }
 
     try {
@@ -156,7 +156,7 @@ export default function TacticsSetCreator({
           isPGN: true,
         })
       } else {
-        const puzzles = await GetPuzzlesForSet(rating, size, themesList)
+        const puzzles = await getPuzzlesForSet(rating, size, themesList)
         if (!puzzles || puzzles.length == 0) {
           setMessage('Failed to fetch puzzles. Please try different criteria.')
           return
@@ -292,19 +292,19 @@ export default function TacticsSetCreator({
                         <label>Difficulty</label>
                         <div className="flex gap-2 flex-row md:gap-4">
                           <Button
-                            variant={difficulty == 0 ? 'success' : undefined}
+                            {...(difficulty == 0 ? { variant: 'success' } : {})}
                             onClick={() => setDifficulty(0)}
                           >
                             Easy
                           </Button>
                           <Button
-                            variant={difficulty == 1 ? 'success' : undefined}
+                            {...(difficulty == 1 ? { variant: 'success' } : {})}
                             onClick={() => setDifficulty(1)}
                           >
                             Medium
                           </Button>
                           <Button
-                            variant={difficulty == 2 ? 'success' : undefined}
+                            {...(difficulty == 2 ? { variant: 'success' } : {})}
                             onClick={() => setDifficulty(2)}
                           >
                             Hard

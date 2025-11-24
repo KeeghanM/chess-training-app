@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
 } from '../../_elements/tooltip'
 
-interface RecallConfigureProps {
+type RecallConfigureProps = {
   difficulty: number
   setDifficulty: (difficulty: number) => void
   piecesToRecall: number
@@ -21,6 +21,12 @@ interface RecallConfigureProps {
   error?: string
 }
 
+/**
+ * RecallConfigure Component
+ *
+ * Configures settings for positional recall training,
+ * including difficulty, number of pieces to recall, and timer settings.
+ */
 export default function RecallConfigure({
   difficulty,
   setDifficulty,
@@ -62,19 +68,19 @@ export default function RecallConfigure({
             </label>
             <div className="flex gap-4">
               <Button
-                variant={difficulty == 0 ? 'accent' : undefined}
+                {...(difficulty == 0 ? { variant: 'accent' } : {})}
                 onClick={() => setDifficulty(0)}
               >
                 Easy
               </Button>
               <Button
-                variant={difficulty == 1 ? 'accent' : undefined}
+                {...(difficulty == 1 ? { variant: 'accent' } : {})}
                 onClick={() => setDifficulty(1)}
               >
                 Medium
               </Button>
               <Button
-                variant={difficulty == 2 ? 'accent' : undefined}
+                {...(difficulty == 2 ? { variant: 'accent' } : {})}
                 onClick={() => setDifficulty(2)}
               >
                 Hard

@@ -3,6 +3,20 @@ import type {
   UserCourse,
   UserLine,
 } from '@prisma/client'
+import type { CreateCourseData } from '@schemas/courses'
+import {
+  AddLinesSchema,
+  CheckCourseNameSchema,
+  CourseIdSchema,
+  CreateCourseSchema,
+  MarkGroupForReviewSchema,
+  MarkLineForReviewSchema,
+  PurchaseCourseSchema,
+  UpdateCourseSchema,
+  UpdateLineStatsSchema,
+  UploadTrainedFensSchema,
+  UserCourseIdSchema,
+} from '@schemas/courses'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { CleanMove } from '@components/training/courses/create/parse/ParsePGNtoLineData'
@@ -27,7 +41,7 @@ export type Course = {
 // Types for course training operations
 export type TrainingFen = {
   fen: string
-  commentId?: number
+  commentId?: number | undefined
 }
 
 export type LineStatsUpdate = {
@@ -56,7 +70,10 @@ export function useCourseQueries() {
       queryKey: ['user-course', courseId],
       queryFn: async ({
         queryKey,
-      }): Promise<{ course: PrismaUserCourse; nextReview?: string }> => {
+      }): Promise<{
+        course: PrismaUserCourse
+        nextReview?: string | undefined
+      }> => {
         const [, id] = queryKey
         const response = await fetch(`/api/courses/user/${id}`)
         const json = (await response.json()) as ResponseJson
@@ -72,12 +89,13 @@ export function useCourseQueries() {
   // --- Mutations ---
   const purchaseCourse = useMutation({
     mutationFn: async ({ courseId }: { courseId: string }) => {
+      const validatedData = PurchaseCourseSchema.parse({ courseId })
       await fetch('/api/ecomm/purchaseCourse', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ courseId }),
+        body: JSON.stringify(validatedData),
       })
     },
     onSuccess: () => {
@@ -89,13 +107,14 @@ export function useCourseQueries() {
   // Upload trained FENs
   const uploadTrainedFens = useMutation({
     mutationFn: async (data: { userCourseId: string; fens: TrainingFen[] }) => {
+      const validatedData = UploadTrainedFensSchema.parse(data)
       await fetch(`/api/courses/user/${data.userCourseId}/fens/upload`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          fens: data.fens,
+          fens: validatedData.fens,
         }),
       })
     },
@@ -114,6 +133,7 @@ export function useCourseQueries() {
       lineCorrect: boolean
       revisionDate: Date
     }) => {
+      const validatedData = UpdateLineStatsSchema.parse(data)
       await fetch(
         `/api/courses/user/${data.userCourseId}/stats/${data.lineId}`,
         {
@@ -122,8 +142,8 @@ export function useCourseQueries() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            lineCorrect: data.lineCorrect,
-            revisionDate: data.revisionDate,
+            lineCorrect: validatedData.lineCorrect,
+            revisionDate: validatedData.revisionDate,
           }),
         },
       )
@@ -138,25 +158,14 @@ export function useCourseQueries() {
 
   // Course creation mutations
   const createCourse = useMutation({
-    mutationFn: async (data: {
-      courseName: string
-      slug: string
-      description: string
-      groupNames: {
-        groupName: string
-      }[]
-      lines: {
-        groupName: string
-        colour: string
-        moves: CleanMove[]
-      }[]
-    }) => {
+    mutationFn: async (data: CreateCourseData) => {
+      const validatedData = CreateCourseSchema.parse(data)
       await fetch('/api/courses/create/upload', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(validatedData),
       })
     },
     onSuccess: () => {
@@ -166,12 +175,13 @@ export function useCourseQueries() {
 
   const checkCourseName = useMutation({
     mutationFn: async (courseName: string): Promise<boolean> => {
+      const validatedData = CheckCourseNameSchema.parse({ name: courseName })
       const response = await fetch('/api/courses/create/checkName', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: courseName }),
+        body: JSON.stringify(validatedData),
       })
       return response.ok
     },
@@ -188,7 +198,8 @@ export function useCourseQueries() {
   // Course management mutations
   const deleteCourse = useMutation({
     mutationFn: async (userCourseId: string) => {
-      await fetch(`/api/courses/user/${userCourseId}`, {
+      const validatedData = UserCourseIdSchema.parse({ userCourseId })
+      await fetch(`/api/courses/user/${validatedData.userCourseId}`, {
         method: 'DELETE',
       })
     },
@@ -200,7 +211,8 @@ export function useCourseQueries() {
 
   const restoreCourse = useMutation({
     mutationFn: async (userCourseId: string) => {
-      await fetch(`/api/courses/user/${userCourseId}/restore`, {
+      const validatedData = UserCourseIdSchema.parse({ userCourseId })
+      await fetch(`/api/courses/user/${validatedData.userCourseId}/restore`, {
         method: 'POST',
       })
     },
@@ -229,10 +241,11 @@ export function useCourseQueries() {
         sortOrder: number
       }>
     }) => {
+      const validatedData = UpdateCourseSchema.parse(data)
       await fetch('/api/courses', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(validatedData),
       })
     },
     onSuccess: () => {
@@ -250,12 +263,13 @@ export function useCourseQueries() {
         moves: CleanMove[]
       }>
     }) => {
+      const validatedData = AddLinesSchema.parse(data)
       await fetch('/api/courses/create/addLines', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(validatedData),
       })
     },
     onSuccess: () => {
@@ -265,12 +279,13 @@ export function useCourseQueries() {
 
   const getCourseLines = useMutation({
     mutationFn: async (data: { courseId: string }): Promise<unknown> => {
+      const validatedData = CourseIdSchema.parse(data)
       const response = await fetch('/api/courses/create/getLines', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(validatedData),
       })
 
       const json = (await response.json()) as ResponseJson
@@ -285,6 +300,7 @@ export function useCourseQueries() {
       lineId: string
       minDate: string
     }) => {
+      const validatedData = MarkLineForReviewSchema.parse(data)
       await fetch(
         `/api/courses/user/${data.courseId}/lines/markLineForReview`,
         {
@@ -292,7 +308,10 @@ export function useCourseQueries() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ lineId: data.lineId, minDate: data.minDate }),
+          body: JSON.stringify({
+            lineId: validatedData.lineId,
+            minDate: validatedData.minDate,
+          }),
         },
       )
     },
@@ -303,6 +322,7 @@ export function useCourseQueries() {
 
   const markGroupForReview = useMutation({
     mutationFn: async (data: { courseId: string; groupId: number }) => {
+      const validatedData = MarkGroupForReviewSchema.parse(data)
       await fetch(
         `/api/courses/user/${data.courseId}/lines/markGroupForReview`,
         {
@@ -310,7 +330,7 @@ export function useCourseQueries() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ groupId: data.groupId }),
+          body: JSON.stringify({ groupId: validatedData.groupId }),
         },
       )
     },
@@ -321,12 +341,16 @@ export function useCourseQueries() {
 
   const markAllForReview = useMutation({
     mutationFn: async (data: { courseId: string }) => {
-      await fetch(`/api/courses/user/${data.courseId}/lines/markAllForReview`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const validatedData = CourseIdSchema.parse(data)
+      await fetch(
+        `/api/courses/user/${validatedData.courseId}/lines/markAllForReview`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
         },
-      })
+      )
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-courses'] })
