@@ -184,7 +184,7 @@ export function useTacticsQueries() {
     mutationFn: async (params: {
       rating?: number
       ratingDeviation?: number
-      themes?: string[]
+      themes?: string[] | undefined
       count?: number
     }): Promise<TrainingPuzzle[]> => {
       // TODO: Add schema for this params object if needed, currently passed through

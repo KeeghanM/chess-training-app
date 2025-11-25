@@ -80,7 +80,7 @@ export default function TacticsSetCreator({
   const getPuzzlesForSet = async (
     rating: number,
     count: number,
-    themes: string[] | undefined,
+    themes: string[],
   ) => {
     const params = {
       rating: Math.round(rating * difficultyAdjuster(difficulty)),
