@@ -9,7 +9,12 @@ const bundleAnalyzer = withBundleAnalyzer({
  * @type {import('next').NextConfig}
  */
 const nextConfig = {
-  output: 'standalone', // Add this line
+  output: 'standalone',
+  experimental: {
+    turbo: {
+      root: '../../', // Points to the monorepo root where node_modules is
+    },
+  },
   reactStrictMode: true,
   headers: async () => [
     {
