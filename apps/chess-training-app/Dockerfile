@@ -21,6 +21,7 @@ COPY apps/chess-training-app ./apps/chess-training-app
 
 # Set the build variables
 ENV NODE_ENV="production"
+ENV SKIP_ENV_VALIDATION=1
 ARG NEXT_PUBLIC_MAX_COURSES
 ENV NEXT_PUBLIC_MAX_COURSES=$NEXT_PUBLIC_MAX_COURSES
 ARG NEXT_PUBLIC_MAX_SETS
