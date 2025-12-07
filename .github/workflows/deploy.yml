@@ -28,18 +28,18 @@ jobs:
             # Note: Include shared packages in the apps that use them!
             app:
               - 'apps/chess-training-app/**'
-              - '.github/*'
+              - '.github/**'
 
             api:
               - 'apps/puzzles-api/**'
-              - '.github/*'
+              - '.github/**'
 
             tactics:
               - 'apps/tactics-finder/**'
-              - '.github/*'
+              - '.github/**'
   build-and-push-puzzles-api:
     needs: check-paths
-    if: ${{ needs.check-paths.outputs.deploy-app == 'true' }}
+    if: ${{ needs.check-paths.outputs.deploy-api == 'true' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
