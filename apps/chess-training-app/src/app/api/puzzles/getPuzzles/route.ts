@@ -36,7 +36,7 @@ export const POST = apiWrapper(async (request) => {
     params = {
       ...params,
       themesType: 'OR',
-      ...(themes && { themes: JSON.stringify(themes) }),
+      ...(themes && themes.length > 0 && { themes: JSON.stringify(themes) }),
     }
   }
   if (playerMoves) params = { ...params, playerMoves: playerMoves.toString() }

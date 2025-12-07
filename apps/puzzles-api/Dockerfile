@@ -2,7 +2,7 @@ FROM node:22-alpine AS deps
 WORKDIR /app
 
 # Copy root package.json and yarn.lock for workspace setup
-COPY package.json yarn.lock ./
+COPY package.json ./
 COPY apps/puzzles-api/package.json ./apps/puzzles-api/
 
 # install all deps including dev
@@ -27,12 +27,7 @@ ENV NODE_ENV="production"
 
 # Copy necessary files for production
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/apps/puzzles-api/dist ./apps/puzzles-api/dist
-COPY --from=builder /app/apps/puzzles-api/package.json ./apps/puzzles-api/package.json
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/yarn.lock ./yarn.lock
-
-WORKDIR /app/apps/puzzles-api
+COPY --from=builder /app/apps/puzzles-api/dist ./dist
 
 EXPOSE 4000
 

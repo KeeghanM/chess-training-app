@@ -1,9 +1,13 @@
-name: Coolify Selective Deploy
+name: Create and publish Docker images
 
 on:
   push:
-    branches:
-      - main
+    branches: ['main']
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME_BASE: ${{ github.repository }}
 
 jobs:
   check-paths:
@@ -30,27 +34,91 @@ jobs:
 
             tactics:
               - 'apps/tactics-finder/**'
-
-  deploy-app:
+  build-and-push-puzzles-api:
     needs: check-paths
     if: ${{ needs.check-paths.outputs.deploy-app == 'true' }}
     runs-on: ubuntu-latest
-    steps:
-      - name: 🚀 Trigger chess-training-app deploy
-        run: curl -f -X POST ${{ secrets.COOLIFY_WEBHOOK_APP }} > /dev/null 2>&1
+    permissions:
+      contents: read
+      packages: write
 
-  deploy-api:
-    needs: check-paths
-    if: ${{ needs.check-paths.outputs.deploy-api == 'true' }}
-    runs-on: ubuntu-latest
     steps:
-      - name: 🚀 Trigger puzzles-api deploy
-        run: curl -f -X POST ${{ secrets.COOLIFY_WEBHOOK_API }} > /dev/null 2>&1
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  deploy-tactics:
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BASE }}-puzzles-api
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/puzzles-api/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            PORT=4000
+
+      - name: Trigger redeploy
+        run: |
+          curl -X GET ${{ secrets.PUZZLES_DEPLOY_URL }}
+
+  build-and-push-chess-training-app:
     needs: check-paths
-    if: ${{ needs.check-paths.outputs.deploy-tactics == 'true' }}
+    if: ${{ needs.check-paths.outputs.deploy-app == 'true' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
     steps:
-      - name: 🚀 Trigger tactics-finder deploy
-        run: curl -f -X POST ${{ secrets.COOLIFY_WEBHOOK_tactics }} > /dev/null 2>&1
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BASE }}-chess-training-app
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/chess-training-app/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NEXT_PUBLIC_SITE_URL=${{ vars.NEXT_PUBLIC_SITE_URL }}
+            NEXT_PUBLIC_POSTHOG_KEY=${{ vars.NEXT_PUBLIC_POSTHOG_KEY }}
+            NEXT_PUBLIC_POSTHOG_HOST=${{ vars.NEXT_PUBLIC_POSTHOG_HOST }}
+            NEXT_PUBLIC_STRIPE_PUBLIC_KEY=${{ vars.NEXT_PUBLIC_STRIPE_PUBLIC_KEY }}
+            NEXT_PUBLIC_MAX_COURSES=${{ vars.NEXT_PUBLIC_MAX_COURSES }}
+            NEXT_PUBLIC_MAX_SETS=${{ vars.NEXT_PUBLIC_MAX_SETS }}
+
+      - name: Trigger redeploy
+        run: |
+          curl -X GET ${{ secrets.APP_DEPLOY_URL }}

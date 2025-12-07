@@ -9,6 +9,7 @@ const bundleAnalyzer = withBundleAnalyzer({
  * @type {import('next').NextConfig}
  */
 const nextConfig = {
+  output: 'standalone', // Add this line
   reactStrictMode: true,
   headers: async () => [
     {
