@@ -28,12 +28,15 @@ jobs:
             # Note: Include shared packages in the apps that use them!
             app:
               - 'apps/chess-training-app/**'
+              - './github/*'
 
             api:
               - 'apps/puzzles-api/**'
+              - './github/*'
 
             tactics:
               - 'apps/tactics-finder/**'
+              - './github/*'
   build-and-push-puzzles-api:
     needs: check-paths
     if: ${{ needs.check-paths.outputs.deploy-app == 'true' }}
@@ -52,6 +55,9 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -94,6 +100,9 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
