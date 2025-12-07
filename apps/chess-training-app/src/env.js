@@ -59,40 +59,8 @@ export const env = createEnv({
       .default(2),
   },
 
-  /**
-   * You can't destruct `process.env` as a regular object in the Next.js edge runtimes (e.g.
-   * middlewares) or client-side so we need to destruct manually.
-   */
-  runtimeEnv: {
-    // SERVER
-    DATABASE_URL: process.env.DATABASE_URL,
-    NODE_ENV: process.env.NODE_ENV,
-    API_BASE_URL: process.env.API_BASE_URL,
-    KINDE_CLIENT_ID: process.env.KINDE_CLIENT_ID,
-    KINDE_CLIENT_SECRET: process.env.KINDE_CLIENT_SECRET,
-    KINDE_ISSUER_URL: process.env.KINDE_ISSUER_URL,
-    KINDE_SITE_URL: process.env.KINDE_SITE_URL,
-    KINDE_POST_LOGOUT_REDIRECT_URL: process.env.KINDE_POST_LOGOUT_REDIRECT_URL,
-    KINDE_POST_LOGIN_REDIRECT_URL: process.env.KINDE_POST_LOGIN_REDIRECT_URL,
-    KINDE_AUDIENCE: process.env.KINDE_AUDIENCE,
-    SMTP_HOST: process.env.SMTP_HOST,
-    SMTP_PORT: process.env.SMTP_PORT,
-    SMTP_USER: process.env.SMTP_USER,
-    SMTP_PASS: process.env.SMTP_PASS,
-    BREVO_API_KEY: process.env.BREVO_API_KEY,
-    RAPIDAPI_KEY: process.env.RAPIDAPI_KEY,
-    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
-    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
-    KILLBILL_URL: process.env.KILLBILL_URL,
-    KILLBILL_USERNAME: process.env.KILLBILL_USERNAME,
-    KILLBILL_PASSWORD: process.env.KILLBILL_PASSWORD,
-    KILLBILL_API_KEY: process.env.KILLBILL_API_KEY,
-    KILLBILL_API_SECRET: process.env.KILLBILL_API_SECRET,
-    REDIS_HOST: process.env.REDIS_HOST,
-    REDIS_PORT: process.env.REDIS_PORT,
-    PUZZLE_API_URL: process.env.PUZZLE_API_URL,
-
-    // CLIENT
+  experimental__runtimeEnv: {
+    // CLIENT ONLY Because of 'experimental'
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
@@ -100,14 +68,6 @@ export const env = createEnv({
     NEXT_PUBLIC_MAX_COURSES: process.env.NEXT_PUBLIC_MAX_COURSES,
     NEXT_PUBLIC_MAX_SETS: process.env.NEXT_PUBLIC_MAX_SETS,
   },
-  /**
-   * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
-   * useful for Docker builds.
-   */
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
-  /**
-   * Makes it so that empty strings are treated as undefined.
-   * `SOME_VAR: z.string()` and `SOME_VAR=''` will throw an error.
-   */
   emptyStringAsUndefined: true,
 })
