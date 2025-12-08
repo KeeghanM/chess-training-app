@@ -23,7 +23,7 @@ COPY apps/chess-training-app ./apps/chess-training-app
 ENV NODE_ENV="production"
 ENV SKIP_ENV_VALIDATION=1
 
-# Client-side vars
+# Client-side vars (Passed via --build-arg)
 ARG NEXT_PUBLIC_MAX_COURSES
 ENV NEXT_PUBLIC_MAX_COURSES=$NEXT_PUBLIC_MAX_COURSES
 ARG NEXT_PUBLIC_MAX_SETS
@@ -37,8 +37,9 @@ ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 ARG NEXT_PUBLIC_STRIPE_PUBLIC_KEY
 ENV NEXT_PUBLIC_STRIPE_PUBLIC_KEY=$NEXT_PUBLIC_STRIPE_PUBLIC_KEY
 
-# Server-side vars (dummy values for build only)
-ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
+# --- SERVER SIDE VARS ---
+# these dummies satisfy Zod validation during build
+# Note: DATABASE_URL is passed as a secret as it's actually consumed during build
 ENV API_BASE_URL="http://localhost:3000"
 ENV KINDE_CLIENT_ID="dummy"
 ENV KINDE_CLIENT_SECRET="dummy"
@@ -64,11 +65,16 @@ ENV PUZZLE_API_URL="http://localhost:4000"
 ENV REDIS_HOST="localhost"
 ENV REDIS_PORT="6379"
 
-# Generate Prisma client
-RUN yarn workspace chess-training-app prisma generate
+# --- BUILD COMMANDS ---
+# We mount the secret to a temporary file, read it into an ENV var, and run the command
+RUN --mount=type=secret,id=DATABASE_URL \
+    export DATABASE_URL=$(cat /run/secrets/DATABASE_URL) && \
+    yarn workspace chess-training-app prisma generate
 
-# Build the application
-RUN yarn workspace chess-training-app build
+# We do the same here because Next.js getStaticProps might need the DB
+RUN --mount=type=secret,id=DATABASE_URL \
+    export DATABASE_URL=$(cat /run/secrets/DATABASE_URL) && \
+    yarn workspace chess-training-app build
 
 FROM node:22-alpine AS runner
 WORKDIR /app

@@ -36,3 +36,4 @@ __pycache__/
 *.cp4
 **/import/
 .mypy_cache/
+db_secret.txt
