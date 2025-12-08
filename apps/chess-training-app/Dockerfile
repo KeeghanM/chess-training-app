@@ -72,6 +72,7 @@ RUN --mount=type=secret,id=DATABASE_URL \
     yarn workspace chess-training-app prisma generate
 
 # We do the same here because Next.js getStaticProps might need the DB
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN --mount=type=secret,id=DATABASE_URL \
     export DATABASE_URL=$(cat /run/secrets/DATABASE_URL) && \
     yarn workspace chess-training-app build
@@ -80,7 +81,6 @@ FROM node:22-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV="production"
-ENV NEXT_TELEMETRY_DISABLED=1
 # Create system user group and user (for secure execution)
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
@@ -89,7 +89,7 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/apps/chess-training-app/public ./public/
 COPY --from=builder --chown=nextjs:nodejs /app/apps/chess-training-app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/apps/chess-training-app/.next/static ./.next/static/
+COPY --from=builder --chown=nextjs:nodejs /app/apps/chess-training-app/.next/static ./apps/chess-training-app/.next/static
 
 # Switch to non-root user
 USER nextjs
@@ -99,4 +99,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 # Start the application
-CMD ["node", "server.js"]
+CMD ["node", "apps/chess-training-app/server.js"]
