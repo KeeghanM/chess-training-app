@@ -6,8 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME_BASE: ${{ github.repository }}
+  REGISTRY: ghcr.io/keeghanm/cta
 
 jobs:
   check-paths:
@@ -63,7 +62,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BASE }}-puzzles-api
+          images: ${{ env.REGISTRY }}-puzzles-api
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -83,7 +82,7 @@ jobs:
           curl -X POST ${{ secrets.PUZZLES_DEPLOY_URL }} \
           -H "Content-Type: application/json" \
           -H "x-github-event: registry_package" \
-          -d '{"registry_package": {"package_version": {"package_url": "${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BASE }}-puzzles-api:main"}}}'
+          -d '{"registry_package": {"package_version": {"package_url": "${{ env.REGISTRY }}-puzzles-api:main"}}}'
 
   build-and-push-chess-training-app:
     needs: check-paths
@@ -111,7 +110,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BASE }}-chess-training-app
+          images: ${{ env.REGISTRY }}-app
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -138,4 +137,4 @@ jobs:
           curl -X POST ${{ secrets.APP_DEPLOY_URL }} \
           -H "Content-Type: application/json" \
           -H "x-github-event: registry_package" \
-          -d '{"registry_package": {"package_version": {"package_url": "${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BASE }}-chess-training-app:main"}}}'
+          -d '{"registry_package": {"package_version": {"package_url": "${{ env.REGISTRY  }}-app:main"}}}'
