@@ -2,7 +2,7 @@ import globalAxios from 'axios'
 import * as killbill from 'killbill'
 import { env } from '~/env'
 
-const axios = globalAxios.create()
+const axios = globalAxios.create({ timeout: 3000 })
 
 const KILLBILL_API_KEY = env.KILLBILL_API_KEY
 const KILLBILL_API_SECRET = env.KILLBILL_API_SECRET
