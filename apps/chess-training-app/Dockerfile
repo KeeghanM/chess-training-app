@@ -87,7 +87,7 @@ RUN adduser --system --uid 1001 nextjs
 # Copy necessary files from build stage
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/apps/chess-training-app/public ./public/
+COPY --from=builder /app/apps/chess-training-app/public ./apps/chess-training-app/public
 COPY --from=builder --chown=nextjs:nodejs /app/apps/chess-training-app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/apps/chess-training-app/.next/static ./apps/chess-training-app/.next/static
 

@@ -80,7 +80,10 @@ jobs:
 
       - name: Trigger redeploy
         run: |
-          curl -X GET ${{ secrets.PUZZLES_DEPLOY_URL }}
+          curl -X POST ${{ secrets.PUZZLES_DEPLOY_URL }} \
+          -H "Content-Type: application/json" \
+          -H "x-github-event: registry_package" \
+          -d '{"registry_package": {"package_version": {"package_url": "${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BASE }}-puzzles-api:main"}}}'
 
   build-and-push-chess-training-app:
     needs: check-paths
@@ -132,4 +135,7 @@ jobs:
 
       - name: Trigger redeploy
         run: |
-          curl -X GET ${{ secrets.APP_DEPLOY_URL }}
+          curl -X POST ${{ secrets.APP_DEPLOY_URL }} \
+          -H "Content-Type: application/json" \
+          -H "x-github-event: registry_package" \
+          -d '{"registry_package": {"package_version": {"package_url": "${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BASE }}-chess-training-app:main"}}}'
