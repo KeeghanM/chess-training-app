@@ -42,7 +42,8 @@ export async function getUserServer() {
         },
       })
       const isStaff = permissions?.permissions.includes('staff-member') ?? false
-      const isPremium = subscriptionStatus.features.hasPremium
+      const isPromoPeriod = new Date() < new Date('2025-12-31T23:59:59Z')
+      const isPremium = isPromoPeriod || subscriptionStatus.features.hasPremium
 
       return { user, hasAuth, profile, isStaff, isPremium, badges }
     } catch (e) {
