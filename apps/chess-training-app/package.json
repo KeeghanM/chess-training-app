@@ -39,7 +39,7 @@
     "ioredis": "^5.8.2",
     "killbill": "^0.24.0",
     "lucide-react": "^0.544.0",
-    "next": "^16.0.7",
+    "next": "16.0.10",
     "nodemailer": "^7.0.7",
     "posthog-js": "^1.270.1",
     "posthog-node": "^5.9.2",
